@@ -20,7 +20,7 @@ Any static web server can host that directory.
 
 - `public/`: semantic HTML, shared CSS tokens, and favicon.
 - `scripts/`: dependency-free build and local development server.
-- `.github/`: issue and pull request templates, plus a build check.
+- `.github/`: issue and pull request templates.
 - `vercel.json`: static deployment configuration and response headers.
 
 ## Deployment
@@ -28,6 +28,8 @@ Any static web server can host that directory.
 The dedicated Vercel project is `bakhtiyaraj-dev` in the existing `BakhtiyarAjPro`
 team (`bakhtiyaraj-pro-updated`). GitHub integration deploys pushes to `main`
 to production and branches/pull requests to previews. No Vercel token is stored in GitHub.
+Vercel runs the build on every deployment. A separate GitHub Actions workflow is
+not enabled because the current GitHub login does not have the `workflow` scope.
 
 Target domain: https://bakhtiyaraj.dev. Domain activation is separate from the build;
 check Vercel Domains for the current verified assignment before moving it.
