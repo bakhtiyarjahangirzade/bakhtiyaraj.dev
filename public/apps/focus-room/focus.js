@@ -17,6 +17,38 @@
   let stats = data?.stats && Number.isInteger(data.stats.sessions) && data.stats.sessions >= 0 && Number.isFinite(data.stats.minutes) && data.stats.minutes >= 0 ? data.stats : { date: day(), sessions: 0, minutes: 0, completedId: null };
   let context, rainSource, rainGain;
   let canPlay = false, rainBusy = false;
+  let clickBuffer;
+  const clickBytes = fetch('assets/audio/radio-click.wav').then(response => { if (!response.ok) throw new Error('click unavailable'); return response.arrayBuffer(); }).catch(() => null);
+  async function mechanicalClick() {
+    if (config.volume === 0 || !await unlock()) return;
+    try {
+      if (!clickBuffer) { const bytes = await clickBytes; if (!bytes) return; clickBuffer = await context.decodeAudioData(bytes.slice(0)); }
+      const source = context.createBufferSource(), gain = context.createGain();
+      source.buffer = clickBuffer; gain.gain.value = .7 * config.volume / 100;
+      source.connect(gain); gain.connect(context.destination); source.start();
+      source.onended = () => { source.disconnect(); gain.disconnect(); };
+    } catch { /* Missing click audio never blocks a timer action. */ }
+  }
+  document.addEventListener('click', event => { const button = event.target.closest('button'); if (button && !button.disabled) mechanicalClick(); }, true);
+  function updateDrum(mode, value, animate = true) {
+    const wheel = document.querySelector(`[data-wheel="${mode}"]`);
+    const display = wheel.querySelector('.flap-display');
+    const next = String(value), old = display.dataset.value || next;
+    display.querySelectorAll('.flap-old,.flap-new').forEach(node => node.remove());
+    display.querySelectorAll(':scope > .flap-top > span,:scope > .flap-bottom > span').forEach(span => span.textContent = next);
+    display.dataset.value = next;
+    wheel.dataset.digits = String(next.length);
+    const max = mode === 'focus' ? 120 : 60;
+    wheel.querySelector('[data-step="1"]').disabled = Number(value) >= max;
+    wheel.querySelector('[data-step="-1"]').disabled = Number(value) <= 1;
+    if (!animate || old === next || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const reverse = Number(value) < Number(old);
+    for (const [flap, text, extra] of [[reverse ? 'flap-bottom' : 'flap-top',old,'flap-old'],[reverse ? 'flap-top' : 'flap-bottom',next,'flap-new']]) {
+      const layer = document.createElement('span'); layer.className = `${flap} ${extra}${reverse ? ' reverse' : ''}`;
+      const content = document.createElement('span'); content.textContent = text; layer.append(content); display.append(layer);
+      layer.addEventListener('animationend', () => layer.remove(), { once: true });
+    }
+  }
   const names = { focus: 'focus', short: 'short break', long: 'long break' };
   function day() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
   function save() {
@@ -97,10 +129,12 @@
     document.querySelector('.timer-panel').classList.toggle('break', state.mode !== 'focus');
     for (const button of document.querySelectorAll('[data-mode]')) { button.setAttribute('aria-pressed', String(button.dataset.mode === state.mode)); button.disabled = state.status === 'running'; }
     const startLabel = state.status === 'running' ? 'Pause session' : state.status === 'paused' ? 'Resume session' : state.status === 'complete' ? `Start ${names[nextMode()]}` : `Start ${names[state.mode]}`;
-    const icon = document.createElement('img'); icon.alt = ''; icon.src = state.status === 'running' ? 'assets/icons/pause.svg' : 'assets/icons/play.svg';
-    const label = document.createElement('span'); label.textContent = state.status === 'running' ? 'PAUSE' : state.status === 'paused' ? 'RESUME' : 'START';
-    $('start').setAttribute('aria-label', startLabel);
-    $('start').replaceChildren(icon, label);
+    if ($('start').getAttribute('aria-label') !== startLabel) {
+      const icon = document.createElement('img'); icon.alt = ''; icon.src = state.status === 'running' ? 'assets/icons/pause.svg' : 'assets/icons/play.svg';
+      const label = document.createElement('span'); label.textContent = state.status === 'running' ? 'PAUSE' : state.status === 'paused' ? 'RESUME' : 'START';
+      $('start').setAttribute('aria-label', startLabel);
+      $('start').replaceChildren(icon, label);
+    }
     const today = stats.date === day();
     const sessions = today ? stats.sessions : 0, minutes = today ? stats.minutes : 0;
     $('session-number').textContent = String(sessions);
@@ -119,7 +153,26 @@
   $('reset').addEventListener('click', () => { state = core.fresh(state.mode, config[state.mode], Date.now()); save(); $('timer-status').textContent = 'Session reset. Ready when you are.'; render(); });
   for (const button of document.querySelectorAll('[data-mode]')) button.addEventListener('click', () => { const mode = button.dataset.mode; state = core.fresh(mode, config[mode], Date.now()); save(); $('timer-status').textContent = `${names[mode]} selected.`; render(); });
   for (const mode of ['focus', 'short', 'long']) {
-    const input = $(mode + '-min'); input.value = config[mode];
+    const input = $(mode + '-min'); input.value = config[mode]; updateDrum(mode, config[mode], false);
+    const drum = input.closest('.number-drum');
+    let editStart = String(config[mode]);
+    input.addEventListener('focus', () => { editStart = input.value; drum.classList.add('is-typing'); });
+    input.addEventListener('keydown', event => {
+      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        event.preventDefault(); drum.classList.remove('is-typing');
+        const previous = input.value;
+        event.key === 'ArrowUp' ? input.stepUp() : input.stepDown();
+        if (input.value !== previous) { input.dispatchEvent(new Event('input', { bubbles: true })); mechanicalClick(); }
+      } else if (event.key === 'Enter') input.blur();
+      else if (event.key.length === 1 || event.key === 'Backspace' || event.key === 'Delete') drum.classList.add('is-typing');
+    });
+    input.addEventListener('blur', () => {
+      if (input.getAttribute('aria-invalid') === 'true') return;
+      const edited = drum.classList.contains('is-typing') && editStart !== input.value;
+      if (edited) drum.querySelector('.flap-display').dataset.value = editStart;
+      drum.classList.remove('is-typing'); updateDrum(mode, input.value, edited);
+      if (edited) mechanicalClick();
+    });
     input.addEventListener('input', () => {
       const value = Number(input.value), max = mode === 'focus' ? 120 : 60;
       const valid = input.value !== '' && Number.isInteger(value) && value >= 1 && value <= max;
@@ -128,12 +181,19 @@
       $('settings-error').hidden = !invalid;
       if (!valid) { $('settings-error').textContent = `Enter a whole number between 1 and ${max} minutes for ${names[mode]}.`; return; }
       config[mode] = value;
+      updateDrum(mode, value);
       if (state.mode === mode && state.status === 'idle') state = core.fresh(mode, value, Date.now());
       save(); render();
     });
   }
+  for (const button of document.querySelectorAll('[data-step]')) button.addEventListener('click', () => {
+    const input = $(button.dataset.for + '-min');
+    const min = Number(input.min), max = Number(input.max);
+    input.value = Math.max(min, Math.min(max, Number(input.value || min) + Number(button.dataset.step)));
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
   $('alarm').value = config.alarm; $('volume').value = config.volume; $('volume-value').textContent = config.volume + '%';
-  $('alarm').addEventListener('change', () => { config.alarm = $('alarm').value; save(); });
+  $('alarm').addEventListener('change', () => { config.alarm = $('alarm').value; mechanicalClick(); save(); });
   $('volume').addEventListener('input', () => { config.volume = Number($('volume').value); $('volume-value').textContent = config.volume + '%'; if (rainGain) rainGain.gain.setTargetAtTime(.26 * config.volume / 100, context.currentTime, .1); save(); });
   $('preview-sound').addEventListener('click', async () => { if (config.alarm === 'mute' || config.volume === 0) { $('audio-status').textContent = 'Choose a sound and raise the volume to listen.'; return; } if (await unlock()) { chime(); $('audio-status').textContent = 'Sound preview played.'; } });
   $('rain').addEventListener('click', toggleRain);

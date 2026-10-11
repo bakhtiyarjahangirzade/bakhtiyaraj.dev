@@ -24,11 +24,15 @@ they are built; the site does not pretend those products are already usable.
 
 Desktop build instructions: [apps/focus-room-desktop](apps/focus-room-desktop).
 Run `npm test` for timer-core tests. The unsigned Windows binary is distributed
-through the `focus-room-v1.2.0` GitHub release, not committed to Git.
+through the `focus-room-v1.3.0` GitHub release, not committed to Git.
 
 The Instrument edition uses local fonts and material textures. Font and icon
 licenses are included under `public/apps/focus-room/assets/`. See `design-qa.md`
 for comparison evidence and the deliberate native-control/chrome adaptations.
+Duration controls use animated split flaps with keyboard-editable values and
+mechanical step keys. Button clicks play a short radio-style effect, controlled
+by the master volume. The bundled MIT sample is reproducible with
+`python scripts/generate-click.py`; no third-party recording or network is needed.
 
 ## Run locally
 

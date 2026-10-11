@@ -38,6 +38,11 @@ locally bundled DSEG7 display type, Oxanium wordmark and Barlow Condensed contro
 Horizontal inset readout, right session meter, tactile Start/Reset controls and
 a single lower equipment strip for duration, sound and rain. Native number fields
 and range input remain keyboard-operable. Material images and icons ship offline.
+Version 1.3 replaces the visible native duration steppers with split-flap number
+drums and mechanical up/down keys. Native numeric editing remains underneath for
+keyboard and assistive technology. Value changes animate, except with reduced
+motion. Enabled buttons use a bundled MIT mechanical radio-click sample; master
+volume controls the clicks, alarm and rain. The sample generator is included.
 The catalog retains its separately approved gray design.
 English copy, native duration fields and system-owned sound dropdown.
 Start/pause/resume/reset remain explicit. Mode switching disables while running.

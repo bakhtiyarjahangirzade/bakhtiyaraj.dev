@@ -23,12 +23,13 @@ else {
     window.webContents.on('will-navigate', (event, url) => {
       if (url.startsWith('focus://app/')) return;
       event.preventDefault();
-      if (url === 'https://www.bakhtiyaraj.dev/' || url === 'https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/tag/focus-room-v1.2.0') shell.openExternal(url);
+      if (url === 'https://www.bakhtiyaraj.dev/' || url === 'https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/tag/focus-room-v1.3.0') shell.openExternal(url);
     });
     window.webContents.on('did-fail-load', (_event, code, description) => console.error('Focus Room load failed:', code, description));
     window.loadURL('focus://app/').then(() => window.show()).catch(error => console.error(error.message));
   });
   app.on('window-all-closed', () => app.quit());
 }
+
 
 

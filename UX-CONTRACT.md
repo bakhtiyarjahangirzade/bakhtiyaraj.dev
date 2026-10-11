@@ -6,10 +6,11 @@ The web and Windows renderer share public/apps/focus-room files.
 | --- | --- | --- |
 | Timer state | timer-core.js + focus.js | Wall-clock deadline, pause freezes remaining time, reset returns to configured duration |
 | Modes | focus.js | Focus / short / long; mode buttons disabled while running |
-| Duration input | native number input + focus.js | Whole minutes; focus 1–120, breaks 1–60; inline validation |
+| Duration input | native number input + split-flap frame + focus.js | Whole minutes; focus 1–120, breaks 1–60; up/down keys, keyboard editing, animated commits and inline validation |
 | Select/Listbox | native | OS-owned sound popup is intentionally accepted on both platforms |
 | Completion | focus.js | Record exactly once, play configured chime, offer next phase without autostart |
 | Sound | Web Audio in focus.js | User gesture unlock; volume shared with generated rain; silence is supported |
+| Button feedback | bundled radio-click.wav + focus.js | Enabled button activation plays a short mechanical click; master volume zero silences it |
 | Persistence | device localStorage | Restore timer, settings and daily counts; storage failure leaves current timer usable |
 | Windows shell | main.cjs | Native titlebar, isolated sandboxed renderer, no remote code or preload IPC |
 
