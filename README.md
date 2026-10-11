@@ -1,7 +1,16 @@
 # BAKHY
 
 Free and open-source personal developer hub by Bakhtiyar. This is the minimal
-working foundation: a responsive home page, project area, notes area, and source links.
+working foundation: a responsive catalog, category filters, concept previews,
+an experiments area, and source links.
+
+## Project catalog
+
+Browse All, Apps, Games, Tools, or Lab. The selected category is shareable in the
+URL and works with browser back/forward. Pixel Lab, Color Riot, Grid Run, and
+Focus Room are explicitly labeled design concepts, not released products.
+Preview buttons open a project summary. Real applications can replace them as
+they are built; the site does not pretend those products are already usable.
 
 ## Run locally
 

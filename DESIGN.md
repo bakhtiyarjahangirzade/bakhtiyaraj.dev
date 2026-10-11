@@ -1,27 +1,28 @@
 # BAKHY design direction
 
-Personal developer content hub, initially in Turkish. The user rejected the
-corporate blue layout and selected an experimental, bold direction with original
-visuals and motion. Keep content honest about the early stage.
+The user approved a soft gray design inspired by their reference: rounded pill
+buttons, clean bold typography, rounded product previews with rich local gradients.
+Initial content language is English with a direct, informal headline.
 
-## Visual language
+## Visual tokens
 
-Oversized BAKHY typography intersects a locally generated rotating torus knot.
-Dark aubergine, pale type, lilac wires and acid green express an experimental
-personal workspace. Restrained project and editorial notes sections follow the hero.
-No fabricated projects, testimonials or dashboard functionality.
+public/styles.css owns the runtime tokens: background #e0e2e4, ink #080a0b,
+muted #606569, line #bdc2c6, lime #d6ef86. Typography uses local Segoe UI / Arial
+with restrained monospace detail inside product previews. No external fonts.
 
-## Token ownership
+## Catalog and interactions
 
-public/styles.css is the single token owner: background #17131e, panel #211a2d,
-ink #f2eee9, muted #b4aabd, acid #d6f985, pink #e0a7f2, line #493e54.
-Display: Arial Black / Segoe UI. Body: Segoe UI / Arial. Utility: Consolas.
-Georgia italic provides contrast in the thesis and notes heading.
+All / Apps / Games / Tools / Lab filters are prominent above the catalog.
+Category selection is persisted in the URL; browser back/forward restores it.
+All cards are explicitly labeled Concept until a real project is implemented.
+Preview buttons open accessible native modal dialogs with real project summaries,
+Escape support and focus restoration. Contact links open GitHub's new-issue page.
+JavaScript-free visits show the concepts and real links; unsupported controls hide.
+Native anchors/buttons, visible focus, responsive stacked cards, reduced-motion
+support, one document scroller and a global scrollbar baseline.
 
-## Behavior
+## Content truth
 
-Native anchors navigate to real source destinations. A native toggle pauses and
-resumes the decorative canvas with aria-pressed. Reduced-motion starts paused.
-Animation stops offscreen and in hidden tabs. Without JS, all content and links
-work and the unsupported motion control remains hidden. Visible keyboard focus,
-one document scroller, stacked mobile composition. No tracking or dependencies.
+Pixel Lab, Color Riot, Grid Run and Focus Room are proposed concepts. Do not claim
+they are usable, offer fake launch buttons, or fabricate counts of shipped products.
+Lab has an honest empty state. No login, backend, tracking or paid dependencies.
