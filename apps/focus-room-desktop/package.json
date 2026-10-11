@@ -1,0 +1,24 @@
+{
+  "name": "bakhy-focus-room",
+  "version": "1.0.0",
+  "description": "A free offline Pomodoro timer with gentle sounds",
+  "author": "Bakhtiyar Jahangirzade",
+  "license": "MIT",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "package": "node prepare.cjs && electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "dev.bakhtiyaraj.focusroom",
+    "productName": "Focus Room",
+    "directories": { "output": "release" },
+    "files": ["main.cjs", "renderer/**/*", "package.json"],
+    "win": { "target": "portable", "icon": "icon.ico", "signExecutable": false },
+    "portable": { "artifactName": "Focus-Room-1.0.0-Windows-x64.exe" }
+  }
+}

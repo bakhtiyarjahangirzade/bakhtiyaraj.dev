@@ -32,7 +32,7 @@ function render(category) {
     button.classList.toggle('active', active);
     button.setAttribute('aria-pressed', String(active));
   }
-  result.textContent = category === 'lab' ? 'LAB / EXPERIMENTS' : `${category.toUpperCase()} / ${count} CONCEPT${count === 1 ? '' : 'S'}`;
+  result.textContent = category === 'lab' ? 'LAB / EXPERIMENTS' : `${category.toUpperCase()} / ${count} PROJECT${count === 1 ? '' : 'S'}`;
 }
 root.querySelector('.category-nav').hidden = false;
 root.querySelector('#draft-status-text').textContent = 'APPS / GAMES / TOOLS / EXPERIMENTS';

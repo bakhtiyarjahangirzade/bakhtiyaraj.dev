@@ -152,7 +152,7 @@
 #bakhy .lab-experiment{border-radius:24px;background:radial-gradient(ellipse at 20% 30%,#3057b6,transparent 70%),#272038;color:#baccff}
 @media(max-width:620px){#bakhy .draft-window{padding:0 20px}#bakhy h1{font-size:38px;letter-spacing:-1.8px}#bakhy .draft-hero-row{grid-template-columns:1fr;gap:20px}#bakhy .category-button{padding:14px 12px;font-size:12px}#bakhy .draft-contact{padding:24px 20px}#bakhy .draft-contact h2{font-size:28px}#bakhy .contact-arrow{width:48px;height:48px;font-size:26px}}
 
-html { color-scheme: light; scrollbar-gutter: stable; scrollbar-color: #899196 #e0e2e4; scroll-padding-top: 24px; }
+html { color-scheme: light; scrollbar-gutter: stable; scrollbar-color: #899196 #e0e2e4; scrollbar-width: auto; scroll-padding-top: 24px; }
 body { margin: 0; background: #e0e2e4; font-family: 'Segoe UI', Arial, sans-serif; }
 button, a { cursor: pointer; }
 button:focus-visible, a:focus-visible { outline: 3px solid #276297; outline-offset: 4px; }
@@ -164,6 +164,7 @@ a:active, button:active { opacity: .8; }
 #bakhy { max-width: 1200px; margin: 0 auto; }
 #bakhy .draft-window { border-radius: 0; }
 #bakhy .draft-logo { color: var(--draft-ink); text-decoration: none; }
+#bakhy a.preview-button { text-decoration: none; }
 #bakhy .draft-about:hover, #bakhy .draft-footer a:hover { text-decoration: underline; }
 #bakhy .draft-footer a { color: var(--draft-muted); text-decoration: none; }
 #bakhy .contact-arrow { text-decoration: none; transition: transform .2s; }

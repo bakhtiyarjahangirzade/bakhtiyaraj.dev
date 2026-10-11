@@ -6,3 +6,5 @@ dist/
 !.env.example
 *.log
 work/
+apps/focus-room-desktop/renderer/
+apps/focus-room-desktop/release/

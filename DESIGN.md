@@ -23,6 +23,19 @@ support, one document scroller and a global scrollbar baseline.
 
 ## Content truth
 
-Pixel Lab, Color Riot, Grid Run and Focus Room are proposed concepts. Do not claim
-they are usable, offer fake launch buttons, or fabricate counts of shipped products.
+Pixel Lab, Color Riot and Grid Run are proposed concepts. Focus Room is a working
+Pomodoro application and its card links to /apps/focus-room/. Do not fabricate
+counts of shipped products.
 Lab has an honest empty state. No login, backend, tracking or paid dependencies.
+
+## Focus Room / web and Windows
+
+public/apps/focus-room/focus.css owns the shared Pomodoro tokens and primitives.
+Both web and Electron load the same renderer files; desktop uses the native
+Windows titlebar and hides the web download area. Gray shell, rounded controls,
+blue focus surface, warm break surface, and a pale green reflection panel.
+English copy, native duration fields and system-owned sound dropdown.
+Start/pause/resume/reset remain explicit. Mode switching disables while running.
+Completion records one session, plays the selected synthesized sound and offers
+the next phase; it never automatically starts another session. Four completed
+focus sessions lead to a long break. Motion is minimal and reduced-motion safe.

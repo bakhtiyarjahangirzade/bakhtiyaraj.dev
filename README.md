@@ -7,10 +7,24 @@ an experiments area, and source links.
 ## Project catalog
 
 Browse All, Apps, Games, Tools, or Lab. The selected category is shareable in the
-URL and works with browser back/forward. Pixel Lab, Color Riot, Grid Run, and
-Focus Room are explicitly labeled design concepts, not released products.
+URL and works with browser back/forward. Focus Room is a working Pomodoro app at
+`/apps/focus-room/`, also downloadable as a portable Windows x64 executable.
+Pixel Lab, Color Riot, and Grid Run are labeled concepts, not released products.
 Preview buttons open a project summary. Real applications can replace them as
 they are built; the site does not pretend those products are already usable.
+
+## Focus Room
+
+- Custom focus, short-break and long-break durations; pause, resume and reset.
+- Wall-clock deadlines restore correctly after sleep or a delayed timer callback.
+- Soft bell or digital chime, adjustable volume and optional synthesized rain.
+- Sessions and settings saved locally; no account or external service.
+- Windows portable `.exe` is built from the exact same HTML/CSS/JS as the web app.
+- Sounds require the app to be open. Closing/reopening restores the saved timer.
+
+Desktop build instructions: [apps/focus-room-desktop](apps/focus-room-desktop).
+Run `npm test` for timer-core tests. The unsigned Windows binary is distributed
+through the `focus-room-v1.0.0` GitHub release, not committed to Git.
 
 ## Run locally
 
