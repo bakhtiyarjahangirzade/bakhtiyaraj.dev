@@ -61,12 +61,12 @@
     rainSource = context.createBufferSource(); rainSource.buffer = buffer; rainSource.loop = true;
     rainGain = context.createGain(); rainGain.gain.value = .26 * config.volume / 100;
     rainSource.connect(rainGain); rainGain.connect(context.destination); rainSource.start();
-    $('rain').setAttribute('aria-pressed', 'true'); $('rain').textContent = 'On';
+    $('rain').setAttribute('aria-pressed', 'true'); $('rain').querySelector('.sr-only').textContent = 'On';
     $('audio-status').textContent = 'Rain ambience is playing. Your volume controls it too.';
   }
   function stopRain() {
     if (rainSource) { rainSource.stop(); rainSource.disconnect(); rainGain.disconnect(); rainSource = null; rainGain = null; }
-    $('rain').setAttribute('aria-pressed', 'false'); $('rain').textContent = 'Off';
+    $('rain').setAttribute('aria-pressed', 'false'); $('rain').querySelector('.sr-only').textContent = 'Off';
     $('audio-status').textContent = 'Sound plays while the app is open.';
   }
   function nextMode() { return state.mode === 'focus' ? (stats.sessions > 0 && stats.sessions % 4 === 0 ? 'long' : 'short') : 'focus'; }
@@ -90,16 +90,20 @@
     const time = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
     $('clock').textContent = time;
     document.title = `${state.status === 'running' ? time + ' · ' : ''}Focus Room — BAKHY`;
-    $('ring').setAttribute('stroke-dashoffset', String(904.78 * (1 - core.remaining(state, Date.now()) / state.duration)));
+    $('progress').max = state.duration;
+    $('progress').value = state.duration - core.remaining(state, Date.now());
     $('phase-caption').textContent = state.mode === 'focus' ? 'TIME TO FOCUS' : 'ROOM TO BREATHE';
     $('timer-note').textContent = { idle: 'A fresh start.', running: 'You’ve got this.', paused: 'Your time. Your pace.', complete: 'Nicely done.' }[state.status];
     document.querySelector('.timer-panel').classList.toggle('break', state.mode !== 'focus');
     for (const button of document.querySelectorAll('[data-mode]')) { button.setAttribute('aria-pressed', String(button.dataset.mode === state.mode)); button.disabled = state.status === 'running'; }
     const startLabel = state.status === 'running' ? 'Pause session' : state.status === 'paused' ? 'Resume session' : state.status === 'complete' ? `Start ${names[nextMode()]}` : `Start ${names[state.mode]}`;
-    const icon = document.createElement('span'); icon.setAttribute('aria-hidden', 'true'); icon.textContent = state.status === 'running' ? 'Ⅱ' : '▶';
-    $('start').replaceChildren(document.createTextNode(startLabel), icon);
+    const icon = document.createElement('img'); icon.alt = ''; icon.src = state.status === 'running' ? 'assets/icons/pause.svg' : 'assets/icons/play.svg';
+    const label = document.createElement('span'); label.textContent = state.status === 'running' ? 'PAUSE' : state.status === 'paused' ? 'RESUME' : 'START';
+    $('start').setAttribute('aria-label', startLabel);
+    $('start').replaceChildren(icon, label);
     const today = stats.date === day();
     const sessions = today ? stats.sessions : 0, minutes = today ? stats.minutes : 0;
+    $('session-number').textContent = String(sessions);
     $('session-count').textContent = `${sessions} session${sessions === 1 ? '' : 's'} today`;
     $('focus-total').textContent = `${minutes} focused minute${minutes === 1 ? '' : 's'}`;
   }

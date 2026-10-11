@@ -16,18 +16,19 @@ else {
     });
     session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
     session.defaultSession.setPermissionCheckHandler(() => false);
-    window = new BrowserWindow({ width: 1140, height: 850, minWidth: 420, minHeight: 620, title: 'Focus Room', backgroundColor: '#080d18', show: false, autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true, backgroundThrottling: false } });
+    window = new BrowserWindow({ width: 1448, height: 1086, minWidth: 420, minHeight: 620, title: 'Focus Room', backgroundColor: '#242422', show: false, autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true, backgroundThrottling: false } });
     window.once('ready-to-show', () => window.show());
     window.setMenu(null);
     window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     window.webContents.on('will-navigate', (event, url) => {
       if (url.startsWith('focus://app/')) return;
       event.preventDefault();
-      if (url === 'https://www.bakhtiyaraj.dev/' || url === 'https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/tag/focus-room-v1.1.0') shell.openExternal(url);
+      if (url === 'https://www.bakhtiyaraj.dev/' || url === 'https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/tag/focus-room-v1.2.0') shell.openExternal(url);
     });
     window.webContents.on('did-fail-load', (_event, code, description) => console.error('Focus Room load failed:', code, description));
     window.loadURL('focus://app/').then(() => window.show()).catch(error => console.error(error.message));
   });
   app.on('window-all-closed', () => app.quit());
 }
+
 

@@ -153,6 +153,10 @@
 @media(max-width:620px){#bakhy .draft-window{padding:0 20px}#bakhy h1{font-size:38px;letter-spacing:-1.8px}#bakhy .draft-hero-row{grid-template-columns:1fr;gap:20px}#bakhy .category-button{padding:14px 12px;font-size:12px}#bakhy .draft-contact{padding:24px 20px}#bakhy .draft-contact h2{font-size:28px}#bakhy .contact-arrow{width:48px;height:48px;font-size:26px}}
 
 html { color-scheme: light; scrollbar-gutter: stable; scrollbar-color: #899196 #e0e2e4; scrollbar-width: auto; scroll-padding-top: 24px; }
+@font-face { font-family: FocusSegment; src: url('/apps/focus-room/assets/fonts/segment.woff2'); font-display: swap; }
+#bakhy .focus-screen { background: #292824 url('/apps/focus-room/assets/charcoal-grain.png'); background-size: 400px; color: #e1cda9; }
+#bakhy .focus-clock { font-family: FocusSegment, Consolas, monospace; color: #ffb947; font-size: 44px; letter-spacing: -3px; }
+#bakhy .focus-pill { background: #bf873c; color: #241907; border-radius: 5px; }
 body { margin: 0; background: #e0e2e4; font-family: 'Segoe UI', Arial, sans-serif; }
 button, a { cursor: pointer; }
 button:focus-visible, a:focus-visible { outline: 3px solid #276297; outline-offset: 4px; }

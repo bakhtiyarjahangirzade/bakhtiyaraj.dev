@@ -1,36 +1,19 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'">
-  <meta name="description" content="Focus Room — a free Pomodoro timer with gentle sounds, rain ambience and an offline Windows app.">
-  <meta name="theme-color" content="#080d18"><title>Focus Room — BAKHY</title>
-  <link rel="stylesheet" href="focus.css"><link rel="icon" href="icon.svg" type="image/svg+xml">
-  <script src="timer-core.js" defer></script><script src="focus.js" defer></script>
-</head>
-<body>
-  <a class="skip" href="#main">Skip to timer</a>
-  <div class="app-shell">
-    <header><a class="brand" href="https://www.bakhtiyaraj.dev/">BAKHY <span>↗</span></a><span class="app-label">FOCUS ROOM</span><a id="download" class="download" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/download/focus-room-v1.1.0/Focus-Room-1.1.0-Windows-x64.exe">Download for Windows ↗</a></header>
-    <main id="main">
-      <section class="intro"><div><p class="eyebrow">A LITTLE ROOM FOR YOUR ATTENTION.</p><h1>One thing.<br><span>At a time.</span></h1></div><p class="intro-note">Settle in. Start a session.<br>We’ll let you know when it’s time to pause.</p></section>
-      <div class="workspace">
-        <section class="timer-panel" aria-label="Pomodoro timer">
-          <div class="modes" aria-label="Session type"><button data-mode="focus" type="button" aria-pressed="true">Focus</button><button data-mode="short" type="button" aria-pressed="false">Short break</button><button data-mode="long" type="button" aria-pressed="false">Long break</button></div>
-          <div class="timer-face"><svg viewBox="0 0 320 320" aria-hidden="true"><circle class="ring-track" cx="160" cy="160" r="144"/><circle id="ring" class="ring" cx="160" cy="160" r="144" stroke-dasharray="904.78" stroke-dashoffset="0"/></svg><div class="timer-content"><span id="phase-caption">TIME TO FOCUS</span><span id="clock" role="timer" aria-live="off">25:00</span><span id="timer-note">A fresh start.</span></div></div>
-          <div class="timer-actions"><button id="start" class="primary" type="button">Start focus <span aria-hidden="true">▶</span></button><button id="reset" class="reset" type="button" aria-label="Reset current session">↺</button></div>
-          <p id="timer-status" class="timer-status" role="status" aria-live="polite">Ready when you are.</p>
-          <div class="session-footer"><span id="session-count">0 sessions today</span><span id="focus-total">0 focused minutes</span></div>
-        </section>
-        <aside class="settings" aria-label="Timer and sound settings">
-          <section class="settings-section"><div class="section-title"><h2>Your rhythm</h2><span>MINUTES</span></div><div class="duration-grid"><label for="focus-min">Focus<input id="focus-min" type="number" min="1" max="120" step="1" value="25" inputmode="numeric"></label><label for="short-min">Short break<input id="short-min" type="number" min="1" max="60" step="1" value="5" inputmode="numeric"></label><label for="long-min">Long break<input id="long-min" type="number" min="1" max="60" step="1" value="15" inputmode="numeric"></label></div><p id="duration-help" class="help">Changes apply to your next session.</p><p id="settings-error" class="error" role="alert" hidden></p></section>
-          <section class="settings-section"><div class="section-title"><h2>A gentle nudge</h2><span>SOUND</span></div><label class="field-label" for="alarm">Session-end sound</label><div class="sound-row"><select id="alarm"><option value="bell">Soft bell</option><option value="digital">Digital chime</option><option value="mute">Silent</option></select><button id="preview-sound" type="button">Listen ♪</button></div><div class="volume-label"><label for="volume">Volume</label><output id="volume-value" for="volume">50%</output></div><input id="volume" class="volume" type="range" min="0" max="100" step="5" value="50"><div class="ambient-row"><div><span>Rain ambience</span><p>A quiet background, on your terms.</p></div><button id="rain" class="toggle" type="button" aria-pressed="false">Off</button></div><p id="audio-status" class="help" role="status">Sound plays while the app is open.</p></section>
-          <section class="small-note"><span class="note-icon" aria-hidden="true">✳</span><h2>Take the break.</h2><p>Stand up. Look away.<br>Let the next idea find you.</p><span>4 FOCUS SESSIONS → A LONGER BREAK</span></section>
-        </aside>
-      </div>
-      <section class="download-note" id="web-download-note"><div><h2>A room you can take with you.</h2><p>The Windows app works offline. No account. No subscription.</p></div><a href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/tag/focus-room-v1.1.0">Windows download &amp; details ↗</a></section>
-    </main>
-    <footer><span>FOCUS ROOM / BAKHY</span><span>Free &amp; open source · MIT</span><span id="storage-note">Saved on this device.</span></footer>
-  </div>
-</body></html>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'">
+<meta name="description" content="Focus Room Instrument — a tactile Pomodoro timer with gentle sound and an offline Windows app."><meta name="theme-color" content="#242422"><title>Focus Room — BAKHY</title>
+<link rel="preload" href="assets/fonts/segment.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="focus.css"><link rel="icon" href="icon.svg"><script src="timer-core.js" defer></script><script src="focus.js" defer></script></head><body>
+<a class="skip" href="#main">Skip to timer</a><div class="app-shell">
+<header><h1>FOCUS ROOM</h1><a class="brand" href="https://www.bakhtiyaraj.dev/">BAKHY</a><a id="download" class="download" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/download/focus-room-v1.2.0/Focus-Room-1.2.0-Windows-x64.exe">Windows download</a></header>
+<main id="main"><section class="timer-panel" aria-label="Pomodoro timer">
+<div class="modes" aria-label="Session type"><button data-mode="focus" type="button" aria-pressed="true"><img src="assets/icons/indicator.svg" alt="">Focus</button><button data-mode="short" type="button" aria-pressed="false"><img src="assets/icons/indicator.svg" alt="">Short break</button><button data-mode="long" type="button" aria-pressed="false"><img src="assets/icons/indicator.svg" alt="">Long break</button></div>
+<div class="readout-row"><div class="timer-face"><div class="display"><span id="phase-caption" class="sr-only">TIME TO FOCUS</span><span id="clock" role="timer" aria-live="off">25:00</span><span id="timer-note" class="sr-only">A fresh start.</span><progress id="progress" max="1" value="0" aria-label="Session progress"></progress></div></div><div class="session-meter"><span id="session-number" aria-hidden="true">0</span><span>SESSIONS<br> TODAY</span><span id="session-count" class="sr-only">0 sessions today</span><span id="focus-total" class="sr-only">0 focused minutes</span></div></div>
+<div class="timer-actions"><button id="start" class="primary" type="button" aria-label="Start focus"><img src="assets/icons/play.svg" alt=""><span>START</span></button><button id="reset" class="reset" type="button" aria-label="Reset current session"><img src="assets/icons/reset.svg" alt="">RESET</button></div><p id="timer-status" class="timer-status" role="status" aria-live="polite">Ready when you are.</p></section>
+<aside class="settings" aria-label="Timer and sound settings"><img class="screw tl" src="assets/icons/screw.svg" alt=""><img class="screw tr" src="assets/icons/screw.svg" alt=""><img class="screw bl" src="assets/icons/screw.svg" alt=""><img class="screw br" src="assets/icons/screw.svg" alt=""><div class="control-strip">
+<section class="duration-section"><h2>SESSION LENGTH (MINUTES)</h2><div class="duration-grid"><label for="focus-min">Focus<input id="focus-min" type="number" min="1" max="120" step="1" value="25" inputmode="numeric"></label><label for="short-min">Short break<input id="short-min" type="number" min="1" max="60" step="1" value="5" inputmode="numeric"></label><label for="long-min">Long break<input id="long-min" type="number" min="1" max="60" step="1" value="15" inputmode="numeric"></label></div><p id="duration-help" class="help">Changes apply to the next session.</p><p id="settings-error" class="error" role="alert" hidden></p></section>
+<section class="sound-section"><h2>SOUND</h2><div class="sound-row"><select id="alarm" aria-label="Session-end sound"><option value="bell">Soft bell</option><option value="digital">Digital chime</option><option value="mute">Silent</option></select><button id="preview-sound" type="button"><img src="assets/icons/volume.svg" alt="">LISTEN</button></div><div class="volume-label"><label for="volume">VOLUME</label><output id="volume-value" for="volume">50%</output></div><div class="fader"><img src="assets/icons/volume.svg" alt=""><input id="volume" class="volume" type="range" min="0" max="100" step="5" value="50"><img src="assets/icons/volume.svg" alt=""></div><p id="audio-status" class="help" role="status">Sound plays while the app is open.</p></section>
+<section class="rain-section"><h2>RAIN</h2><button id="rain" class="toggle" type="button" aria-label="Rain ambience" aria-pressed="false"><img src="assets/icons/indicator.svg" alt=""><span class="sr-only">Off</span></button><img class="rain-icon" src="assets/icons/rain.svg" alt=""></section>
+</div></aside></main></div>
+<section class="download-note" id="web-download-note"><a href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/tag/focus-room-v1.2.0">Get the offline Windows edition</a></section><footer><span>INSTRUMENT EDITION / BAKHY</span><span>Free &amp; open source · MIT</span><span id="storage-note">Saved on this device.</span></footer></body></html>
+
 

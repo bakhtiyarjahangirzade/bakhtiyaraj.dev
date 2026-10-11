@@ -32,9 +32,12 @@ Lab has an honest empty state. No login, backend, tracking or paid dependencies.
 
 public/apps/focus-room/focus.css owns the shared Pomodoro tokens and primitives.
 Both web and Electron load the same renderer files; desktop uses the native
-Windows titlebar and hides the web download area. Focus Room 1.1 uses a futuristic
-dark shell (#080d18), cyan accent (#77eaff), fine grid detail, glowing progress ring,
-monospace timer, dark bordered controls and purple accents during breaks.
+Windows titlebar and hides the web download area. Focus Room 1.2 faithfully follows
+the selected Instrument reference: generated charcoal grain and amber metal,
+locally bundled DSEG7 display type, Oxanium wordmark and Barlow Condensed controls.
+Horizontal inset readout, right session meter, tactile Start/Reset controls and
+a single lower equipment strip for duration, sound and rain. Native number fields
+and range input remain keyboard-operable. Material images and icons ship offline.
 The catalog retains its separately approved gray design.
 English copy, native duration fields and system-owned sound dropdown.
 Start/pause/resume/reset remain explicit. Mode switching disables while running.

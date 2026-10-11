@@ -24,7 +24,11 @@ they are built; the site does not pretend those products are already usable.
 
 Desktop build instructions: [apps/focus-room-desktop](apps/focus-room-desktop).
 Run `npm test` for timer-core tests. The unsigned Windows binary is distributed
-through the `focus-room-v1.1.0` GitHub release, not committed to Git.
+through the `focus-room-v1.2.0` GitHub release, not committed to Git.
+
+The Instrument edition uses local fonts and material textures. Font and icon
+licenses are included under `public/apps/focus-room/assets/`. See `design-qa.md`
+for comparison evidence and the deliberate native-control/chrome adaptations.
 
 ## Run locally
 
