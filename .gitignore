@@ -8,3 +8,7 @@ dist/
 work/
 apps/focus-room-desktop/renderer/
 apps/focus-room-desktop/release/
+apps/games-desktop/work/
+apps/games-desktop/node_modules/
+public/downloads/
+public/vendor/

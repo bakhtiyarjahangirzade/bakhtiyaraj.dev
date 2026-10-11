@@ -1,32 +1,21 @@
 # BAKHY design direction
 
-The user approved a soft gray design inspired by their reference: rounded pill
-buttons, clean bold typography, rounded product previews with rich local gradients.
-Initial content language is English with a direct, informal headline.
+## Workbench (2026 redesign)
 
-## Visual tokens
+The site follows the Focus Room Instrument world everywhere: a dark workbench with
+charcoal chassis, amber vacuum-fluorescent screens (scanlines, glow, a flicker on change),
+brass/amber latching radio keys with the bundled mechanical click, screws, status LEDs
+(green = live, blinking amber = on the bench) and engraved labels.
 
-public/styles.css owns the runtime tokens: background #e0e2e4, ink #080a0b,
-muted #606569, line #bdc2c6, lime #d6ef86. Typography uses local Segoe UI / Arial
-with restrained monospace detail inside product previews. No external fonts.
-
-## Catalog and interactions
-
-All / Apps / Games / Tools / Lab filters are prominent above the catalog.
-Category selection is persisted in the URL; browser back/forward restores it.
-All cards are explicitly labeled Concept until a real project is implemented.
-Preview buttons open accessible native modal dialogs with real project summaries,
-Escape support and focus restoration. Contact links open GitHub's new-issue page.
-JavaScript-free visits show the concepts and real links; unsupported controls hide.
-Native anchors/buttons, visible focus, responsive stacked cards, reduced-motion
-support, one document scroller and a global scrollbar baseline.
-
-## Content truth
-
-Pixel Lab, Color Riot and Grid Run are proposed concepts. Focus Room is a working
-Pomodoro application and its card links to /apps/focus-room/. Do not fabricate
-counts of shipped products.
-Lab has an honest empty state. No login, backend, tracking or paid dependencies.
+- Hub: header unit with a typing VFD marquee and rack meters, a channel key bank
+  (All / Games / Apps / Extensions, persisted in `?category=`), and a 19" rack where every
+  project is one rack unit with ears, a nameplate, a live amber mini screen and controls.
+- Below: operator datasheet, a patch bay of jacks for contact links, and a brass serial plate.
+- Games share the shell: header unit, lobby panel with VFD title, room code on the screen,
+  dark glass cards with backlit inks, cream dominoes, a brass/charcoal chess board.
+- Tokens live in `public/assets/rack.css`. Fonts are the bundled Oxanium (wordmark),
+  Barlow Condensed (controls) and DSEG7 (digits). No external fonts or scripts; strict CSP.
+- One committed dark look. Reduced motion stops all animation; keyboard focus is always visible.
 
 ## Focus Room / web and Windows
 

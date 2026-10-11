@@ -1,17 +1,40 @@
-# BAKHY
+# BAKHY Workbench
 
-Free and open-source personal developer hub by Bakhtiyar. This is the minimal
-working foundation: a responsive catalog, category filters, concept previews,
-an experiments area, and source links.
+Free and open-source developer hub by Bakhtiyar. The whole site is designed as one
+piece of equipment: a charcoal rack of modules with amber VFD screens, latching radio
+keys, screws and status LEDs (`public/assets/rack.css`). Each module is a real app,
+game or extension, or is clearly marked **On the bench** while it is being built.
 
-## Project catalog
+## Modules
 
-Browse All, Apps, Games, Tools, or Lab. The selected category is shareable in the
-URL and works with browser back/forward. Focus Room is a working Pomodoro app at
-`/apps/focus-room/`, also downloadable as a portable Windows x64 executable.
-Pixel Lab, Color Riot, and Grid Run are labeled concepts, not released products.
-Preview buttons open a project summary. Real applications can replace them as
-they are built; the site does not pretend those products are already usable.
+| Module | Status | Where |
+| --- | --- | --- |
+| Chess | Live | `/games/chess/` · Windows installer |
+| Last One (Uno-style) | Live | `/games/last-one/` · Windows installer |
+| Durak | Live | `/games/durak/` · Windows installer |
+| Domino | Live | `/games/domino/` · Windows installer |
+| Focus Room | Live | `/apps/focus-room/` · Windows release |
+| PreviewMaster | On the bench | Windows Explorer preview handler |
+| ColorPicker, Color+, SiteFilter | On the bench | Chrome extensions |
+
+## Games
+
+- Shared shell in `public/games/shared/`: lobby, match controller, bots, FLIP card motion and sound.
+- Modes: vs bots, same screen (chess), and **online rooms** with a 4-character code or invite link.
+- Online play uses Supabase Realtime broadcast + presence on the `bakhy-dev` project
+  (`public/games/shared/net.js`). No tables, accounts or stored data. The room creator's
+  browser runs the rules engine and sends state to everyone; if a player leaves, a bot takes the seat.
+  Hands are sent to every client, so this is meant for friendly games, not anti-cheat play.
+- Rules engines are plain JSON-in/JSON-out modules (`engine.js`) and are covered by
+  bot-vs-bot simulations in `tests/games.test.mjs`. Chess rules come from chess.js (BSD-2).
+
+### Windows builds
+
+`apps/games-desktop/build.mjs` wraps each game in a ~2.6 MB Neutralinojs app (uses the
+WebView2 runtime that ships with Windows 10/11) and a per-user NSIS installer (~1 MB) with
+Start menu and desktop shortcuts and an uninstaller. `npm run build` produces them in
+`dist/downloads/`, so every Vercel deploy rebuilds the installers. Installers are unsigned,
+so Windows SmartScreen shows a warning on first run.
 
 ## Focus Room
 
@@ -36,8 +59,9 @@ by the master volume. The bundled MIT sample is reproducible with
 
 ## Run locally
 
-Requires Node.js 22 or newer. There are no runtime or build dependencies, API keys,
-paid APIs, accounts, or environment variables required to run the site.
+Requires Node.js 22 or newer. Dev dependencies (chess.js, supabase-js, Neutralinojs CLI,
+resedit, 7zip-bin) are installed by `npm ci`; no API keys or environment variables are needed.
+Use `npm run build:web` to skip the Windows installers.
 
 ```sh
 npm ci

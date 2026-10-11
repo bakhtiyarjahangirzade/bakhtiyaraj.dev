@@ -2,37 +2,281 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="BAKHY — free, open-source apps, games, tools and experiments by Bakhtiyar Jahangirzade. Explore the projects being built next.">
-<meta name="theme-color" content="#e0e2e4">
-<title>BAKHY — Apps, games &amp; useful tools</title>
-<link rel="stylesheet" href="/styles.css">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BAKHY Workbench</title>
+<meta name="description" content="Free, open-source games, apps and browser extensions by Bakhtiyar Jahangirzade. Play online with friends, use them in the browser or download for Windows.">
+<meta name="theme-color" content="#191816">
+<meta property="og:title" content="BAKHY Workbench">
+<meta property="og:description" content="Free games, apps and extensions. No accounts. Built on one workbench.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<script src="/hub.js" defer></script>
+<link rel="preload" href="/assets/fonts/wordmark.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/controls.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/rack.css">
+<link rel="stylesheet" href="/hub.css">
+<script src="/hub.js" type="module"></script>
 </head>
 <body>
-<a class="skip-link" href="#main">Skip to content</a>
-<div id="bakhy" >
-  <div class="draft-window">
-    <header class="draft-header"><a class="draft-logo" href="/" aria-label="BAKHY home">BAKHY<span aria-hidden="true">↗</span></a><nav aria-label="Main navigation"><a class="draft-about cursor-interaction" href="#draft-categories">EXPLORE ↘</a><a class="draft-about cursor-interaction" href="#bakhy-draft-about">ABOUT ↘</a></nav></header>
-    <main id="main">
-      <section class="draft-intro"><div class="draft-eyebrow">INDEPENDENT DEVELOPER — BAKHTIYAR JAHANGIRZADE</div><div class="draft-hero-row"><h1 id="draft-headline">Less friction.<br><span>More useful sh*t.</span></h1><div class="draft-hero-note">Small tools for everyday problems.<br>Free to use. Open to improve.</div></div><div class="draft-status"><span class="draft-dot"></span><span id="draft-status-text">WORK / TOOLS WORTH BUILDING</span><span class="draft-status-end">OPEN SOURCE ↗</span></div></section>
-      <div id="draft-categories" class="category-area"><div class="category-caption"><span>FIND YOUR NEXT CLICK.</span><span id="category-result" aria-live="polite">ALL / 4 CONCEPTS</span></div><nav class="category-nav" hidden aria-label="Browse by category"><button type="button" class="category-button cursor-interaction active" data-filter="all" aria-pressed="true">ALL <span>↗</span></button><button type="button" class="category-button cursor-interaction" data-filter="apps" aria-pressed="false">APPS <span>▦</span></button><button type="button" class="category-button cursor-interaction" data-filter="games" aria-pressed="false">GAMES <span>▶</span></button><button type="button" class="category-button cursor-interaction" data-filter="tools" aria-pressed="false">TOOLS <span>↗</span></button><button type="button" class="category-button cursor-interaction" data-filter="lab" aria-pressed="false">LAB <span>✳</span></button></nav></div>
-      <section id="draft-work" class="draft-gallery" aria-label="Projects">
-        <article class="draft-project" data-kind="tools"><div class="draft-screen pixel-screen" role="img" aria-label="Pixel Lab concept: image import and format controls"><div class="screen-top"><span>PIXEL LAB</span><span>IMAGE UTILITIES / ↗</span></div><div class="pixel-workspace"><div class="pixel-image"><div class="pixel-symbol">P<span>×</span></div><span>YOUR NEXT IMAGE</span></div><div class="pixel-controls"><span class="screen-label">CONVERT TO</span><div class="screen-select">WEBP <span>⌄</span></div><span class="screen-label">QUALITY</span><div class="screen-slider"><i></i></div><div class="screen-export">EXPORT ↗</div></div></div><div class="screen-foot"><span>DROP AN IMAGE. MAKE IT LIGHTER.</span><span>PNG / JPG / WEBP</span></div></div><div class="draft-project-info"><div class="draft-project-meta"><span>TOOLS / IMAGES</span><span class="draft-concept">CONCEPT</span></div><h2>PIXEL LAB <span>↗</span></h2><p>Convert, resize and compress.<br>Less file weight. Less hassle.</p><div class="draft-project-bottom">IMAGE TOOLS <button class="preview-button cursor-interaction" type="button" hidden data-preview="Pixel Lab">PREVIEW TOOL ↗</button></div></div></article>
-        <article class="draft-project" data-kind="tools"><div class="draft-screen color-screen" role="img" aria-label="Color Riot concept: four-color palette and hex values"><div class="screen-top"><span>COLOR RIOT</span><span>PALETTE STUDIO / ↗</span></div><div class="color-palette"><div><b>Aa</b><span>#D0FF48</span></div><div><b>Aa</b><span>#191918</span></div><div><b>Aa</b><span>#F2EFE6</span></div><div><b>Aa</b><span>#FF6543</span></div></div><div class="palette-toolbar"><span>4 COLORS / ONE GOOD IDEA</span><span class="palette-action">GENERATE ↻</span></div></div><div class="draft-project-info"><div class="draft-project-meta"><span>TOOLS / DESIGN</span><span class="draft-concept">CONCEPT</span></div><h2>COLOR RIOT <span>↗</span></h2><p>Find your next palette.<br>Keep the colors. Skip the guesswork.</p><div class="draft-project-bottom">COLOR UTILITIES <button class="preview-button cursor-interaction" type="button" hidden data-preview="Color Riot">PREVIEW TOOL ↗</button></div></div></article>
-        <article class="draft-project" data-kind="games"><div class="draft-screen game-screen" role="img" aria-label="Grid Run arcade game concept"><div class="screen-top"><span>GRID RUN</span><span>ARCADE / CONCEPT</span></div><div class="game-field"><div class="game-path"></div><div class="game-player">▣</div><div class="game-target">✳</div><span class="game-caption">ONE MORE ROUND.</span></div></div><div class="draft-project-info"><div class="draft-project-meta"><span>GAMES / ARCADE</span><span class="draft-concept">CONCEPT</span></div><h2>GRID RUN <span>↗</span></h2><p>Quick rounds. Sharp turns.<br>A small browser arcade concept.</p><div class="draft-project-bottom">BROWSER GAME <button class="preview-button cursor-interaction" type="button" hidden data-preview="Grid Run">PREVIEW GAME ↗</button></div></div></article>
-        <article class="draft-project" data-kind="apps"><div class="draft-screen focus-screen" role="img" aria-label="Focus Room productivity app concept"><div class="screen-top"><span>FOCUS ROOM</span><span>PERSONAL WORKSPACE</span></div><div class="focus-content"><div class="focus-clock">25:00</div><div class="focus-pill">FOCUS SESSION</div><div class="focus-tasks"><span>□ One thing at a time.</span><span>□ Make room to think.</span></div></div></div><div class="draft-project-info"><div class="draft-project-meta"><span>APPS / PRODUCTIVITY</span><span class="draft-concept">READY / FREE</span></div><h2>FOCUS ROOM <span>↗</span></h2><p>A Pomodoro timer with gentle sounds.<br>Use it online or download for Windows.</p><div class="draft-project-bottom">WEB APP <a class="preview-button cursor-interaction" href="/apps/focus-room/">OPEN APP ↗</a></div></div></article>
-      </section>
-      <dialog id="concept-dialog" aria-labelledby="concept-title"><button id="concept-close" type="button" aria-label="Close preview">×</button><p class="concept-kicker">DESIGN CONCEPT</p><h2 id="concept-title"></h2><p id="concept-description"></p><p class="concept-note">This project is planned. It is not available to use yet.</p><a href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/issues/new">Suggest a feature ↗</a></dialog>
-      <section id="draft-lab" class="draft-lab-panel" aria-label="Lab experiments" hidden><div class="lab-label">LAB / THE UNFINISHED PART</div><h2>NOT EVERYTHING<br>NEEDS TO BE <em>USEFUL.</em></h2><div class="lab-columns"><div class="lab-experiment"><div class="lab-graphic" aria-hidden="true"><span>?</span><span>!</span><span>_</span></div><div class="lab-caption">A PLACE FOR WEIRD EXPERIMENTS.</div></div><div class="lab-copy"><p>Small experiments.<br>Unpolished ideas.<br>Things I’m figuring out.</p><div class="lab-empty">NO EXPERIMENTS PUBLISHED YET.<br>THIS IS WHERE THEY’LL LAND.</div></div></div></section>
-      <section id="bakhy-draft-about" class="draft-about-section"><span class="about-marker">THE PERSON<br>BEHIND THE TOOLS.</span><p>I’m Bakhtiyar.<br>I build things I wish existed.<br><span>Then I share what I learn.</span></p><span class="about-signature">BAKHY / BJ</span></section>
-      <section class="draft-contact"><div><span class="contact-label">GOT SOMETHING WORTH BUILDING?</span><h2>LET’S MAKE<br>SOMETHING USEFUL.</h2></div><a class="contact-arrow" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/issues/new" aria-label="Suggest a project on GitHub">↗</a></section>
-    </main>
-    <footer class="draft-footer"><span>BUILD. SHIP. REPEAT.</span><span>© 2026 BAKHTIYAR JAHANGIRZADE</span><a href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev">GITHUB / OPEN SOURCE ↗</a></footer>
-  </div>
-</div>
+<a class="skip" href="#rack">Skip to the rack</a>
 
+<header class="head chassis" id="top">
+  <span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>
+  <div class="head-bar">
+    <a class="mark" href="/" aria-label="BAKHY home"><span class="led green" aria-hidden="true"></span>BAKHY<small>WORKBENCH</small></a>
+    <nav class="head-nav" aria-label="Main">
+      <a class="key key--sm" href="#rack">The rack</a>
+      <a class="key key--sm" href="#operator">Operator</a>
+      <a class="key key--sm" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev" rel="noopener">Source</a>
+    </nav>
+  </div>
+
+  <div class="hero">
+    <div class="hero-screen bezel">
+      <div class="vfd marquee" id="marquee">
+        <p class="marquee-line" id="marquee-text">LESS FRICTION. MORE USEFUL SH*T.</p>
+        <div class="marquee-meta"><span id="clock-face">--:--</span><span>CH 01</span><span id="marquee-ch">SIGNAL OK</span></div>
+      </div>
+    </div>
+    <div class="hero-copy">
+      <h1 class="engraved">Free tools &amp; games, built on one workbench.</h1>
+      <p>Play chess, durak, domino and a fast card game online with friends using a room code. Use the focus timer in the browser or on Windows. Browser extensions are on the bench now. No accounts, no ads, open source.</p>
+      <div class="hero-keys">
+        <a class="key key--amber" href="#rack"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2v12M3.5 9 9 14.5 14.5 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Browse the rack</a>
+        <a class="key" href="/games/chess/"><span class="led green" aria-hidden="true"></span>Quick game</a>
+      </div>
+    </div>
+    <dl class="meters" aria-label="Rack status">
+      <div><dt>Modules</dt><dd id="m-total">9</dd></div>
+      <div><dt>Live</dt><dd id="m-live">5</dd></div>
+      <div><dt>On the bench</dt><dd id="m-bench">4</dd></div>
+    </dl>
+  </div>
+</header>
+
+<main id="rack" class="rack-wrap">
+  <div class="rack-top">
+    <div>
+      <p class="label">Rack / select a channel</p>
+      <h2 class="engraved">Find your next click.</h2>
+    </div>
+    <div class="bank" role="radiogroup" aria-label="Filter modules" id="filters">
+      <button class="key" role="radio" aria-checked="true" data-filter="all"><span class="led"></span>All</button>
+      <button class="key" role="radio" aria-checked="false" data-filter="games"><span class="led"></span>Games</button>
+      <button class="key" role="radio" aria-checked="false" data-filter="apps"><span class="led"></span>Apps</button>
+      <button class="key" role="radio" aria-checked="false" data-filter="extensions"><span class="led"></span>Extensions</button>
+    </div>
+  </div>
+  <p class="sr-only" role="status" id="filter-status"></p>
+
+  <ol class="rack" id="modules">
+    <!-- GAMES -->
+    <li class="module unit" data-kind="games" data-screen="chess">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G01 · Board</p>
+          <h3>Chess</h3>
+          <p class="desc">Classic chess against a friend in an online room, on one screen, or against a three-level bot.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bot</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/chess/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Chess-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="games" data-screen="lastone">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G02 · Cards</p>
+          <h3>Last One</h3>
+          <p class="desc">A fast shedding card game in the Uno style: match the color or number, play wilds, and call it on your last card. 2–4 players.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bots</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/last-one/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Last-One-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="games" data-screen="durak">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G03 · Cards</p>
+          <h3>Durak</h3>
+          <p class="desc">The classic 36-card throw-in game. Attack, defend, beat with trumps, and don't be the last one holding cards. 2–4 players.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bots</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/durak/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Durak-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="games" data-screen="domino">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G04 · Tiles</p>
+          <h3>Domino</h3>
+          <p class="desc">Double-six draw dominoes. Match the ends, draw from the boneyard, first to 100 points wins. 2–4 players.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bots</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/domino/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Domino-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <!-- APPS -->
+    <li class="module unit" data-kind="apps" data-screen="focus">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-A01 · Productivity</p>
+          <h3>Focus Room</h3>
+          <p class="desc">A tactile Pomodoro timer with custom lengths, gentle alarms and rain ambience. Runs in the browser or as an offline Windows app.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Offline</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/apps/focus-room/">Open</a>
+          <a class="key key--sm" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/tag/focus-room-v1.3.0" rel="noopener">Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit is-bench" data-kind="apps" data-screen="preview">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-A02 · Windows</p>
+          <h3>PreviewMaster</h3>
+          <p class="desc">Mac-style Quick Look for Windows. Install once, select a file in Explorer, and see its preview in the preview pane, including formats Windows can't show.</p>
+          <ul class="chips"><li>Windows</li><li>Explorer preview pane</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led amber blink"></span>On the bench</p>
+          <span class="key key--sm" aria-disabled="true">Coming soon</span>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <!-- EXTENSIONS -->
+    <li class="module unit is-bench" data-kind="extensions" data-screen="picker">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-X01 · Chrome</p>
+          <h3>ColorPicker</h3>
+          <p class="desc">Pick any color on any web page with an eyedropper, copy it as HEX, RGB or HSL, and keep a history of recent picks.</p>
+          <ul class="chips"><li>Chrome extension</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led amber blink"></span>On the bench</p>
+          <span class="key key--sm" aria-disabled="true">Coming soon</span>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit is-bench" data-kind="extensions" data-screen="colorplus">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-X02 · Chrome</p>
+          <h3>Color+</h3>
+          <p class="desc">Take a photo or drop an image and get its color palette back, ready to copy into your design tool.</p>
+          <ul class="chips"><li>Chrome extension</li><li>Web</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led amber blink"></span>On the bench</p>
+          <span class="key key--sm" aria-disabled="true">Coming soon</span>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit is-bench" data-kind="extensions" data-screen="filter">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-X03 · Chrome</p>
+          <h3>SiteFilter</h3>
+          <p class="desc">Save words per site, then hide every product or post that contains them, or flip it and show only the ones that match.</p>
+          <ul class="chips"><li>Chrome extension</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led amber blink"></span>On the bench</p>
+          <span class="key key--sm" aria-disabled="true">Coming soon</span>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+  </ol>
+</main>
+
+<section class="operator chassis" id="operator" aria-labelledby="op-title">
+  <span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>
+  <div class="op-grid">
+    <div>
+      <p class="label">Operator datasheet</p>
+      <h2 id="op-title" class="engraved">The person behind the bench.</h2>
+      <p>I'm Bakhtiyar, an independent developer. I build the small tools and games I wish existed, keep them free, and publish the source so anyone can learn from it or improve it.</p>
+    </div>
+    <table class="spec">
+      <caption class="sr-only">Workbench specifications</caption>
+      <tbody>
+        <tr><th scope="row">Operator</th><td>Bakhtiyar Jahangirzade</td></tr>
+        <tr><th scope="row">Price</th><td>Free, every module</td></tr>
+        <tr><th scope="row">License</th><td>MIT, open source</td></tr>
+        <tr><th scope="row">Accounts</th><td>None required</td></tr>
+        <tr><th scope="row">Tracking</th><td>None</td></tr>
+        <tr><th scope="row">Platforms</th><td>Web · Windows · Chrome</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="patch chassis" aria-labelledby="patch-title">
+  <div class="patch-copy">
+    <p class="label">Patch bay</p>
+    <h2 id="patch-title" class="engraved">Got an idea for the next module?</h2>
+  </div>
+  <div class="jacks">
+    <a class="jack" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/issues/new?template=feature_request.md" rel="noopener"><span class="hole" aria-hidden="true"></span>Suggest a module</a>
+    <a class="jack" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/issues/new?template=bug_report.md" rel="noopener"><span class="hole" aria-hidden="true"></span>Report a bug</a>
+    <a class="jack" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev" rel="noopener"><span class="hole" aria-hidden="true"></span>Read the source</a>
+  </div>
+</section>
+
+<footer class="rear">
+  <div class="serial-plate"><span>Model</span><b>BAKHY WB-26</b><span>Serial</span><b>BKY-2026-0001</b></div>
+  <p>Build. Ship. Repeat. · © 2026 Bakhtiyar Jahangirzade · MIT</p>
+</footer>
 </body>
 </html>
-
