@@ -1,6 +1,6 @@
 // Texas Hold'em no-limit, 2–6 players, play chips. Side pots, showdown, blinds rise every 10 hands.
+import { shuffle, rand, botRand } from '../shared/rng.js';
 const RANKS = '23456789TJQKA';
-const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const clone = s => JSON.parse(JSON.stringify(s));
 export const START = 2000;
 const rv = c => RANKS.indexOf(c.r === '10' ? 'T' : c.r);
@@ -125,6 +125,7 @@ export const engine = {
     else if (a.type === 'raise' || a.type === 'allin') {
       const max = s.bets[seat] + s.chips[seat];
       let to = a.type === 'allin' ? max : Math.floor(+a.to);
+      if (!Number.isFinite(to)) throw new Error('Enter a raise amount.');
       if (to > max) to = max;
       const minTo = s.currentBet + s.minRaise;
       if (to < minTo && to < max) throw new Error(`Minimum raise is to ${minTo}.`);
@@ -160,11 +161,14 @@ export const engine = {
       const sc = best7([...hole, ...s.board]); const bc = {}; s.board.forEach(c => bc[c.r] = (bc[c.r] || 0) + 1); const boardSc = [Math.max(...Object.values(bc)) >= 2 ? 1 : 0];
       strength = [.12, .42, .62, .74, .82, .86, .93, .98, 1][sc[0]] + (sc[0] === 1 ? sc[1] / 60 : 0) - (s.board.length >= 3 && sc[0] === boardSc[0] && sc[0] <= 1 ? .2 : 0);
     }
-    strength += (Math.random() - .5) * .16;
+    strength += (botRand() - .5) * .16;
     const odds = toCall / (pot + toCall || 1);
-    if (strength > .8 && Math.random() < .7) { const to = Math.min(s.bets[seat] + stack, Math.max(s.currentBet + s.minRaise, s.currentBet + Math.floor(pot * .75))); return { type: 'raise', to }; }
-    if (toCall === 0) { if (strength > .6 && Math.random() < .5) return { type: 'raise', to: Math.min(s.bets[seat] + stack, s.currentBet + Math.max(s.minRaise, Math.floor(pot * .5))) }; return { type: 'check' }; }
+    if (strength > .8 && botRand() < .7) { const to = Math.min(s.bets[seat] + stack, Math.max(s.currentBet + s.minRaise, s.currentBet + Math.floor(pot * .75))); return { type: 'raise', to }; }
+    if (toCall === 0) { if (strength > .6 && botRand() < .5) return { type: 'raise', to: Math.min(s.bets[seat] + stack, s.currentBet + Math.max(s.minRaise, Math.floor(pot * .5))) }; return { type: 'check' }; }
     if (strength > odds + .25 || (toCall <= s.bb && strength > .3)) return { type: 'call' };
     return { type: 'fold' };
   }
 };
+
+// What one seat is allowed to see: its own hole cards; others only at showdown and only if they did not fold. Never the deck.
+engine.viewFor = (s, seat) => ({ ...s, deck: [], hole: s.hole.map((h, i) => (i === seat || (s.phase === 'result' && s.result?.shown && s.inHand[i] && !s.folded[i])) ? h : h.map(() => null)) });

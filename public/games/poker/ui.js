@@ -29,7 +29,7 @@ export function pokerUI(root, { say }) {
         const av = h('span', { class: 'avatar' + (st.turn === i ? '' : '') }); av.style.backgroundImage = `url(${avatarUrl(ctx.seats[i])})`;
         const wonAmt = over ? st.result?.won?.[i] : 0;
         const el = h('div', { class: 'pk-seat' + (st.turn === i ? ' turn' : '') + (st.folded[i] ? ' folded' : '') + (busted ? ' out' : '') + (i === ctx.mySeat ? ' me' : '') },
-          h('div', { class: 'pk-hole' }, st.inHand[i] ? st.hole[i].map(c => showCards ? stdCard(c, { key: 'h' + c.id }) : cardBack({ 'data-k': 'hb' + i + c.id })) : null),
+          h('div', { class: 'pk-hole' }, st.inHand[i] ? st.hole[i].map((c, k) => showCards && c ? stdCard(c, { key: 'h' + c.id }) : cardBack({ 'data-k': 'hb' + i + '-' + k })) : null),
           h('div', { class: 'seat' + (st.turn === i ? ' turn' : '') }, h('span', { class: 'avatar' }, h('span', { class: 'ring' })),
             h('span', { class: 'nameplate' }, ctx.seats[i]?.name + (i === ctx.mySeat ? ' (you)' : ''), h('span', { class: 'count' }, busted ? 'OUT' : fmt(st.chips[i])))),
           st.dealer === i ? h('span', { class: 'pk-btn' }, 'D') : null,

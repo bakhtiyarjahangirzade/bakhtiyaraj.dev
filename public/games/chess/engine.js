@@ -1,5 +1,6 @@
 // Chess rules (chess.js) + a small alpha-beta bot. State is plain JSON so it can travel over the network.
-import { Chess } from '/vendor/chess.mjs';
+import { Chess } from '../../vendor/chess.mjs';
+import { botRand } from '../shared/rng.js';
 
 function load(state) {
   const c = new Chess();
@@ -80,7 +81,7 @@ export const engine = {
       c.move(m);
       let v = -negamax(c, depth - 1, -Infinity, Infinity, budget);
       c.undo();
-      v += Math.random() * (level === 1 ? 120 : level === 2 ? 25 : 6);
+      v += botRand() * (level === 1 ? 120 : level === 2 ? 25 : 6);
       if (v > bestV) { bestV = v; best = m; }
     }
     return { type: 'move', from: best.from, to: best.to, promotion: best.promotion };
@@ -91,3 +92,6 @@ export const engine = {
     return { board: c.board(), turn: c.turn(), inCheck: c.inCheck(), legal: c.moves({ verbose: true }).map(m => ({ from: m.from, to: m.to, promotion: m.promotion, captured: m.captured })), history: c.history({ verbose: true }) };
   }
 };
+
+// Chess has no hidden information.
+engine.viewFor = s => s;

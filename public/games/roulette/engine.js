@@ -1,4 +1,5 @@
 // European roulette (single zero). Everyone bets on one shared wheel; play chips only.
+import { rand, botRand } from '../shared/rng.js';
 const clone = s => JSON.parse(JSON.stringify(s));
 export const START = 1000;
 export const RED = new Set([1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36]);
@@ -35,7 +36,7 @@ export const engine = {
       if (a.type === 'spin') {
         s.ready.push(seat);
         if (engine.toAct(s).length) { s.msg = 'Waiting for everyone to press Spin'; return s; }
-        const r = Math.floor(Math.random() * 37);
+        const r = Math.floor(rand() * 37);
         s.result = r; s.history = [r, ...s.history].slice(0, 14); s.spinId++;
         s.wins = s.bets.map((b, i) => { let w = 0; for (const [k, v] of Object.entries(b)) if (covers(k, r)) w += v * mult(k); s.chips[i] += w; return w; });
         s.phase = 'result'; s.ready = []; s.msg = 'No more bets';
@@ -57,11 +58,14 @@ export const engine = {
     if (s.phase === 'result') return { type: 'next' };
     const placed = Object.values(s.bets[seat]).reduce((a, b) => a + b, 0);
     if (s.chips[seat] < 1 && !placed) return { type: 'rebuy' };
-    if (placed < 60 && s.chips[seat] >= 1 && Math.random() < .8) {
+    if (placed < 60 && s.chips[seat] >= 1 && botRand() < .8) {
       const outside = ['red', 'black', 'odd', 'even', 'low', 'high', 'd1', 'd2', 'd3', 'c1', 'c2', 'c3'];
-      const k = Math.random() < .55 ? outside[Math.floor(Math.random() * outside.length)] : 'n' + Math.floor(Math.random() * 37);
-      return { type: 'bet', k, amount: Math.min(s.chips[seat], Math.random() < .5 ? 10 : 25) };
+      const k = botRand() < .55 ? outside[Math.floor(botRand() * outside.length)] : 'n' + Math.floor(botRand() * 37);
+      return { type: 'bet', k, amount: Math.min(s.chips[seat], botRand() < .5 ? 10 : 25) };
     }
     return { type: 'spin' };
   }
 };
+
+// Roulette has no hidden information.
+engine.viewFor = s => s;

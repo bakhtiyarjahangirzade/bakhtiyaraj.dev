@@ -1,6 +1,6 @@
 // Last One: Uno-style shedding game. Host-authoritative, JSON state.
+import { shuffle, rand, botRand } from '../shared/rng.js';
 const COLORS = ['r', 'y', 'g', 'b'];
-const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 export const COLOR_NAME = { r: 'Red', y: 'Yellow', g: 'Green', b: 'Blue' };
 
 function deck() {
@@ -32,7 +32,7 @@ export const engine = {
     const d = deck(), hands = [];
     for (let i = 0; i < n; i++) hands.push(d.splice(0, 7));
     let first; do { first = d.pop(); if (first.c === 'w' || isNaN(+first.v)) { d.unshift(first); first = null; } } while (!first);
-    return { n, hands, draw: d, discard: [first], color: first.c, turn: Math.floor(Math.random() * n), dir: 1, drew: false, called: Array(n).fill(false), exposed: null, winner: null, msg: 'Game on', seq: 0 };
+    return { n, hands, draw: d, discard: [first], color: first.c, turn: Math.floor(rand() * n), dir: 1, drew: false, called: Array(n).fill(false), exposed: null, winner: null, msg: 'Game on', seq: 0 };
   },
   toAct(s) { return s.winner != null ? [] : [s.turn]; },
   act(s0, seat, a) {
@@ -87,7 +87,7 @@ export const engine = {
   over(s) { if (s.winner == null) return null; return { title: 'Seat ' + (s.winner + 1) + ' wins', detail: 'Out of cards first', winner: s.winner }; },
   botDelay() { return 900; },
   bot(s, seat) {
-    if (s.exposed != null && s.exposed !== seat && Math.random() < .6) return { type: 'catch' };
+    if (s.exposed != null && s.exposed !== seat && botRand() < .6) return { type: 'catch' };
     const hand = s.hands[seat];
     let options = hand.filter(c => playable(s, c));
     if (s.drew) options = options.filter(c => c.id === hand[hand.length - 1].id);
@@ -98,6 +98,9 @@ export const engine = {
     const card = options[0];
     const counts = { r: 0, y: 0, g: 0, b: 0 }; hand.forEach(c => { if (c.c !== 'w' && c.id !== card.id) counts[c.c]++; });
     const color = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
-    return { type: 'play', id: card.id, color: card.c === 'w' ? color : undefined, last: hand.length === 2 && Math.random() < .9 };
+    return { type: 'play', id: card.id, color: card.c === 'w' ? color : undefined, last: hand.length === 2 && botRand() < .9 };
   }
 };
+
+// What one seat is allowed to see: its own hand, card counts for everyone else, never the draw pile.
+engine.viewFor = (s, seat) => ({ ...s, hands: s.hands.map((h, i) => i === seat ? h : h.map(() => null)), draw: s.draw.map(() => null) });

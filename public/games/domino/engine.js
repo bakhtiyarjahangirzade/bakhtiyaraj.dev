@@ -1,5 +1,5 @@
 // Draw dominoes (double-six). Rounds until someone reaches the target score. JSON state, host-authoritative.
-const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+import { shuffle, rand, botRand } from '../shared/rng.js';
 const clone = s => JSON.parse(JSON.stringify(s));
 export const pipsOf = t => t.a + t.b;
 export function ends(s) { if (!s.line.length) return null; return [s.line[0].a, s.line[s.line.length - 1].b]; }
@@ -87,3 +87,6 @@ export const engine = {
     return { type: 'play', id: t.id, side };
   }
 };
+
+// What one seat is allowed to see: its own tiles, tile counts for everyone else, never the boneyard.
+engine.viewFor = (s, seat) => ({ ...s, hands: s.hands.map((h, i) => i === seat ? h : h.map(() => null)), bone: s.bone.map(() => null) });

@@ -1,8 +1,8 @@
 // Blackjack: everyone at the table plays against the dealer. 6-deck shoe, dealer stands on soft 17,
 // blackjack pays 3:2, double on any two cards, one split. Play chips only.
+import { shuffle, rand, botRand } from '../shared/rng.js';
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 const SUITS = ['s', 'h', 'd', 'c'];
-const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const clone = s => JSON.parse(JSON.stringify(s));
 export const START = 1000, MIN_BET = 10;
 function newShoe() { const d = []; let id = 0; for (let k = 0; k < 6; k++) for (const s of SUITS) for (const r of RANKS) d.push({ id: id++, s, r }); return shuffle(d); }
@@ -47,10 +47,20 @@ function settle(s) {
   }));
   s.phase = 'settle'; s.ready = []; s.msg = d > 21 ? 'Dealer busts' : `Dealer has ${d}`;
 }
+function maybeDeal(s) {
+  if (engine.toAct(s).length) return;
+  if (!s.bets.some(b => b > 0)) { s.sat = []; s.msg = 'Place your bets'; return; } // everyone sat out: start the betting again
+  s.hands = s.bets.map(b => b ? [{ cards: [draw(s), draw(s)], bet: b, done: false, doubled: false, split: false }] : []);
+  s.dealer = { cards: [draw(s), draw(s)], hidden: true };
+  s.hands.forEach(hs => hs.forEach(h => { if (isBJ(h.cards)) h.done = true; }));
+  s.phase = 'play'; s.turn = { seat: 0, hand: 0 }; s.msg = '';
+  if (isBJ(s.dealer.cards)) { s.hands.forEach(hs => hs.forEach(h => h.done = true)); s.msg = 'Dealer blackjack'; s.turn = null; dealerPlay(s); return; }
+  s.turn = null; nextTurn(s);
+}
 export const engine = {
   setup(n, opts) { return { n, chips: Array.from({ length: n }, (_, i) => { const v = opts?.stack?.[i]; return Number.isFinite(v) && v > 0 ? v : START; }), bets: Array(n).fill(0), hands: Array.from({ length: n }, () => []), dealer: { cards: [], hidden: true }, shoe: newShoe(), phase: 'bet', turn: null, ready: [], round: 1, seq: 0, msg: 'Place your bets' }; },
   toAct(s) {
-    if (s.phase === 'bet') return [...Array(s.n).keys()].filter(i => !s.bets[i]);
+    if (s.phase === 'bet') return [...Array(s.n).keys()].filter(i => !s.bets[i] && !(s.sat || []).includes(i));
     if (s.phase === 'play' && s.turn) return [s.turn.seat];
     if (s.phase === 'settle') return [...Array(s.n).keys()].filter(i => !s.ready.includes(i));
     return [];
@@ -59,21 +69,18 @@ export const engine = {
     const s = clone(s0); s.seq++;
     if (a.type === 'rebuy') { if (s.chips[seat] >= MIN_BET) throw new Error('You still have chips.'); s.chips[seat] = START; s.msg = 'Seat ' + (seat + 1) + ' rebuys'; return s; }
     if (s.phase === 'bet') {
+      if (a.type === 'sit') { // sit this round out
+        if (s.bets[seat] || (s.sat || []).includes(seat)) throw new Error('Bet already placed.');
+        (s.sat ||= []).push(seat); maybeDeal(s); return s;
+      }
       if (a.type !== 'bet') throw new Error('Place a bet first.');
+      if ((s.sat || []).includes(seat)) throw new Error('You are sitting out this round.');
       const amt = Math.floor(+a.amount);
       if (!(amt >= MIN_BET)) throw new Error(`Minimum bet is ${MIN_BET}.`);
       if (amt > s.chips[seat]) throw new Error('Not enough chips.');
       if (s.bets[seat]) throw new Error('Bet already placed.');
       s.bets[seat] = amt; s.chips[seat] -= amt;
-      const waiting = engine.toAct(s);
-      if (!waiting.length) { // deal
-        s.hands = s.bets.map(b => b ? [{ cards: [draw(s), draw(s)], bet: b, done: false, doubled: false, split: false }] : []);
-        s.dealer = { cards: [draw(s), draw(s)], hidden: true };
-        s.hands.forEach(hs => hs.forEach(h => { if (isBJ(h.cards)) h.done = true; }));
-        s.phase = 'play'; s.turn = { seat: 0, hand: 0 }; s.msg = '';
-        if (isBJ(s.dealer.cards)) { s.hands.forEach(hs => hs.forEach(h => h.done = true)); s.msg = 'Dealer blackjack'; s.turn = null; dealerPlay(s); return s; }
-        s.turn = null; nextTurn(s);
-      }
+      maybeDeal(s);
       return s;
     }
     if (s.phase === 'play') {
@@ -102,7 +109,7 @@ export const engine = {
     if (s.phase === 'settle') {
       if (a.type !== 'next') throw new Error('Round is over.');
       if (!s.ready.includes(seat)) s.ready.push(seat);
-      if (!engine.toAct(s).length) { s.phase = 'bet'; s.bets = Array(s.n).fill(0); s.hands = Array.from({ length: s.n }, () => []); s.dealer = { cards: [], hidden: true }; s.round++; s.msg = 'Place your bets'; }
+      if (!engine.toAct(s).length) { s.phase = 'bet'; s.bets = Array(s.n).fill(0); s.hands = Array.from({ length: s.n }, () => []); s.dealer = { cards: [], hidden: true }; s.sat = []; s.round++; s.msg = 'Place your bets'; }
       return s;
     }
     throw new Error('Unknown move.');
@@ -110,7 +117,7 @@ export const engine = {
   over() { return null; },
   botDelay(s) { return s.phase === 'settle' ? 2600 : s.phase === 'bet' ? 700 : 900; },
   bot(s, seat) {
-    if (s.phase === 'bet') { if (s.chips[seat] < MIN_BET) return { type: 'rebuy' }; const opts = [10, 25, 50, 100].filter(x => x <= s.chips[seat]); return { type: 'bet', amount: opts[Math.floor(Math.random() * opts.length)] }; }
+    if (s.phase === 'bet') { if (s.chips[seat] < MIN_BET) return { type: 'rebuy' }; const opts = [10, 25, 50, 100].filter(x => x <= s.chips[seat]); return { type: 'bet', amount: opts[Math.floor(botRand() * opts.length)] }; }
     if (s.phase === 'settle') return { type: 'next' };
     if (s.phase === 'play') {
       const h = s.hands[seat][s.turn.hand]; const { t, soft } = total(h.cards); const up = total([s.dealer.cards[0]]).t;
@@ -126,3 +133,6 @@ export const engine = {
     return null;
   }
 };
+
+// What one seat is allowed to see: player cards are face up; the shoe and the dealer's hole card are not.
+engine.viewFor = (s) => ({ ...s, shoe: [], shoeLeft: s.shoe.length, dealer: { ...s.dealer, cards: s.dealer.hidden ? s.dealer.cards.map((c, i) => i === 1 ? null : c) : s.dealer.cards } });

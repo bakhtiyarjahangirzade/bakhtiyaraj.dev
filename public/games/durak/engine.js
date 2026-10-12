@@ -1,7 +1,7 @@
 // Durak (podkidnoy, throw-in, no transfer). 36 cards, 2–4 players. JSON state, host-authoritative.
+import { shuffle, rand, botRand } from '../shared/rng.js';
 const SUITS = ['s', 'c', 'h', 'd'];
 const RANKS = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const clone = s => JSON.parse(JSON.stringify(s));
 export const rv = c => RANKS.indexOf(c.r);
 export function beats(def, att, trump) {
@@ -142,3 +142,6 @@ export const engine = {
 };
 // players who emptied their hand mid-bout stay until the bout ends; nothing to do here
 function settleOutsSoft() {}
+
+// What one seat is allowed to see: its own hand and counts; the talon stays face down except the trump card under it.
+engine.viewFor = (s, seat) => ({ ...s, hands: s.hands.map((h, i) => i === seat ? h : h.map(() => null)), talon: s.talon.map(() => null) });

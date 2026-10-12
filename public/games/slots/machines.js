@@ -1,3 +1,4 @@
+import { rand } from '../shared/rng.js';
 // Slot machine definitions: reels, rows, weighted symbols, paytable (multiplier of line bet), paylines.
 const L5 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2], [0, 0, 1, 2, 2], [2, 2, 1, 0, 0], [1, 0, 0, 0, 1], [1, 2, 2, 2, 1], [0, 1, 0, 1, 0]];
 export const MACHINES = [
@@ -11,7 +12,7 @@ export const MACHINES = [
     symbols: [['cherry', 22, { 3: 3, 4: 8, 5: 20 }], ['plum', 20, { 3: 4, 4: 10, 5: 25 }], ['grape', 18, { 3: 5, 4: 12, 5: 35 }], ['watermelon', 14, { 3: 8, 4: 25, 5: 70 }], ['clover', 10, { 3: 12, 4: 40, 5: 120 }], ['crown', 6, { 3: 25, 4: 80, 5: 300 }], ['star', 4, { 3: 40, 4: 150, 5: 600 }], ['coin', 5, {}]],
     lines: L5, bets: [1, 2, 5, 10] }
 ];
-function pick(m) { const tot = m.symbols.reduce((a, s) => a + s[1], 0); let r = Math.random() * tot; for (const s of m.symbols) { if ((r -= s[1]) < 0) return s[0]; } return m.symbols[0][0]; }
+function pick(m) { const tot = m.symbols.reduce((a, s) => a + s[1], 0); let r = rand() * tot; for (const s of m.symbols) { if ((r -= s[1]) < 0) return s[0]; } return m.symbols[0][0]; }
 export function spin(m) { return Array.from({ length: m.reels }, () => Array.from({ length: m.rows }, () => pick(m))); }
 export function evaluate(m, grid, lineBet) {
   const pays = Object.fromEntries(m.symbols.map(s => [s[0], s[2]]));
