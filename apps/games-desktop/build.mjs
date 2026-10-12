@@ -15,7 +15,12 @@ const GAMES = [
   { id: 'chess', title: 'BAKHY Chess', file: 'BAKHY-Chess' },
   { id: 'last-one', title: 'BAKHY Last One', file: 'BAKHY-Last-One' },
   { id: 'durak', title: 'BAKHY Durak', file: 'BAKHY-Durak' },
-  { id: 'domino', title: 'BAKHY Domino', file: 'BAKHY-Domino' }
+  { id: 'domino', title: 'BAKHY Domino', file: 'BAKHY-Domino' },
+  { id: 'serpent', title: 'BAKHY Serpent Zone', file: 'BAKHY-Serpent-Zone' },
+  { id: 'blackjack', title: 'BAKHY Blackjack', file: 'BAKHY-Blackjack' },
+  { id: 'roulette', title: 'BAKHY Roulette', file: 'BAKHY-Roulette' },
+  { id: 'poker', title: 'BAKHY Poker', file: 'BAKHY-Poker' },
+  { id: 'slots', title: 'BAKHY Slots', file: 'BAKHY-Slots' }
 ];
 const only = process.argv[2];
 await mkdir(out, { recursive: true });
@@ -44,10 +49,10 @@ for (const g of GAMES.filter(x => !only || x.id === only)) {
   const dir = path.join(work, g.id), res = path.join(dir, 'resources');
   await rm(dir, { recursive: true, force: true });
   await mkdir(res, { recursive: true });
-  for (const p of ['assets', 'vendor', 'favicon.svg', 'games/shared', `games/${g.id}`]) await cp(path.join(pub, p), path.join(res, p), { recursive: true });
+  for (const p of ['assets', 'vendor', 'favicon.svg', 'games/shared', 'games/blackjack', `games/${g.id}`]) await cp(path.join(pub, p), path.join(res, p), { recursive: true });
   { // window icon: the 256px PNG frame inside the .ico
     const R0 = (await import('resedit')).default ?? (await import('resedit'));
-    const icoFile = R0.Data.IconFile.from(await readFile(path.join(here, 'icons', g.id + '.ico')));
+    const icoFile = R0.Data.IconFile.from(await readFile(path.join(here, 'icons', (g.icon || g.id) + '.ico')));
     const big = icoFile.icons.reduce((a, b) => ((b.width || 256) > (a.width || 256) ? b : a));
     const raw = big.data.bin ?? big.data.rawData ?? big.data;
     await writeFile(path.join(res, 'icon.png'), Buffer.from(raw instanceof ArrayBuffer ? new Uint8Array(raw) : raw));
@@ -75,7 +80,7 @@ for (const g of GAMES.filter(x => !only || x.id === only)) {
   const R = (await import('resedit')).default ?? (await import('resedit'));
   const bin = R.NtExecutable.from(await readFile(exe), { ignoreCert: true });
   const rs = R.NtExecutableResource.from(bin);
-  const ico = R.Data.IconFile.from(await readFile(path.join(here, 'icons', g.id + '.ico')));
+  const ico = R.Data.IconFile.from(await readFile(path.join(here, 'icons', (g.icon || g.id) + '.ico')));
   const grp = R.Resource.IconGroupEntry.fromEntries(rs.entries);
   R.Resource.IconGroupEntry.replaceIconsForResource(rs.entries, grp[0]?.id ?? 1, grp[0]?.lang ?? 1033, ico.icons.map(i => i.data));
   const vi = R.Resource.VersionInfo.fromEntries(rs.entries)[0] || R.Resource.VersionInfo.createEmpty();
@@ -84,6 +89,6 @@ for (const g of GAMES.filter(x => !only || x.id === only)) {
   vi.setStringValues({ lang: 1033, codepage: 1200 }, { ProductName: g.title, FileDescription: g.title, CompanyName: 'BAKHY', OriginalFilename: g.file + '.exe', LegalCopyright: 'MIT · Bakhtiyar Jahangirzade' });
   vi.outputToResourceEntries(rs.entries); rs.outputResource(bin);
   await writeFile(exe, Buffer.from(bin.generate()));
-  execFileSync(nsis.bin, ['-V2', `-DNAME=${g.title}`, `-DID=${cfg.applicationId}`, `-DEXE=${g.file}.exe`, `-DSRC=${dist}`, `-DICON=${path.join(here, 'icons', g.id + '.ico')}`, `-DVERSION=${VERSION}`, `-DOUT=${path.join(out, g.file + '-Setup.exe')}`, path.join(here, 'installer.nsi')], { stdio: 'inherit', env: nsis.env });
+  execFileSync(nsis.bin, ['-V2', `-DNAME=${g.title}`, `-DID=${cfg.applicationId}`, `-DEXE=${g.file}.exe`, `-DSRC=${dist}`, `-DICON=${path.join(here, 'icons', (g.icon || g.id) + '.ico')}`, `-DVERSION=${VERSION}`, `-DOUT=${path.join(out, g.file + '-Setup.exe')}`, path.join(here, 'installer.nsi')], { stdio: 'inherit', env: nsis.env });
   console.log('built', g.file + '-Setup.exe');
 }

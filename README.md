@@ -13,13 +13,24 @@ game or extension, or is clearly marked **On the bench** while it is being built
 | Last One (Uno-style) | Live | `/games/last-one/` · Windows installer |
 | Durak | Live | `/games/durak/` · Windows installer |
 | Domino | Live | `/games/domino/` · Windows installer |
+| Serpent Zone | Live | `/games/serpent/` · snake battle royale, shrinking arena |
+| Blackjack, Roulette, Poker, Slots | Live | `/games/blackjack/` · `/games/roulette/` · `/games/poker/` · `/games/slots/` |
 | Focus Room | Live | `/apps/focus-room/` · Windows release |
 | PreviewMaster | On the bench | Windows Explorer preview handler |
 | ColorPicker, Color+, SiteFilter | On the bench | Chrome extensions |
 
+## Accounts and play chips
+
+- Sign in / register with email and password (Supabase Auth). New accounts get 5,000 play chips, plus a daily +1,000 bonus.
+- Balances live in `public.profiles.chips` and only change through RPCs (`set_chips`, `claim_bonus`, `admin_update_user`), each logged in `chip_log`.
+- Guests keep a local 5,000-chip wallet in their browser. Chips are play money only: they can't be bought or cashed out.
+- Casino tables seat players with their wallet balance and write the table stack back after each round. Game results are reported by the client, so balances are not cheat-proof.
+- `/admin/` lets admins edit chips, roles and bans. The account registered with bakhtiyaraj@code.edu.az becomes admin automatically.
+
 ## Games
 
-- Shared shell in `public/games/shared/`: lobby, match controller, bots, FLIP card motion and sound.
+- Shared shell in `public/games/shared/`: lobby, match controller, bots, deal/FLIP card motion, card-room table, seats with avatars, confetti and sound.
+- Table art (felt, wood rail, card back, robot avatars) was generated with ChatGPT image generation and converted with `scripts/convert-game-assets.py`. Chess pieces and the board are hand-drawn SVG/CSS.
 - Modes: vs bots, same screen (chess), and **online rooms** with a 4-character code or invite link.
 - Online play uses Supabase Realtime broadcast + presence on the `bakhy-dev` project
   (`public/games/shared/net.js`). No tables, accounts or stored data. The room creator's

@@ -4,7 +4,7 @@ const SUPABASE_URL = 'https://yxiedrrahclzqukfnqrn.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_n0X-RVe8A6z9HviK4qsWAg_FgTTKJq2';
 
 let client = null;
-async function getClient() {
+export async function getClient() {
   if (client) return client;
   if (!window.supabase) {
     await new Promise((res, rej) => {
@@ -14,7 +14,7 @@ async function getClient() {
     });
   }
   client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'bakhy-auth' },
     realtime: { params: { eventsPerSecond: 20 } }
   });
   return client;
@@ -48,14 +48,14 @@ export class Room {
       const timer = setTimeout(() => reject(new Error('The room server did not answer. Check your connection and try again.')), 12000);
       this.ch.subscribe(async st => {
         this.status = st; this.emit('status', st);
-        if (st === 'SUBSCRIBED') { clearTimeout(timer); await this.ch.track({ name: this.me.name, at: Date.now() }); resolve(); }
+        if (st === 'SUBSCRIBED') { clearTimeout(timer); await this.ch.track({ name: this.me.name, at: Date.now(), chips: this.me.chips }); resolve(); }
         if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT') { clearTimeout(timer); reject(new Error('Could not open the room. Try again in a moment.')); }
       });
     });
   }
   peers() {
     const st = this.ch ? this.ch.presenceState() : {};
-    return Object.entries(st).map(([id, metas]) => ({ id, name: metas[0]?.name || 'Player', at: metas[0]?.at || 0 })).sort((a, b) => a.at - b.at);
+    return Object.entries(st).map(([id, metas]) => ({ id, name: metas[0]?.name || 'Player', at: metas[0]?.at || 0, chips: metas[0]?.chips })).sort((a, b) => a.at - b.at);
   }
   send(payload) { if (this.ch) return this.ch.send({ type: 'broadcast', event: 'msg', payload }); }
   async leave() { try { await this.ch?.untrack(); await this.ch?.unsubscribe(); } catch {} this.ch = null; }

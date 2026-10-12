@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin · BAKHY</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#191816">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/rack.css">
+<link rel="stylesheet" href="/games/shared/game.css">
+<link rel="stylesheet" href="admin.css">
+<script type="module" src="admin.js"></script>
+</head>
+<body class="game">
+<header class="g-head chassis">
+  <a class="key key--sm" href="/">← Rack</a>
+  <div class="g-title"><span class="led amber" aria-hidden="true"></span><h1 class="engraved">Admin</h1><span class="g-serial">Control room</span></div>
+  <div class="g-tools" id="acc"></div>
+</header>
+<main id="app" class="adm">
+  <p class="adm-gate" id="gate">Checking your account…</p>
+  <section id="panel" hidden>
+    <div class="adm-stats" id="stats"></div>
+    <div class="adm-bar"><input class="g-input" id="q" placeholder="Search players" aria-label="Search players"><button class="key key--sm" id="reload" type="button">Reload</button></div>
+    <div class="adm-tablewrap"><table class="adm-table"><thead><tr><th>Player</th><th>Chips</th><th>Role</th><th>Banned</th><th>Games</th><th>Joined</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+    <h2 class="engraved">Recent chip activity</h2>
+    <div class="adm-tablewrap"><table class="adm-table"><thead><tr><th>When</th><th>Player</th><th>Change</th><th>Balance</th><th>Reason</th></tr></thead><tbody id="log"></tbody></table></div>
+  </section>
+</main>
+</body>
+</html>

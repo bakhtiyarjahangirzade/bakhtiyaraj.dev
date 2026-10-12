@@ -25,7 +25,7 @@ def domino(d):
     d.line((x0 + 16, y0 + h / 2, x0 + w - 16, y0 + h / 2), fill=AMBER, width=8)
     for px, py in [(.3, .25), (.7, .75), (.5, .5)]: d.ellipse((x0 + px * w - 13, y0 + py * h / 2 - 13, x0 + px * w + 13, y0 + py * h / 2 + 13), fill=AMBER)
     for px, py in [(.3, .2), (.7, .2), (.3, .5), (.7, .5), (.3, .8), (.7, .8)]: d.ellipse((x0 + px * w - 12, y0 + h / 2 + py * h / 2 - 12, x0 + px * w + 12, y0 + h / 2 + py * h / 2 + 12), fill=AMBER)
-games = {'chess': text('♞', 240, 6), 'last-one': text('1!', 210), 'durak': text('♠', 250, 10), 'domino': domino}
+games = {'chess': text('♞', 240, 6), 'last-one': text('1!', 210), 'durak': text('♠', 250, 10), 'domino': domino, 'serpent': text('S', 250), 'blackjack': text('21', 220), 'roulette': text('◎', 260, 6), 'poker': text('♥', 250, 10), 'slots': text('7', 270)}
 os.makedirs('icons', exist_ok=True)
 for k, fn in games.items():
     im = glow_draw(base(), fn)

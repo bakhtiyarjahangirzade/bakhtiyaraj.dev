@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Slots · BAKHY</title>
+<meta name="description" content="Free slot machines with play chips: Lucky Sevens, Gem Rush and Neon Orchard. No real money.">
+<meta name="theme-color" content="#191816">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/rack.css">
+<link rel="stylesheet" href="/games/shared/game.css">
+<link rel="stylesheet" href="/games/shared/cards.css">
+<link rel="stylesheet" href="slots.css">
+<script type="module" src="slots.js"></script>
+</head>
+<body class="game">
+<header class="g-head chassis">
+  <a class="key key--sm" href="/?category=casino">← Rack</a>
+  <div class="g-title"><span class="led green" aria-hidden="true"></span><h1 class="engraved">Slots</h1><span class="g-serial">BKY-C04</span></div>
+  <div class="g-tools" id="acc"><button class="key key--sm" id="sound" type="button"><span class="led"></span>Sound on</button></div>
+</header>
+<main id="app">
+  <div class="bank slot-tabs" role="radiogroup" aria-label="Machine" id="machines"></div>
+  <section class="cabinet" id="cabinet" aria-label="Slot machine"></section>
+  <p class="slot-msg" id="msg" role="status" aria-live="polite"></p>
+  <p class="slot-note">Play chips only. They have no money value and can't be bought or cashed out. Press Space to spin.</p>
+</main>
+</body>
+</html>

@@ -1,5 +1,7 @@
 // BAKHY Workbench hub: channel filter keys, marquee, rack meters and the live amber mini screens.
 import { pressFeedback } from '/assets/sound.js';
+import { mountAccount } from '/assets/account-ui.js';
+mountAccount(document.getElementById('headnav'));
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (s, r = document) => r.querySelector(s);
@@ -89,6 +91,35 @@ const glow = (ctx, a = 1) => { ctx.shadowColor = `rgba(255,160,40,${0.7 * a})`; 
 const col = a => `rgba(${AMBER},${a})`;
 
 const screens = {
+  blackjack(ctx, w, h, t) {
+    glow(ctx); const cw = h * .38, ch = h * .54, n = 2 + Math.floor(t / 1.2) % 3;
+    for (let i = 0; i < n; i++) { ctx.save(); ctx.translate(w * .32 + i * cw * .5, h * .55); ctx.rotate((i - 1) * .08); card(ctx, cw, ch, ['A', 'K', '7', '3'][i], 1, i % 2 ? '♥' : '♠'); ctx.restore(); }
+    ctx.font = `400 ${h * .32}px Segment, monospace`; ctx.fillStyle = col(1); ctx.textAlign = 'right'; ctx.fillText(n === 2 ? '21' : n === 3 ? '28' : '31', w - 14, h * .62);
+    ctx.font = '500 11px Controls'; ctx.textAlign = 'left'; ctx.fillStyle = col(.7); ctx.fillText(n === 2 ? 'BLACKJACK' : 'BUST', 12, 18);
+  },
+  roulette(ctx, w, h, t) {
+    const R = h * .42, cx = w * .4, cy = h / 2, a = t * 1.2; glow(ctx, .5);
+    for (let i = 0; i < 37; i++) { const a0 = a + i * Math.PI * 2 / 37; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0, a0 + Math.PI * 2 / 37); ctx.closePath(); ctx.fillStyle = col(i === 0 ? .9 : i % 2 ? .45 : .12); ctx.fill(); }
+    ctx.fillStyle = 'rgba(20,12,4,1)'; ctx.beginPath(); ctx.arc(cx, cy, R * .55, 0, 7); ctx.fill();
+    const b = -t * 2.4; ctx.fillStyle = col(1); ctx.beginPath(); ctx.arc(cx + Math.cos(b) * R * .8, cy + Math.sin(b) * R * .8, 4, 0, 7); ctx.fill();
+    ctx.font = `400 ${h * .3}px Segment, monospace`; ctx.textAlign = 'right'; ctx.fillText(String([17, 32, 0, 23][Math.floor(t / 2) % 4]).padStart(2, '0'), w - 12, h * .62);
+  },
+  poker(ctx, w, h, t) {
+    glow(ctx); const cw = h * .32, ch = h * .46, shown = 3 + Math.floor(t / 1.4) % 3;
+    for (let i = 0; i < 5; i++) { ctx.save(); ctx.translate(w * .14 + i * (cw + 6), h * .52); card(ctx, cw, ch, i < shown ? ['A', 'A', 'K', 'Q', 'A'][i] : '', i < shown ? 1 : .25, i < shown ? '♠♥♣♦♠'[i] : ''); ctx.restore(); }
+    ctx.font = '500 11px Controls'; ctx.textAlign = 'left'; ctx.fillStyle = col(.75); ctx.fillText(shown === 5 ? 'THREE OF A KIND' : 'POT 1,240', 12, 18);
+  },
+  slots(ctx, w, h, t) {
+    const syms = ['7', '★', '◆', 'BAR', '♣', '7']; const cw = w / 3.6; glow(ctx);
+    for (let r = 0; r < 3; r++) { const x = w * .1 + r * (cw + 6); ctx.strokeStyle = col(.6); ctx.strokeRect(x, 10, cw, h - 20); const off = (t * (6 - r) * 60) % 60; const spinning = (t % 4) < 1.5 + r * .4;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, 10, cw, h - 20); ctx.clip(); ctx.textAlign = 'center'; ctx.font = `600 ${h * .3}px Wordmark, serif`; ctx.fillStyle = col(1);
+      for (let k = -1; k < 3; k++) ctx.fillText(spinning ? syms[(k + Math.floor(t * 8) + r) % syms.length] : (k === 1 ? '7' : syms[(k + r + 2) % syms.length]), x + cw / 2, (spinning ? off : 0) + k * h * .36 + h * .2);
+      ctx.restore(); }
+  },
+  serpent(ctx, w, h, t) {
+    glow(ctx); for (let s = 0; s < 3; s++) for (let k = 0; k < 26; k++) { const tt = t * .9 + s * 2.1 - k * .05; const x = w / 2 + Math.cos(tt) * w * (.3 - s * .06), y = h / 2 + Math.sin(tt * 1.6) * h * (.32 - s * .05); ctx.fillStyle = col(1 - k / 26); ctx.beginPath(); ctx.arc(x, y, 5 - k * .12, 0, 7); ctx.fill(); }
+    const R = Math.max(12, h * .48 - (t % 6) * 6); ctx.strokeStyle = col(.5); ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.arc(w / 2, h / 2, R * 1.8, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+  },
   chess(ctx, w, h, t) {
     const s = Math.min(w, h) - 18, x0 = (w - s) / 2, y0 = (h - s) / 2, c = s / 8;
     for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) {

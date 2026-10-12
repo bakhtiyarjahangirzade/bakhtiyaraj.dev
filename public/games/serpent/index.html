@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Serpent Zone · BAKHY</title>
+<meta name="description" content="A snake battle royale: eat, grow and outlast everyone while the arena shrinks. Play online with friends or against bots.">
+<meta name="theme-color" content="#0b0d12">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/rack.css">
+<link rel="stylesheet" href="/games/shared/game.css">
+<link rel="stylesheet" href="serpent.css">
+<script type="module" src="serpent.js"></script>
+</head>
+<body class="game sz">
+<header class="g-head chassis">
+  <a class="key key--sm" href="/?category=games">← Rack</a>
+  <div class="g-title"><span class="led green" id="led" aria-hidden="true"></span><h1 class="engraved">Serpent Zone</h1><span class="g-serial">BKY-G05</span></div>
+  <div class="g-tools" id="tools"><span class="plate" id="roomplate" hidden></span></div>
+</header>
+<main id="app">
+  <div class="sz-stage" id="stage">
+    <canvas id="cv" aria-label="Arena"></canvas>
+    <div class="sz-hud" id="hud" hidden>
+      <div class="sz-zone"><span>Zone</span><b id="zoneTxt">—</b></div>
+      <div class="sz-alive"><span>Alive</span><b id="aliveTxt">0</b></div>
+      <div class="sz-len"><span>Length</span><b id="lenTxt">0</b></div>
+      <ol class="sz-board" id="board"></ol>
+    </div>
+    <div class="sz-menu" id="menu">
+      <h2>Serpent Zone</h2>
+      <p class="sz-sub">Eat glowing orbs to grow. Hit another serpent's body and you're out. The arena keeps shrinking — be the last one coiled.</p>
+      <label class="label" for="nm">Your name</label>
+      <input id="nm" class="g-input" maxlength="14" autocomplete="nickname">
+      <div class="sz-btns">
+        <button class="key key--amber" id="solo" type="button">Play vs bots</button>
+        <button class="key" id="create" type="button">Create online room</button>
+      </div>
+      <div class="sz-join"><input id="code" class="g-input g-code" maxlength="4" placeholder="CODE" aria-label="Room code"><button class="key" id="join" type="button">Join</button></div>
+      <div class="sz-lobby" id="lobby" hidden></div>
+      <p class="sz-help">Steer with the mouse or touch. Hold the mouse button, Space or a second finger to boost (it costs length). Arrow keys also steer.</p>
+    </div>
+    <div class="sz-over" id="over" hidden></div>
+  </div>
+</main>
+</body>
+</html>

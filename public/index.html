@@ -22,7 +22,7 @@
   <span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>
   <div class="head-bar">
     <a class="mark" href="/" aria-label="BAKHY home"><span class="led green" aria-hidden="true"></span>BAKHY<small>WORKBENCH</small></a>
-    <nav class="head-nav" aria-label="Main">
+    <nav class="head-nav" aria-label="Main" id="headnav">
       <a class="key key--sm" href="#rack">The rack</a>
       <a class="key key--sm" href="#operator">Operator</a>
       <a class="key key--sm" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev" rel="noopener">Source</a>
@@ -38,7 +38,7 @@
     </div>
     <div class="hero-copy">
       <h1 class="engraved">Free tools &amp; games, built on one workbench.</h1>
-      <p>Play chess, durak, domino and a fast card game online with friends using a room code. Use the focus timer in the browser or on Windows. Browser extensions are on the bench now. No accounts, no ads, open source.</p>
+      <p>Card games, a casino with play chips, a snake battle royale and focus tools. Play online with friends using a room code, or against bots. Sign in to keep your chips across games and devices. No real money, no ads, open source.</p>
       <div class="hero-keys">
         <a class="key key--amber" href="#rack"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2v12M3.5 9 9 14.5 14.5 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Browse the rack</a>
         <a class="key" href="/games/chess/"><span class="led green" aria-hidden="true"></span>Quick game</a>
@@ -61,6 +61,7 @@
     <div class="bank" role="radiogroup" aria-label="Filter modules" id="filters">
       <button class="key" role="radio" aria-checked="true" data-filter="all"><span class="led"></span>All</button>
       <button class="key" role="radio" aria-checked="false" data-filter="games"><span class="led"></span>Games</button>
+      <button class="key" role="radio" aria-checked="false" data-filter="casino"><span class="led"></span>Casino</button>
       <button class="key" role="radio" aria-checked="false" data-filter="apps"><span class="led"></span>Apps</button>
       <button class="key" role="radio" aria-checked="false" data-filter="extensions"><span class="led"></span>Extensions</button>
     </div>
@@ -145,6 +146,100 @@
       <span class="ear" aria-hidden="true"></span>
     </li>
 
+    <li class="module unit" data-kind="games" data-screen="serpent">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G05 · Arcade</p>
+          <h3>Serpent Zone</h3>
+          <p class="desc">A snake battle royale. Eat glowing orbs, grow, cut others off, and survive while the arena keeps shrinking.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bots</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/serpent/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Serpent-Zone-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="casino" data-screen="blackjack">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-C01 · Casino</p>
+          <h3>Blackjack</h3>
+          <p class="desc">Up to five players against the dealer. Hit, stand, double and split with play chips.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online tables</li><li>Play chips</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/blackjack/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Blackjack-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="casino" data-screen="roulette">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-C02 · Casino</p>
+          <h3>Roulette</h3>
+          <p class="desc">European single-zero wheel. Everyone bets on the same spin, straight up to red or black.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online tables</li><li>Play chips</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/roulette/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Roulette-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="casino" data-screen="poker">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-C03 · Casino</p>
+          <h3>Poker</h3>
+          <p class="desc">No-limit Texas Hold'em for 2–6 players with side pots, blinds that rise, and bots that bluff a little.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online tables</li><li>Play chips</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/poker/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Poker-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="casino" data-screen="slots">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-C04 · Casino</p>
+          <h3>Slots</h3>
+          <p class="desc">Three machines: Lucky Sevens, Gem Rush with wilds, and Neon Orchard with free-spin coins.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Play chips</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/slots/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Slots-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
     <!-- APPS -->
     <li class="module unit" data-kind="apps" data-screen="focus">
       <span class="ear" aria-hidden="true"></span>

@@ -3,7 +3,7 @@ import { engine } from './engine.js';
 import { lastOneUI } from './ui.js';
 mountGame({
   id: 'last-one', title: 'Last One', serial: 'BKY-G02', tagline: 'Uno-style card game · 2–4 players',
-  minPlayers: 2, maxPlayers: 4, modes: ['bot', 'online'], defaults: { players: 4 },
+  minPlayers: 2, maxPlayers: 4, modes: ['bot', 'online'], defaults: { players: 4 }, felt: 'red',
   options: [{ key: 'players', label: 'Players', modes: ['bot'], values: [[2, '2 players'], [3, '3 players'], [4, '4 players']] }],
   rules: [
     'Everyone starts with 7 cards. On your turn, play a card that matches the top card by color or by number/symbol, or play a wild.',

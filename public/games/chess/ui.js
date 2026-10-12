@@ -1,10 +1,17 @@
 // Chess board UI: click or drag to move, legal-move dots, promotion picker, move log on an amber screen.
 import { h, fill, sfxCard } from '../shared/table.js';
+import { seatEl, confetti } from '../shared/cards.js';
 import { engine } from './engine.js';
 
 const GLYPH = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
 const NAME = { k: 'king', q: 'queen', r: 'rook', b: 'bishop', n: 'knight', p: 'pawn' };
 const files = 'abcdefgh';
+let imgs = false; const repaints = new Set();
+{ const t = new Image(); t.onload = () => { imgs = true; repaints.forEach(f => f()); }; t.src = '/assets/game/chess/w-k.svg'; }
+function pieceEl(color, type, key) {
+  if (imgs) return h('img', { class: 'pc img ' + color, src: `/assets/game/chess/${color}-${type}.svg`, alt: '', draggable: 'false', 'data-k': key });
+  return h('span', { class: 'pc ' + color, 'data-k': key }, GLYPH[type] + '\uFE0E');
+}
 
 export function chessUI(root, { say }) {
   let st, view, ctx, sel = null, flipped = null, lastLen = -1;
@@ -26,6 +33,8 @@ export function chessUI(root, { say }) {
       status,
       h('div', { class: 'g-actions' }, flipBtn, resign))));
 
+  repaints.add(() => st && paint());
+  let won = false;
   const isFlipped = () => flipped ?? (ctx.mySeat === 1);
 
   board.addEventListener('click', e => {
@@ -75,7 +84,7 @@ export function chessUI(root, { say }) {
   }
   function askPromotion(from, to) {
     const color = view.turn;
-    fill(promo, ...['q', 'r', 'b', 'n'].map(t => h('button', { class: 'key', type: 'button', 'aria-label': 'Promote to ' + NAME[t], onclick: () => { promo.hidden = true; sel = null; ctx.send({ type: 'move', from, to, promotion: t }); } }, h('span', { class: 'pc ' + color }, GLYPH[t] + '︎'))),
+    fill(promo, ...['q', 'r', 'b', 'n'].map(t => h('button', { class: 'key', type: 'button', 'aria-label': 'Promote to ' + NAME[t], onclick: () => { promo.hidden = true; sel = null; ctx.send({ type: 'move', from, to, promotion: t }); } }, pieceEl(color, t, 'promo' + t))),
       h('button', { class: 'key key--sm', type: 'button', onclick: () => { promo.hidden = true; } }, 'Cancel'));
     promo.hidden = false; promo.querySelector('button').focus();
   }
@@ -92,7 +101,7 @@ export function chessUI(root, { say }) {
       if (checkSq === sq) cls.push('check');
       const label = sq + (p ? ', ' + (p.color === 'w' ? 'white ' : 'black ') + NAME[p.type] : '');
       cells.push(h('button', { class: cls.join(' '), type: 'button', 'data-sq': sq, 'aria-label': label, tabindex: i === 0 ? '0' : '-1' },
-        p ? h('span', { class: 'pc ' + p.color, 'data-k': p.color + p.type + sq }, GLYPH[p.type] + '︎') : null,
+        p ? pieceEl(p.color, p.type, p.color + p.type + sq) : null,
         (fl ? f === 7 : f === 0) ? h('span', { class: 'coord rk' }, String(8 - r)) : null,
         (fl ? r === 0 : r === 7) ? h('span', { class: 'coord fl' }, files[f]) : null));
     }
@@ -103,12 +112,12 @@ export function chessUI(root, { say }) {
     const turnSeat = view.turn === 'w' ? 0 : 1, over = engine.over(st);
     [[top, seatTop], [bottom, seatBottom]].forEach(([el, s]) => {
       const seat = ctx.seats[s];
-      fill(el, h('span', { class: 'seat-badge' + (!over && turnSeat === s ? ' turn' : '') }, h('span', { class: !over && turnSeat === s ? 'led on' : 'led' }), h('span', { class: 'pc mini ' + (s === 0 ? 'w' : 'b') }, '♚︎'), `${seat?.name || '—'}${s === ctx.mySeat && !ctx.local ? ' (you)' : ''}`));
+      fill(el, seatEl(seat, { turn: !over && turnSeat === s, you: s === ctx.mySeat && !ctx.local, tag: s === 0 ? 'White' : 'Black' }));
     });
     // captures
     const caps = { w: [], b: [] };
     for (const m of view.history) if (m.captured) caps[m.color].push(m.captured);
-    const capEl = (color) => caps[color].sort((a, b) => 'qrbnp'.indexOf(a) - 'qrbnp'.indexOf(b)).map(t => h('span', { class: 'pc mini ' + (color === 'w' ? 'b' : 'w') }, GLYPH[t] + '︎'));
+    const capEl = (color) => caps[color].sort((a, b) => 'qrbnp'.indexOf(a) - 'qrbnp'.indexOf(b)).map(t => pieceEl(color === 'w' ? 'b' : 'w', t, 'cap' + Math.random()));
     fill(capTop, ...capEl(seatTop === 0 ? 'w' : 'b'));
     fill(capBottom, ...capEl(seatBottom === 0 ? 'w' : 'b'));
     // log
@@ -138,6 +147,8 @@ export function chessUI(root, { say }) {
       st = state; ctx = c; view = engine.view(state);
       if (st.moves.length !== lastLen) { if (lastLen >= 0) sfxCard(); lastLen = st.moves.length; sel = null; promo.hidden = true; }
       paint();
+      const res = engine.over(st);
+      if (res && !won) { won = true; if (res.winner != null && (res.winner === ctx.mySeat || ctx.local)) confetti(); } else if (!res) won = false;
     }
   };
 }

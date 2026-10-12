@@ -1,11 +1,13 @@
-.dm-board{--t:clamp(24px,3vw,36px);flex-direction:column;justify-content:center;padding-top:56px}
-.dm-boneyard{position:absolute;left:16px;right:16px;top:14px;display:flex;justify-content:space-between;pointer-events:none}
-.dm-line{display:grid;gap:10px;justify-items:center;width:100%}
+.dm-board{--t:clamp(24px,2.8vw,34px);flex-direction:column;padding-top:64px;padding-bottom:40px}
+.dm-info{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:3;display:flex;gap:10px}
+.dm-chip{padding:5px 12px;border-radius:14px;background:rgba(0,0,0,.35);color:rgba(255,255,255,.8);font:500 12px/1 var(--f-ui);letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.dm-line{position:relative;z-index:3;display:grid;gap:12px;justify-items:center;width:100%}
 .dm-row{display:flex;align-items:center;gap:4px;justify-content:center;flex-wrap:nowrap}
 .dm-row.rev{flex-direction:row-reverse}
-.dm-hand{gap:10px}
+.dm-hand{gap:12px;align-items:center}
 .dm-hand>.tile+.tile{margin-left:0}
-.dm-hand .tile{--t:clamp(30px,3.6vw,42px)}
-.dm-score{font-size:12px;letter-spacing:.1em;color:var(--amber)}
+.dm-hand .tile{--t:clamp(30px,3.6vw,44px)}
 .dm-end{min-height:38px;font-size:15px}
-.opp-fan.tiles>.tile+.tile{margin-left:-8px}
+.dm-empty{position:relative;z-index:3;margin:0;color:rgba(255,255,255,.75);font-size:18px;text-shadow:0 1px 2px #000}
+.seat .fan.tiles{gap:3px}
+.seat .fan.tiles>.tile+.tile{margin-left:0}

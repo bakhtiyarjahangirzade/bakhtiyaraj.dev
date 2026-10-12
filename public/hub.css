@@ -4,7 +4,7 @@
 .head-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:0 8px 18px;border-bottom:1px solid var(--edge);box-shadow:0 1px 0 rgba(255,255,255,.05)}
 .mark{display:inline-flex;align-items:center;gap:12px;text-decoration:none;font:600 26px/1 var(--f-mark);letter-spacing:.32em;color:#efe6d4;text-shadow:0 1px 0 #000}
 .mark small{font:500 12px/1 var(--f-ui);letter-spacing:.5em;color:var(--ink-faint);margin-left:4px}
-.head-nav{display:flex;gap:12px;flex-wrap:wrap}
+.head-nav{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 
 .hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) auto;gap:34px;align-items:center;padding-top:30px}
 .hero-screen{grid-column:1/-1}
@@ -96,5 +96,6 @@
   .operator{padding:28px 20px}.op-grid{grid-template-columns:1fr;gap:20px}
   .patch{padding:24px 20px}
   .bank{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .bank .key:first-child{grid-column:1/-1}
   .serial-plate{grid-template-columns:auto auto}
 }

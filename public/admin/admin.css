@@ -1,0 +1,13 @@
+.adm{max-width:1100px}
+.adm-gate{padding:24px;border-radius:12px;background:rgba(0,0,0,.3);color:#e6d6b4;font-size:18px}
+.adm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.adm-stat{display:grid;gap:6px;padding:16px;border-radius:12px;background:linear-gradient(180deg,#2a2018,#17110c);box-shadow:0 0 0 1px #4a3620}
+.adm-stat span{font:600 11px/1 var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:#bda983}
+.adm-stat b{font:700 28px/1 var(--f-mark);color:#ffe9b0}
+.adm-bar{display:flex;gap:10px;margin-bottom:12px}.adm-bar .g-input{flex:1}
+.adm-tablewrap{overflow-x:auto;border-radius:12px;background:rgba(0,0,0,.25);margin-bottom:26px}
+.adm-table{width:100%;border-collapse:collapse;font-size:15px}
+.adm-table th,.adm-table td{padding:8px 12px;border-bottom:1px solid #3a2e22;text-align:left;white-space:nowrap}
+.adm-table th{font:600 11px/1 var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:#bda983}
+.adm-table .g-input{height:36px;width:130px}
+.adm-table td.up{color:#7dff8a}.adm-table td.down{color:#ff7a6a}

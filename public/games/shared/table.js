@@ -1,6 +1,8 @@
 // Shared game shell: header, lobby (bots / same screen / online room), match controller, bots and online sync.
 import { Room, myId, newCode, cleanCode } from './net.js';
 import { pressFeedback, soundOn, setSound } from '/assets/sound.js';
+import * as acc from '/assets/account.js';
+import { mountAccount } from '/assets/account-ui.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const h = (tag, attrs = {}, ...kids) => {
@@ -29,7 +31,7 @@ class Match {
   constructor(engine, seats, opts, onChange) {
     this.engine = engine; this.seats = seats; this.opts = opts; this.onChange = onChange;
     this.v = 0; this.timers = [];
-    this.state = engine.setup(seats.length, opts);
+    this.state = engine.setup(seats.length, { ...opts, stack: seats.map(s => s.bot ? undefined : s.chips) });
     this.changed();
   }
   dispatch(seat, action) {
@@ -48,7 +50,7 @@ class Match {
         if (this.v !== v) return;
         const a = this.engine.bot(this.state, seat, this.opts);
         if (a == null) return;
-        try { this.dispatch(seat, a); } catch (e) { console.warn('bot move rejected', e); }
+        try { this.dispatch(seat, a); } catch (e) { console.warn('bot move rejected', e); if (this.v === v) this.timers.push(setTimeout(() => this.v === v && this.scheduleBots(), 1200)); }
       }, delay));
     }
   }
@@ -69,6 +71,8 @@ export function mountGame(cfg) {
     h('div', { class: 'g-title' }, led, h('h1', { class: 'engraved' }, cfg.title), h('span', { class: 'g-serial' }, cfg.serial)),
     h('div', { class: 'g-tools' }, roomPlate, soundKey));
   app.before(header);
+  if (!window.BAKHY_DESKTOP) mountAccount(header.querySelector('.g-tools'));
+  acc.init().then(() => { const n = acc.displayName(); if (n && (!store.get('name', null) || store.get('nameFromAcc', false))) { me.name = n; store.set('name', n); store.set('nameFromAcc', true); const i = document.getElementById('pname'); if (i) i.value = n; } });
 
   const toast = h('p', { class: 'g-toast', role: 'status', 'aria-live': 'polite' });
   document.body.append(toast);
@@ -95,7 +99,7 @@ export function mountGame(cfg) {
 
     const screen = h('div', { class: 'bezel' }, h('div', { class: 'vfd g-marquee' },
       h('p', { class: 'g-big' }, cfg.title.toUpperCase()), h('p', { class: 'g-sub' }, cfg.tagline)));
-    const panel = h('section', { class: 'g-lobby chassis', 'aria-label': 'Game setup' },
+    const panel = h('section', { class: 'g-lobby chassis' + (cfg.felt === 'red' ? ' red' : ''), 'aria-label': 'Game setup' },
       h('span', { class: 'screw tl' }), h('span', { class: 'screw tr' }), h('span', { class: 'screw bl' }), h('span', { class: 'screw br' }),
       screen,
       h('div', { class: 'g-row' }, h('label', { class: 'label', for: 'pname' }, 'Your name'), nameIn),
@@ -131,7 +135,7 @@ export function mountGame(cfg) {
     const n = mode === 'local' ? (opts.players || cfg.minPlayers) : (opts.players || cfg.minPlayers);
     const seats = [];
     for (let i = 0; i < n; i++) {
-      if (i === 0) seats.push({ id: me.id, name: me.name, bot: false });
+      if (i === 0) seats.push({ id: me.id, name: me.name, bot: false, chips: cfg.casino ? acc.balance() : undefined });
       else if (mode === 'local') seats.push({ id: 'local' + i, name: 'Player ' + (i + 1), bot: false });
       else seats.push({ id: 'bot' + i, name: BOT_NAMES[(i - 1) % BOT_NAMES.length], bot: true });
     }
@@ -164,6 +168,7 @@ export function mountGame(cfg) {
       mySeat: seat, seats: session.seats, local: session.kind === 'local', opts: session.opts,
       send: action => act(seat, action)
     });
+    if (cfg.casino && seat >= 0 && session.seats[seat] && !session.seats[seat].bot && session.kind !== 'local' && cfg.casino.settled(st) && st.chips[seat] !== session.synced) { session.synced = st.chips[seat]; acc.setBalance(st.chips[seat], cfg.id); }
     const res = cfg.engine.over(st);
     if (res) showOver(res);
     else if (overShown) { overShown.remove(); overShown = null; }
@@ -194,7 +199,7 @@ export function mountGame(cfg) {
   /* ---------- Online: host ---------- */
   async function hostRoom(opts) {
     const code = newCode();
-    session = { kind: 'online', host: true, code, opts, seats: [{ id: me.id, name: me.name, bot: false }], started: false };
+    session = { kind: 'online', host: true, code, opts, seats: [{ id: me.id, name: me.name, bot: false, chips: cfg.casino ? acc.balance() : undefined }], started: false };
     await openRoom(code);
     if (!room) return;
     history.replaceState(null, '', '?room=' + code);
@@ -203,8 +208,8 @@ export function mountGame(cfg) {
       if (session.started) return;
       // keep seats in join order, drop people who left, add newcomers
       session.seats = session.seats.filter(s => s.bot || peers.some(p => p.id === s.id));
-      for (const p of peers) if (!session.seats.some(s => s.id === p.id) && session.seats.length < cfg.maxPlayers) session.seats.push({ id: p.id, name: p.name, bot: false });
-      for (const s of session.seats) { const p = peers.find(q => q.id === s.id); if (p) s.name = p.name; }
+      for (const p of peers) if (!session.seats.some(s => s.id === p.id) && session.seats.length < cfg.maxPlayers) session.seats.push({ id: p.id, name: p.name, bot: false, chips: p.chips });
+      for (const s of session.seats) { const p = peers.find(q => q.id === s.id); if (p) { s.name = p.name; if (p.chips != null) s.chips = p.chips; } }
       broadcastLobby(); waitingRoom();
     });
     room.on('leave', id => {
@@ -255,6 +260,7 @@ export function mountGame(cfg) {
   async function openRoom(code) {
     led.className = 'led amber blink';
     roomPlate.hidden = false; roomPlate.textContent = 'Room ' + code;
+    if (cfg.casino) me.chips = acc.balance();
     room = new Room(cfg.id, code, me);
     room.on('status', st => { if (st === 'SUBSCRIBED') led.className = 'led green'; if (st === 'CLOSED' || st === 'CHANNEL_ERROR') led.className = 'led red'; });
     try { await room.connect(); }
@@ -331,11 +337,19 @@ export function flip(root, update) {
   root.querySelectorAll('[data-k]').forEach(el => before.set(el.dataset.k, el.getBoundingClientRect()));
   update();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const src = root.querySelector('[data-deal-from]')?.getBoundingClientRect();
+  let n = 0;
   root.querySelectorAll('[data-k]').forEach(el => {
     const a = before.get(el.dataset.k), b = el.getBoundingClientRect();
-    if (!a) { el.animate([{ opacity: 0, transform: 'scale(.85)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: 'ease-out' }); return; }
+    if (!a) {
+      if (src && before.size && (el.classList.contains('card') || el.classList.contains('tile'))) {
+        const dx = src.left + src.width / 2 - (b.left + b.width / 2), dy = src.top + src.height / 2 - (b.top + b.height / 2);
+        el.animate([{ transform: `translate(${dx}px,${dy}px) rotate(-25deg) scale(.7)`, opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 460, delay: Math.min(n++, 10) * 70, easing: 'cubic-bezier(.2,.8,.25,1)', fill: 'backwards' });
+      } else el.animate([{ opacity: 0, transform: 'scale(.85)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: 'ease-out' });
+      return;
+    }
     const dx = a.left - b.left, dy = a.top - b.top;
     if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
-    el.animate([{ transform: `translate(${dx}px,${dy}px)` }, { transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.2,.8,.3,1)' });
+    el.animate([{ transform: `translate(${dx}px,${dy}px)` }, { transform: 'none' }], { duration: 360, easing: 'cubic-bezier(.2,.8,.3,1)' });
   });
 }
