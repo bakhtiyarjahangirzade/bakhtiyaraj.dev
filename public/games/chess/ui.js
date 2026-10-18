@@ -117,7 +117,7 @@ export function chessUI(root, { say }) {
     // captures
     const caps = { w: [], b: [] };
     for (const m of view.history) if (m.captured) caps[m.color].push(m.captured);
-    const capEl = (color) => caps[color].sort((a, b) => 'qrbnp'.indexOf(a) - 'qrbnp'.indexOf(b)).map(t => pieceEl(color === 'w' ? 'b' : 'w', t, 'cap' + Math.random()));
+    const capEl = (color) => caps[color].sort((a, b) => 'qrbnp'.indexOf(a) - 'qrbnp'.indexOf(b)).map((t, i) => pieceEl(color === 'w' ? 'b' : 'w', t, 'cap' + color + i));
     fill(capTop, ...capEl(seatTop === 0 ? 'w' : 'b'));
     fill(capBottom, ...capEl(seatBottom === 0 ? 'w' : 'b'));
     // log

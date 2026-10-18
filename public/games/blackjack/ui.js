@@ -38,7 +38,7 @@ export function blackjackUI(root, { say }) {
     flip(root, () => {
       fill(spots, ...Array.from({ length: n }, (_, i) => {
         const th = n === 1 ? Math.PI / 2 : (Math.PI * (160 - i * (140 / (n - 1)))) / 180;
-        const x = 50 + 41 * Math.cos(th), y = 8 + 62 * Math.sin(th);
+        const narrow = matchMedia('(max-width: 900px)').matches; const x = 50 + (narrow ? 33 : 41) * Math.cos(th), y = 8 + 62 * Math.sin(th);
         const turn = st.turn && st.turn.seat === i;
         const hs = st.hands[i];
         const av = h('span', { class: 'avatar sm' }); av.style.backgroundImage = `url(${avatarUrl(ctx.seats[i])})`;

@@ -4,7 +4,7 @@
 .cb-player .seat{grid-template-columns:auto auto;align-items:center;gap:12px}
 .cb-player .avatar{width:52px;height:52px}
 .cb-caps{width:min(100%,660px);min-height:28px;display:flex;flex-wrap:wrap;gap:0;align-items:center}
-.cb-caps .pc{width:26px;height:26px;font-size:22px;margin-right:-6px}
+.cb-caps .pc,.cb-caps .pc.img{width:26px;height:26px;font-size:22px;margin-right:-6px;flex:none}
 .cb-frame{position:relative;width:min(100%,660px,calc(100vh - 300px));min-width:280px;padding:clamp(12px,2vw,22px);border-radius:12px;
   background:#3a2414 var(--rail-img) center/420px;
   box-shadow:0 30px 60px rgba(0,0,0,.65),0 0 0 2px #1a0f07,inset 0 2px 0 rgba(255,220,170,.25),inset 0 -6px 14px rgba(0,0,0,.6)}

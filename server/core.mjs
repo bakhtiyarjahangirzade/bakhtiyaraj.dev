@@ -24,7 +24,7 @@ const active = seat => isHuman(seat) && !seat.left;
 /* ------------------------------------------------------------------ */
 /* Request context: collects steps, wallet movements and reveals.      */
 class Ctx {
-  constructor(t, now) { this.t = t; this.now = now; this.steps = []; this.wallet = []; this.reveals = []; this.gone = []; this.rng = null; }
+  constructor(t, now) { this.t = t; this.now = now; this.steps = []; this.wallet = []; this.reveals = []; this.gone = []; this.results = []; this.rng = null; }
   get g() { return GAMES[this.t.game]; }
   get s() { return this.t.state; }
   rngFor() {
@@ -280,7 +280,7 @@ export function handle(t, req) {
     default: fail('Unknown request.');
   }
   finish(ctx);
-  return { table: t, steps: ctx.steps, wallet: ctx.wallet, reveals: ctx.reveals, gone: ctx.gone };
+  return { table: t, steps: ctx.steps, wallet: ctx.wallet, reveals: ctx.reveals, gone: ctx.gone, results: ctx.results };
 }
 
 function rebuy(ctx, i, balances) {
@@ -310,6 +310,12 @@ function finish(ctx) {
   const { t } = ctx, g = ctx.g;
   // a finished poker table pays everyone out
   if (t.state && t.status === 'playing' && g.engine.over(t.state)) {
+    const res = g.engine.over(t.state);
+    t.seats.forEach((seat, i) => {
+      if (!isHuman(seat) || seat.left || !seat.uid) return;
+      const won = res.winner != null ? res.winner === i : res.loser != null ? res.loser !== i : false;
+      ctx.results.push({ uid: seat.uid, game: t.game, mode: t.mode, won });
+    });
     if (g.casino) t.seats.forEach((seat, i) => { if (isHuman(seat) && !seat.cashed && !seat.left) ctx.cashout(i, t.game + ':cash-out'); });
     t.status = 'done'; t.deadline = null;
   }
@@ -330,5 +336,5 @@ function create(user, body, now) {
     const n = Math.max(g.min, Math.min(g.max, opts.players || g.min));
     for (let i = 1; i < n; i++) t.seats.push({ uid: null, name: BOT_NAMES[(i - 1) % BOT_NAMES.length], bot: true });
   }
-  return { table: t, steps: [], wallet: [], reveals: [], gone: [] };
+  return { table: t, steps: [], wallet: [], reveals: [], gone: [], results: [] };
 }

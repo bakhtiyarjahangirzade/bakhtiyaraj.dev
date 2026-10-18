@@ -10,7 +10,8 @@
     "test": "node --test tests/*.test.cjs tests/*.test.mjs",
     "build:web": "BAKHY_SKIP_DESKTOP=1 node scripts/build.mjs",
     "prepare": "node scripts/vendor.mjs",
-    "build:function": "node scripts/build-function.mjs"
+    "build:function": "node scripts/build-function.mjs",
+    "dev:play": "node scripts/dev-play.mjs"
   },
   "engines": {
     "node": ">=22"

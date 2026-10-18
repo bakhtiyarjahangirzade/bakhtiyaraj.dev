@@ -1,5 +1,6 @@
 import { SYMBOLS } from './symbols.js';
-import { MACHINES, spin, evaluate } from './machines.js';
+import { MACHINES, spin } from './machines.js';
+import { api } from '/games/shared/net.js';
 import * as acc from '/assets/account.js';
 import { mountAccount } from '/assets/account-ui.js';
 import { pressFeedback, soundOn, setSound } from '/assets/sound.js';
@@ -16,7 +17,7 @@ acc.init();
 
 let m = MACHINES[0], lineBet = 1, busy = false, free = 0, auto = 0, grid = null;
 const tabs = $('#machines');
-MACHINES.forEach(mc => tabs.append(el('button', { class: 'key', role: 'radio', type: 'button', 'aria-checked': String(mc === m), 'data-id': mc.id, onclick: () => { if (busy) return; pressFeedback(); m = mc; lineBet = mc.bets[0]; free = 0; auto = 0; build(); } }, el('span', { class: 'led' }), mc.name)));
+MACHINES.forEach(mc => tabs.append(el('button', { class: 'key', role: 'radio', type: 'button', 'aria-checked': String(mc === m), 'data-id': mc.id, onclick: () => { if (busy) return; pressFeedback(); m = mc; lineBet = mc.bets[0]; free = 0; auto = 0; build(); paintSeeds(); } }, el('span', { class: 'led' }), mc.name)));
 
 const cab = $('#cabinet');
 function build() {
@@ -37,7 +38,7 @@ function build() {
       el('div', { class: 'meter bet' }, el('span', {}, 'Bet / line'), el('div', { class: 'stepper' }, el('button', { type: 'button', 'aria-label': 'Lower bet', onclick: () => step(-1) }, '−'), el('b', { id: 'lb' }, String(lineBet)), el('button', { type: 'button', 'aria-label': 'Raise bet', onclick: () => step(1) }, '+'))),
       el('div', { class: 'meter' }, el('span', {}, 'Total bet'), el('b', { id: 'tb' }, fmt(lineBet * m.lines.length))),
       el('div', { class: 'meter free', hidden: true, id: 'freebox' }, el('span', {}, 'Free spins'), el('b', { id: 'free' }, '0')),
-      el('button', { class: 'auto key', type: 'button', id: 'auto', 'aria-pressed': 'false', onclick: () => { auto = auto ? 0 : 10; $('#auto').setAttribute('aria-pressed', String(!!auto)); $('#auto').textContent = auto ? 'Stop auto' : 'Auto ×10'; if (auto && !busy) go(); } }, 'Auto ×10'),
+      el('button', { class: 'auto key', type: 'button', id: 'auto', 'aria-pressed': 'false', onclick: () => { auto = auto ? 0 : 10; paintAuto(); if (auto && !busy) go(); } }, 'Auto ×10'),
       el('button', { class: 'spin', type: 'button', id: 'spin', onclick: () => go() }, el('span', {}, 'SPIN'))),
     el('details', { class: 'paytable' }, el('summary', {}, 'Paytable'), el('div', { class: 'pt-grid' }, m.symbols.filter(s => Object.keys(s[2]).length || s[0] === m.scatter).map(([id, , pays]) => el('div', { class: 'pt' }, sym(id), el('span', {}, id === m.scatter ? '3+ anywhere = free spins' : Object.entries(pays).sort((a, b) => b[0] - a[0]).map(([n, x]) => `${n}× ${Math.round(x * (m.scale || 1))}`).join(' · ')), id === m.wild ? el('em', {}, 'Wild') : null)))));
 }
@@ -49,28 +50,58 @@ function jingle(big) { [523, 659, 784, 1047, big ? 1319 : 0].filter(Boolean).for
 
 async function go() {
   if (busy) return;
-  const total = lineBet * m.lines.length;
-  if (!free) {
-    if (acc.balance() < total) { $('#win').textContent = 'Low'; auto = 0; showMsg(acc.balance() < m.bets[0] * m.lines.length ? 'Out of chips. Claim the daily bonus from your account, or sign in.' : 'Lower your bet.'); return; }
-    acc.setBalance(acc.balance() - total, 'slots:' + m.id);
-  } else { free--; }
   busy = true; $('#spin').disabled = true; clearWins();
   pressFeedback();
-  const next = spin(m);
-  await animate(next);
-  grid = next;
-  const res = evaluate(m, grid, lineBet);
-  if (res.free) free += res.free;
+  let r;
+  try {
+    await acc.ensurePlayer();
+    r = await api('spin', { machine: m.id, lineBet }); // the server picks the symbols and moves the chips
+  } catch (e) {
+    busy = false; $('#spin').disabled = false; auto = 0; paintAuto();
+    $('#win').textContent = '0'; showMsg(e.message);
+    if (e.needLogin) document.querySelector('.acc-plate')?.click();
+    return;
+  }
+  const res = r.result;
+  acc.setKnownBalance(r.balance - res.total);
+  seeds = r.seeds; paintSeeds();
+  await animate(res.grid);
+  grid = res.grid;
+  free = res.freeLeft;
   $('#freebox').hidden = !free; $('#free').textContent = free;
   if (res.total) {
-    acc.setBalance(acc.balance() + res.total, 'slots:' + m.id);
+    acc.setKnownBalance(r.balance);
     showWins(res);
     countUp($('#win'), res.total);
-    const big = res.total >= total * 10; jingle(big); if (big) confetti(2200);
+    const big = res.total >= res.lineBet * m.lines.length * 10; jingle(big); if (big) confetti(2200);
   } else $('#win').textContent = '0';
   busy = false; $('#spin').disabled = false;
-  if (free > 0 || auto > 0) { if (!free) auto--; if (auto === 0 && $('#auto')) { $('#auto').setAttribute('aria-pressed', 'false'); $('#auto').textContent = 'Auto ×10'; } setTimeout(() => (free > 0 || auto > 0) && go(), res.total ? 1400 : 500); }
+  if (free > 0 || auto > 0) { if (!free) auto--; if (auto === 0) paintAuto(); setTimeout(() => (free > 0 || auto > 0) && go(), res.total ? 1400 : 500); }
 }
+function paintAuto() { const a = $('#auto'); if (!a) return; a.setAttribute('aria-pressed', String(!!auto)); a.textContent = auto ? 'Stop auto' : 'Auto ×10'; }
+
+/* ---------- Fair play: seed commitment, client seed, reveal ---------- */
+let seeds = null;
+function paintSeeds() {
+  const box = $('#fair'); if (!box || !seeds) return;
+  box.querySelector('[data-k=commit]').textContent = seeds.commit;
+  box.querySelector('[data-k=nonce]').textContent = seeds.nonce;
+  const cs = box.querySelector('[name=cs]'); if (document.activeElement !== cs) cs.value = seeds.clientSeed;
+  if (!busy) { free = seeds.free && seeds.free.machine === m.id ? seeds.free.left : 0; $('#freebox').hidden = !free; $('#free').textContent = free; }
+}
+async function loadSeeds() { try { await acc.init(); if (!acc.current().user) return; seeds = (await api('seeds')).seeds; paintSeeds(); } catch {} }
+function mountFair() {
+  const box = el('details', { class: 'paytable slot-fair', id: 'fair' }, el('summary', {}, 'Fair play'),
+    el('p', {}, 'Every spin is drawn on the server from a secret seed, your client seed and a spin counter. The secret seed is fixed in advance: you see its SHA-256 fingerprint below. Press "Reveal seed" any time to see it and recompute your past spins on the verification page.'),
+    el('dl', { class: 'g-fair-dl' }, el('dt', {}, 'Server seed fingerprint'), el('dd', {}, el('code', { 'data-k': 'commit' }, 'play a spin to create your seeds')), el('dt', {}, 'Spins with this seed'), el('dd', { 'data-k': 'nonce' }, '0')),
+    el('form', { class: 'acc-form row', onsubmit: async e => { e.preventDefault(); try { seeds = (await api('clientseed', { clientSeed: e.target.cs.value.trim() })).seeds; paintSeeds(); showMsg('Client seed saved.'); } catch (er) { showMsg(er.message); } } },
+      el('label', { for: 'fair-cs' }, 'Your client seed'), el('input', { id: 'fair-cs', name: 'cs', maxlength: '64', pattern: '[A-Za-z0-9_\\-]{1,64}', required: true }), el('button', { class: 'key key--sm', type: 'submit' }, 'Save')),
+    el('div', { class: 'acc-actions' },
+      el('button', { class: 'key key--amber', type: 'button', onclick: async () => { if (busy) return; try { const r = await api('rotate'); seeds = r.seeds; paintSeeds(); showMsg(`Revealed seed for ${r.revealed.spins} spins. Check them on the verification page.`); } catch (er) { showMsg(er.message); } } }, 'Reveal seed & start a new one'),
+      el('a', { class: 'key', href: '/fair/?slots=1', target: '_blank', rel: 'noopener' }, 'Verification page')));
+  $('#app').append(box);
+}
+
 function animate(next) {
   const reels = [...cab.querySelectorAll('.reel')];
   return new Promise(done => {
@@ -111,3 +142,5 @@ const paintSound = () => { sk.setAttribute('aria-pressed', String(soundOn())); s
 sk.addEventListener('click', () => { setSound(!soundOn()); paintSound(); }); paintSound();
 addEventListener('keydown', e => { if (e.code === 'Space' && !e.target.closest('input,button,select,textarea,dialog')) { e.preventDefault(); go(); } });
 build();
+mountFair();
+loadSeeds();

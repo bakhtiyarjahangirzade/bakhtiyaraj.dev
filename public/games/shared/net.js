@@ -60,3 +60,37 @@ export class Room {
   send(payload) { if (this.ch) return this.ch.send({ type: 'broadcast', event: 'msg', payload }); }
   async leave() { try { await this.ch?.untrack(); await this.ch?.unsubscribe(); } catch {} this.ch = null; }
 }
+
+/* ---------- Game server (Supabase Edge Function "play") ---------- */
+// Every card game and casino table runs on the server; the browser only sends moves and receives
+// its own seat's view. ensurePlayer() (account.js) must have produced a session first.
+// Local development: scripts/dev-play.mjs runs the same server core in memory at /__play.
+let devP = null;
+export function devServer() {
+  if (!/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) return Promise.resolve(false);
+  return devP ||= fetch('/__profile').then(r => r.ok && (r.headers.get('content-type') || '').includes('json')).catch(() => false);
+}
+export async function api(op, body = {}) {
+  if (await devServer()) {
+    const r = await fetch('/__play', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ op, ...body }) });
+    const j = await r.json(); if (j.error) throw new Error(j.error); return j;
+  }
+  const sb = await getClient();
+  const { data, error } = await sb.functions.invoke('play', { body: { op, ...body } });
+  if (error) {
+    let msg = 'The game server did not answer. Check your connection and try again.';
+    try { const j = await error.context?.json?.(); if (j?.error) msg = j.error; } catch {}
+    const e = new Error(msg); e.status = error.context?.status; throw e;
+  }
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+// Live updates of this player's seat view for one table (row-level security: only your own row arrives).
+export async function watchTable(tableId, onView, onStatus) {
+  if (await devServer()) { setTimeout(() => onStatus?.('SUBSCRIBED'), 0); return () => {}; }
+  const sb = await getClient();
+  const ch = sb.channel('seat:' + tableId + ':' + Math.random().toString(36).slice(2, 7))
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'seat_views', filter: 'table_id=eq.' + tableId }, p => { if (p.new?.data) onView(p.new.data); })
+    .subscribe(st => onStatus?.(st));
+  return () => { try { sb.removeChannel(ch); } catch {} };
+}

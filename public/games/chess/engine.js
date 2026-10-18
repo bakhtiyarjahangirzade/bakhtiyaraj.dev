@@ -95,3 +95,13 @@ export const engine = {
 
 // Chess has no hidden information.
 engine.viewFor = s => s;
+
+// Browser only: think in a worker. Falls back to the main thread if workers are unavailable.
+let worker = null, wid = 0; const waiting = new Map();
+engine.botAsync = (state, seat, opts) => {
+  if (typeof Worker === 'undefined' || typeof document === 'undefined') return engine.bot(state, seat, opts);
+  try {
+    if (!worker) { worker = new Worker(new URL('./bot-worker.js', import.meta.url), { type: 'module' }); worker.onmessage = e => { waiting.get(e.data.id)?.(e.data.a); waiting.delete(e.data.id); }; }
+    return new Promise(res => { const id = ++wid; waiting.set(id, res); worker.postMessage({ id, state, seat, opts }); });
+  } catch { return engine.bot(state, seat, opts); }
+};

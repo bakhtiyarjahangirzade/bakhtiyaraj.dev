@@ -21,8 +21,10 @@ export function canThrow(s, seat, card) {
   return tableRanks(s).has(card.r);
 }
 
-function refill(s) {
-  const order = [s.attacker, ...attackers(s).filter(i => i !== s.attacker), s.defender];
+function refill(s) { // main attacker first, then the other attackers clockwise, the defender last
+  const order = [s.attacker];
+  for (let k = 1; k < s.n; k++) { const i = (s.attacker + k) % s.n; if (i !== s.defender && !s.out.includes(i)) order.push(i); }
+  order.push(s.defender);
   for (const i of order) while (s.hands[i].length < 6 && s.talon.length) s.hands[i].push(s.talon.pop());
 }
 function settleOuts(s) {
@@ -60,9 +62,11 @@ export const engine = {
     const hands = []; for (let i = 0; i < n; i++) hands.push(d.splice(0, 6));
     const trumpCard = d[0]; // bottom of the talon, drawn last
     const talon = d; // pop() takes from the top
-    let attacker = 0, low = 99;
+    let attacker = -1, low = 99;
     hands.forEach((h, i) => h.forEach(c => { if (c.s === trumpCard.s && rv(c) < low) { low = rv(c); attacker = i; } }));
-    const s = { n, hands, talon, trump: trumpCard.s, trumpCard, attacker, defender: (attacker + 1) % n, table: [], passed: [], taking: false, out: [], durak: null, discarded: 0, limit: 5, bout: 1, msg: 'Lowest trump attacks first', seq: 0 };
+    const noTrump = attacker < 0;
+    if (noTrump) attacker = Math.floor(rand() * n); // nobody holds a trump: a random player starts
+    const s = { n, hands, talon, trump: trumpCard.s, trumpCard, attacker, defender: (attacker + 1) % n, table: [], passed: [], taking: false, out: [], durak: null, discarded: 0, limit: 5, bout: 1, msg: noTrump ? 'No trumps dealt · random first attack' : 'Lowest trump attacks first', seq: 0 };
     return s;
   },
   toAct(s) {

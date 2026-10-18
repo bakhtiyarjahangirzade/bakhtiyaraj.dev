@@ -41,7 +41,7 @@ export function durakUI(root, { say }) {
         h('div', { class: 'dk-table', 'aria-label': 'Table' }, st.table.length ? st.table.map((p, i) => {
           const target = mineSel && !p.d && beats(mineSel, p.a, st.trump);
           return h('div', { class: 'dk-pair' + (target ? ' target' : '') },
-            face(p.a, { button: !!target, onclick: () => { ctx.send({ type: 'defend', id: picked, target: i }); picked = null; } }),
+            face(p.a, { button: !!target, onclick: target ? () => { ctx.send({ type: 'defend', id: picked, target: i }); picked = null; } : null }),
             p.d ? face(p.d, { cls: 'def' }) : null);
         }) : h('p', { class: 'dk-empty' }, st.durak != null ? '' : `${ctx.seats[st.attacker]?.name} attacks ${ctx.seats[st.defender]?.name}`)),
         h('div', { class: 'pile dk-bito' }, h('div', { class: 'stack' }, st.discarded ? cardBack({ class: 'dk-discard' }) : null), h('span', { class: 'label' }, `${st.discarded} beaten`)));
@@ -59,6 +59,7 @@ export function durakUI(root, { say }) {
     let hint = 'Waiting…';
     if (st.durak != null) hint = '';
     else if (st.out.includes(my)) hint = "You're out. Watch the rest play.";
+    else if (iDefend && !st.table.length) hint = `Get ready: ${ctx.seats[st.attacker]?.name} attacks you.`;
     else if (iDefend) hint = st.taking ? 'You are taking. Attackers may add more cards.' : st.table.some(p => !p.d) ? 'Beat each attacking card, or take them all.' : 'All beaten. Waiting for attackers.';
     else if (!st.table.length && my === st.attacker) hint = 'Your attack: play any card.';
     else if (canPass) hint = st.taking ? 'Defender takes. Add matching ranks or press Done.' : allBeaten ? 'All beaten. Throw in a matching rank or press Done.' : 'You can throw in cards of ranks on the table.';
@@ -71,7 +72,7 @@ export function durakUI(root, { say }) {
   return {
     render(state, c) {
       st = state; ctx = c;
-      if (st.seq !== lastSeq) { if (lastSeq >= 0) sfxCard(); lastSeq = st.seq; picked = null; }
+      if (st.seq !== lastSeq) { if (lastSeq >= 0) sfxCard(); lastSeq = st.seq; if (picked != null && !(st.hands[c.mySeat] || []).some(x => x && x.id === picked)) picked = null; }
       paint();
       const res = engine.over(st);
       if (res && !won) { won = true; if (res.loser !== ctx.mySeat) confetti(); } else if (!res) won = false;

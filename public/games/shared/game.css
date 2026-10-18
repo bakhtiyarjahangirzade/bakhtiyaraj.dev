@@ -55,3 +55,24 @@ select.g-input{cursor:pointer}
   .g-serial{display:none}
 }
 .mark-mini{font:600 16px/1 var(--f-mark);letter-spacing:.3em;color:var(--ink-dim)}
+
+/* Compact header while a table is open, so the whole table and your hand fit on one screen. */
+body.game:has(.g-table) .g-head{margin-top:8px;padding:8px 14px}
+body.game:has(.g-table) #app{margin-top:10px}
+body.game:has(.g-table){padding-bottom:12px}
+.g-over.peek{background:transparent;backdrop-filter:none;place-content:end center;pointer-events:none}
+.g-over.peek .bezel{display:none}
+.g-over.peek .g-actions{pointer-events:auto;background:rgba(8,7,6,.85);padding:10px 14px;border-radius:8px}
+.g-fair-dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px}
+.g-fair-dl dt{color:var(--ink-faint)}
+.g-fair-dl dd{margin:0;word-break:break-all}
+.g-fair-dl code{font:12px/1.4 ui-monospace,Menlo,monospace;color:#f2c879}
+.g-fair-note{font-size:14px!important;color:var(--ink-faint)!important}
+@media (max-width:640px){
+  .g-head{margin-top:8px;padding:8px 10px;gap:8px}
+  .g-title{gap:8px}.g-title h1{font-size:18px;letter-spacing:.18em}
+  .g-tools{gap:6px}
+  .g-tools .key--sm{padding:6px 10px;font-size:12px;min-height:34px}
+  .g-tools .snd{font-size:0;gap:0}.g-tools .snd::after{content:'♪';font-size:16px}
+  .g-fair-dl{grid-template-columns:1fr}
+}

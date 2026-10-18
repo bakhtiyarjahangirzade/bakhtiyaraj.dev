@@ -1342,22 +1342,22 @@ var __awaiter = function(thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
-        step(generator.next(value));
+        step2(generator.next(value));
       } catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator["throw"](value));
+        step2(generator["throw"](value));
       } catch (e) {
         reject(e);
       }
     }
-    function step(result) {
+    function step2(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
+    step2((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
 var FunctionsClient = class {
@@ -2910,22 +2910,22 @@ var __awaiter2 = function(thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
-        step(generator.next(value));
+        step2(generator.next(value));
       } catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator["throw"](value));
+        step2(generator["throw"](value));
       } catch (e) {
         reject(e);
       }
     }
-    function step(result) {
+    function step2(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
+    step2((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
 var resolveFetch2 = (customFetch) => {
@@ -2969,22 +2969,22 @@ var __awaiter3 = function(thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
-        step(generator.next(value));
+        step2(generator.next(value));
       } catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator["throw"](value));
+        step2(generator["throw"](value));
       } catch (e) {
         reject(e);
       }
     }
-    function step(result) {
+    function step2(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
+    step2((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
 var _getErrorMessage = (err) => err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
@@ -3060,22 +3060,22 @@ var __awaiter4 = function(thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
-        step(generator.next(value));
+        step2(generator.next(value));
       } catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator["throw"](value));
+        step2(generator["throw"](value));
       } catch (e) {
         reject(e);
       }
     }
-    function step(result) {
+    function step2(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
+    step2((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
 var DEFAULT_SEARCH_OPTIONS = {
@@ -3606,22 +3606,22 @@ var __awaiter5 = function(thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
-        step(generator.next(value));
+        step2(generator.next(value));
       } catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator["throw"](value));
+        step2(generator["throw"](value));
       } catch (e) {
         reject(e);
       }
     }
-    function step(result) {
+    function step2(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
+    step2((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
 var StorageBucketApi = class {
@@ -3823,22 +3823,22 @@ var __awaiter6 = function(thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
-        step(generator.next(value));
+        step2(generator.next(value));
       } catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator["throw"](value));
+        step2(generator["throw"](value));
       } catch (e) {
         reject(e);
       }
     }
-    function step(result) {
+    function step2(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
+    step2((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
 var resolveFetch3 = (customFetch) => {
@@ -3885,22 +3885,22 @@ var __awaiter7 = function(thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
-        step(generator.next(value));
+        step2(generator.next(value));
       } catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator["throw"](value));
+        step2(generator["throw"](value));
       } catch (e) {
         reject(e);
       }
     }
-    function step(result) {
+    function step2(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
+    step2((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
 function stripTrailingSlash(url) {
@@ -6630,22 +6630,22 @@ var __awaiter8 = function(thisArg, _arguments, P, generator) {
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
-        step(generator.next(value));
+        step2(generator.next(value));
       } catch (e) {
         reject(e);
       }
     }
     function rejected(value) {
       try {
-        step(generator["throw"](value));
+        step2(generator["throw"](value));
       } catch (e) {
         reject(e);
       }
     }
-    function step(result) {
+    function step2(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
+    step2((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
 var SupabaseClient = class {
@@ -9119,6 +9119,28 @@ var engine = {
   }
 };
 engine.viewFor = (s) => s;
+var worker = null;
+var wid = 0;
+var waiting = /* @__PURE__ */ new Map();
+engine.botAsync = (state, seat, opts) => {
+  if (typeof Worker === "undefined" || typeof document === "undefined") return engine.bot(state, seat, opts);
+  try {
+    if (!worker) {
+      worker = new Worker(new URL("./bot-worker.js", import.meta.url), { type: "module" });
+      worker.onmessage = (e) => {
+        waiting.get(e.data.id)?.(e.data.a);
+        waiting.delete(e.data.id);
+      };
+    }
+    return new Promise((res) => {
+      const id = ++wid;
+      waiting.set(id, res);
+      worker.postMessage({ id, state, seat, opts });
+    });
+  } catch {
+    return engine.bot(state, seat, opts);
+  }
+};
 
 // public/games/last-one/engine.js
 var COLORS = ["r", "y", "g", "b"];
@@ -9191,11 +9213,16 @@ var engine2 = {
     const hand = s.hands[seat];
     if (a.type === "draw") {
       if (s.drew) throw new Error("You already drew. Play the card or pass.");
+      const before = hand.length;
       drawCards(s, seat, 1);
       s.drew = true;
-      s.exposed = s.exposed === seat ? null : s.exposed;
-      const c = hand[hand.length - 1];
-      if (!c || !playable(s, c)) {
+      s.exposed = null;
+      const c = hand.length > before ? hand[hand.length - 1] : null;
+      if (!c) {
+        s.drew = false;
+        s.turn = next(s);
+        s.msg = "No cards left to draw \xB7 passed";
+      } else if (!playable(s, c)) {
         s.drew = false;
         s.turn = next(s);
         s.msg = "Drew and passed";
@@ -9205,6 +9232,7 @@ var engine2 = {
     if (a.type === "pass") {
       if (!s.drew) throw new Error("Draw a card first.");
       s.drew = false;
+      s.exposed = null;
       s.turn = next(s);
       s.msg = "Passed";
       return s;
@@ -9234,25 +9262,25 @@ var engine2 = {
         s.msg = "Out of cards";
         return s;
       }
-      let step = 1;
+      let step2 = 1;
       if (card.v === "s") {
-        step = 2;
+        step2 = 2;
         s.msg = "Skip";
       } else if (card.v === "r") {
-        if (s.n === 2) step = 2;
+        if (s.n === 2) step2 = 2;
         else s.dir *= -1;
         s.msg = "Reverse";
       } else if (card.v === "+2") {
         drawCards(s, next(s), 2);
-        step = 2;
+        step2 = 2;
         s.msg = "+2 and skip";
       } else if (card.v === "+4") {
         drawCards(s, next(s), 4);
-        step = 2;
+        step2 = 2;
         s.msg = "+4 and skip";
       } else if (card.v === "w") s.msg = "Color: " + COLOR_NAME[a.color];
       else if (!(hand.length === 1 && a.last)) s.msg = "";
-      s.turn = next(s, s.turn, step);
+      s.turn = next(s, s.turn, step2);
       return s;
     }
     throw new Error("Unknown move.");
@@ -9325,7 +9353,12 @@ function canThrow(s, seat, card) {
   return tableRanks(s).has(card.r);
 }
 function refill(s) {
-  const order = [s.attacker, ...attackers(s).filter((i) => i !== s.attacker), s.defender];
+  const order = [s.attacker];
+  for (let k = 1; k < s.n; k++) {
+    const i = (s.attacker + k) % s.n;
+    if (i !== s.defender && !s.out.includes(i)) order.push(i);
+  }
+  order.push(s.defender);
   for (const i of order) while (s.hands[i].length < 6 && s.talon.length) s.hands[i].push(s.talon.pop());
 }
 function settleOuts(s) {
@@ -9373,14 +9406,16 @@ var engine3 = {
     for (let i = 0; i < n; i++) hands.push(d.splice(0, 6));
     const trumpCard = d[0];
     const talon = d;
-    let attacker = 0, low = 99;
+    let attacker = -1, low = 99;
     hands.forEach((h, i) => h.forEach((c) => {
       if (c.s === trumpCard.s && rv(c) < low) {
         low = rv(c);
         attacker = i;
       }
     }));
-    const s = { n, hands, talon, trump: trumpCard.s, trumpCard, attacker, defender: (attacker + 1) % n, table: [], passed: [], taking: false, out: [], durak: null, discarded: 0, limit: 5, bout: 1, msg: "Lowest trump attacks first", seq: 0 };
+    const noTrump = attacker < 0;
+    if (noTrump) attacker = Math.floor(rand() * n);
+    const s = { n, hands, talon, trump: trumpCard.s, trumpCard, attacker, defender: (attacker + 1) % n, table: [], passed: [], taking: false, out: [], durak: null, discarded: 0, limit: 5, bout: 1, msg: noTrump ? "No trumps dealt \xB7 random first attack" : "Lowest trump attacks first", seq: 0 };
     return s;
   },
   toAct(s) {
@@ -9504,23 +9539,34 @@ function deal(s, starter) {
   s.bone = set;
   s.line = [];
   s.passes = 0;
+  s.mustPlay = null;
   if (starter == null) {
-    let best = -1;
+    let best = -1, tileId = null;
     starter = 0;
     s.hands.forEach((h, i) => h.forEach((t) => {
       const v = t.a === t.b ? 100 + t.a : t.a + t.b;
       if (v > best) {
         best = v;
         starter = i;
+        tileId = t.id;
       }
     }));
+    s.mustPlay = tileId;
   }
   s.turn = starter;
+  s.starter = starter;
 }
 function endRound(s, winner, blocked) {
   const totals = s.hands.map((h) => h.reduce((x, t) => x + pipsOf(t), 0));
   if (blocked) {
-    const low = Math.min(...totals);
+    const low = Math.min(...totals), tied = totals.filter((v) => v === low).length;
+    if (tied > 1) {
+      s.last = { winner: -1, pts: 0, blocked, round: s.round };
+      s.msg = "Blocked round tied \xB7 no points";
+      s.round++;
+      deal(s, s.starter);
+      return;
+    }
     winner = totals.indexOf(low);
   }
   const pts = totals.reduce((x, v, i) => i === winner ? x : x + v, 0);
@@ -9553,6 +9599,7 @@ var engine4 = {
     if (a.type === "play") {
       const i = hand.findIndex((t2) => t2.id === a.id);
       if (i < 0) throw new Error("That tile is not in your hand.");
+      if (s.mustPlay != null && !s.line.length && a.id !== s.mustPlay) throw new Error("The opening tile must be your highest double.");
       const t = hand[i], sides = fits(s, t);
       if (!sides.length) throw new Error("That tile doesn't match either end.");
       const side = sides.includes(a.side) ? a.side : sides[0];
@@ -9604,6 +9651,7 @@ var engine4 = {
   },
   bot(s, seat) {
     const hand = s.hands[seat];
+    if (s.mustPlay != null && !s.line.length) return { type: "play", id: s.mustPlay, side: "L" };
     const opts = hand.filter((t2) => fits(s, t2).length).sort((x, y) => (y.a === y.b) * 3 + pipsOf(y) - ((x.a === x.b) * 3 + pipsOf(x)));
     if (!opts.length) return s.bone.length ? { type: "draw" } : { type: "pass" };
     const t = opts[0], sides = fits(s, t);
@@ -10447,6 +10495,7 @@ var Ctx = class {
     this.wallet = [];
     this.reveals = [];
     this.gone = [];
+    this.results = [];
     this.rng = null;
   }
   get g() {
@@ -10580,8 +10629,8 @@ function setDeadline(ctx) {
   if (t.mode !== "online" || t.status !== "playing" || !t.state) return;
   const humans = t.seats.filter(active2);
   if (humans.length < 2) return;
-  const waiting = ctx.g.engine.toAct(t.state).filter((i) => active2(t.seats[i]) && !t.seats[i].away);
-  if (!waiting.length) return;
+  const waiting2 = ctx.g.engine.toAct(t.state).filter((i) => active2(t.seats[i]) && !t.seats[i].away);
+  if (!waiting2.length) return;
   const nextish = ["result", "settle"].includes(t.state.phase);
   t.deadline = ctx.now + (nextish ? NEXT_MS : TURN_MS);
 }
@@ -10760,7 +10809,7 @@ function handle(t, req) {
       fail("Unknown request.");
   }
   finish(ctx);
-  return { table: t, steps: ctx.steps, wallet: ctx.wallet, reveals: ctx.reveals, gone: ctx.gone };
+  return { table: t, steps: ctx.steps, wallet: ctx.wallet, reveals: ctx.reveals, gone: ctx.gone, results: ctx.results };
 }
 function rebuy(ctx, i, balances) {
   const { t } = ctx, c = ctx.g.casino;
@@ -10795,6 +10844,12 @@ function leave(ctx, i) {
 function finish(ctx) {
   const { t } = ctx, g = ctx.g;
   if (t.state && t.status === "playing" && g.engine.over(t.state)) {
+    const res = g.engine.over(t.state);
+    t.seats.forEach((seat, i) => {
+      if (!isHuman(seat) || seat.left || !seat.uid) return;
+      const won = res.winner != null ? res.winner === i : res.loser != null ? res.loser !== i : false;
+      ctx.results.push({ uid: seat.uid, game: t.game, mode: t.mode, won });
+    });
     if (g.casino) t.seats.forEach((seat, i) => {
       if (isHuman(seat) && !seat.cashed && !seat.left) ctx.cashout(i, t.game + ":cash-out");
     });
@@ -10828,7 +10883,7 @@ function create(user, body, now) {
     const n = Math.max(g.min, Math.min(g.max, opts.players || g.min));
     for (let i = 1; i < n; i++) t.seats.push({ uid: null, name: BOT_NAMES[(i - 1) % BOT_NAMES.length], bot: true });
   }
-  return { table: t, steps: [], wallet: [], reveals: [], gone: [] };
+  return { table: t, steps: [], wallet: [], reveals: [], gone: [], results: [] };
 }
 
 // public/games/slots/machines.js
@@ -10959,6 +11014,388 @@ function doSpin(row, machineId, lineBet, balance) {
   };
 }
 
+// public/games/serpent/sim.js
+var TICK = 1 / 30;
+var A = 4096;
+var SEG = 7;
+var SPEED = 165;
+var BOOST = 300;
+var TURN = 3.4;
+var START_LEN = 28;
+var R0 = 1500;
+var RMIN = 220;
+var SHRINK_FROM = 15;
+var SHRINK_TO = 190;
+var MAX_TIME = 240;
+var BOT_NAMES2 = ["Relay", "Diode", "Valve", "Fuse", "Coil", "Quartz", "Ohm", "Volt", "Flux", "Pulse", "Tesla", "Farad"];
+var PI = 3.141592653589793;
+var TAU = 6.283185307179586;
+var TURN_U = Math.round(TURN / TAU * A * TICK);
+function sinPoly(x) {
+  if (x > PI / 2) x = PI - x;
+  else if (x < -PI / 2) x = -PI - x;
+  const x2 = x * x;
+  return x * (1 - x2 / 6 * (1 - x2 / 20 * (1 - x2 / 42 * (1 - x2 / 72 * (1 - x2 / 110 * (1 - x2 / 156 * (1 - x2 / 210)))))));
+}
+var SIN = new Float64Array(A);
+var COS = new Float64Array(A);
+for (let i = 0; i < A; i++) {
+  let r = i / A * TAU;
+  if (r > PI) r -= TAU;
+  SIN[i] = sinPoly(r);
+  let c = r + PI / 2;
+  if (c > PI) c -= TAU;
+  COS[i] = sinPoly(c);
+}
+var wrap = (u) => (u % A + A) % A;
+function atanPoly(t) {
+  const t2 = t * t;
+  return t * (0.999866 + t2 * (-0.3302995 + t2 * (0.180141 + t2 * (-0.085133 + t2 * 0.0208351))));
+}
+function atan2u(y, x) {
+  if (x === 0 && y === 0) return 0;
+  const ax = x < 0 ? -x : x, ay = y < 0 ? -y : y;
+  let r = ax >= ay ? atanPoly(ay / ax) : PI / 2 - atanPoly(ax / ay);
+  if (x < 0) r = PI - r;
+  if (y < 0) r = -r;
+  return wrap(Math.round(r / TAU * A));
+}
+var diffU = (a, b) => {
+  let d = wrap(b - a);
+  if (d > A / 2) d -= A;
+  return d;
+};
+function rng(seed) {
+  let s = seed >>> 0 || 1;
+  const f = () => {
+    s = s + 1831565813 | 0;
+    let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+  return f;
+}
+function zoneR(t) {
+  if (t < SHRINK_FROM) return R0;
+  const k = Math.min(1, (t - SHRINK_FROM) / (SHRINK_TO - SHRINK_FROM));
+  return R0 + (RMIN - R0) * k;
+}
+var radius = (s) => 7 + Math.min(13, s.len / 45);
+function createWorld(opts) {
+  const W = { tick: 0, time: 0, R: R0, food: [], foodSeq: 0, snakes: [], phase: "play", winner: null, rnd: rng(opts.seed), authority: opts.authority !== false, events: [], grid: null };
+  return W;
+}
+function spawnPoint(W, R) {
+  const a = Math.floor(W.rnd() * A), d = (0.15 + 0.55 * W.rnd()) * R;
+  return { x: COS[a] * d, y: SIN[a] * d };
+}
+function addSnake(W, o) {
+  let p = o.at;
+  for (let k = 0; !p && k < 40; k++) {
+    const c = spawnPoint(W, W.R);
+    if (k === 39 || W.snakes.every((t) => {
+      const q = t.pts[0], dx = q.x - c.x, dy = q.y - c.y;
+      return dx * dx + dy * dy > 320 * 320;
+    })) p = c;
+  }
+  const a = wrap(atan2u(-p.y, -p.x) + A / 4 * (W.rnd() < 0.5 ? 1 : -1) + Math.floor((W.rnd() - 0.5) * 600));
+  const pts = [];
+  for (let i = 0; i < START_LEN; i++) pts.push({ x: p.x - COS[a] * i * SEG, y: p.y - SIN[a] * i * SEG });
+  const s = { id: o.id, name: o.name, bot: !!o.bot, skin: o.skin || "ember", hue: o.hue ?? Math.floor(W.rnd() * 360), a, ta: a, pts, len: START_LEN, peak: START_LEN, grow: 0, alive: true, boost: false, score: 0, kills: 0, aiT: 0, drop: 0, persona: o.persona || null, local: o.local !== false };
+  W.snakes.push(s);
+  return s;
+}
+function addFood(W, x, y, v = 1, h) {
+  const f = { id: ++W.foodSeq, x, y, v, h: h ?? Math.floor(W.rnd() * 360) };
+  W.food.push(f);
+  return f;
+}
+function topUpFood(W) {
+  const target = Math.round(220 + W.R / 6);
+  let tries = 0;
+  while (W.food.length < target && tries++ < 60) {
+    const p = spawnPoint(W, W.R / 0.72);
+    addFood(W, p.x, p.y, W.rnd() < 0.12 ? 3 : 1);
+  }
+}
+var CELL = 48;
+function buildGrid(W) {
+  const grid = /* @__PURE__ */ new Map();
+  for (const s of W.snakes) {
+    if (!s.alive) continue;
+    for (let i = 0; i < s.pts.length; i += 2) {
+      const p = s.pts[i];
+      const k = Math.floor(p.x / CELL) * 65536 + Math.floor(p.y / CELL);
+      let c = grid.get(k);
+      if (!c) grid.set(k, c = []);
+      c.push(s, p);
+    }
+  }
+  W.grid = grid;
+}
+function hitAt(W, x, y, r, self2, skipOwn = true) {
+  const cx = Math.floor(x / CELL), cy = Math.floor(y / CELL), reach = Math.ceil((r + 20) / CELL);
+  for (let gx = cx - reach; gx <= cx + reach; gx++) for (let gy = cy - reach; gy <= cy + reach; gy++) {
+    const c = W.grid.get(gx * 65536 + gy);
+    if (!c) continue;
+    for (let j = 0; j < c.length; j += 2) {
+      const o = c[j];
+      if (o === self2 && skipOwn || !o.alive) continue;
+      const p = c[j + 1], rr = r + radius(o) * 0.8;
+      const dx = p.x - x, dy = p.y - y;
+      if (dx * dx + dy * dy < rr * rr) {
+        hitAt.head = p === o.pts[0] || p === o.pts[2];
+        return o;
+      }
+    }
+  }
+  return null;
+}
+function moveSnake(W, s) {
+  const d = diffU(s.a, s.ta);
+  s.a = wrap(s.a + Math.max(-TURN_U, Math.min(TURN_U, d)));
+  const boosting = s.boost && s.len > 20;
+  const step2 = (boosting ? BOOST : SPEED) * TICK;
+  const head2 = s.pts[0], nh = { x: head2.x + COS[s.a] * step2, y: head2.y + SIN[s.a] * step2 };
+  let prev = s.pts[1];
+  if (!prev) {
+    s.pts.unshift(nh);
+  } else {
+    let dx = nh.x - prev.x, dy = nh.y - prev.y, dist = Math.sqrt(dx * dx + dy * dy);
+    while (dist >= SEG) {
+      const k = SEG / dist;
+      prev = { x: prev.x + dx * k, y: prev.y + dy * k };
+      s.pts.splice(1, 0, prev);
+      dx = nh.x - prev.x;
+      dy = nh.y - prev.y;
+      dist = Math.sqrt(dx * dx + dy * dy);
+    }
+    s.pts[0] = nh;
+  }
+  const keep = Math.max(2, Math.round(s.len));
+  if (s.pts.length > keep) s.pts.length = keep;
+  if (s.grow > 0) {
+    const k = Math.min(s.grow, 8 * TICK * 10);
+    s.len += k;
+    s.grow -= k;
+  }
+  if (boosting) {
+    s.len -= 6 * TICK;
+    s.drop += TICK;
+    if (s.drop > 0.25 && W.authority) {
+      s.drop = 0;
+      const t = s.pts[s.pts.length - 1];
+      addFood(W, t.x, t.y, 1, s.hue);
+    }
+  }
+  if (s.len > s.peak) s.peak = s.len;
+}
+function eat(W, s) {
+  const h = s.pts[0], r = radius(s) + 8, r2 = r * r;
+  for (let i = W.food.length - 1; i >= 0; i--) {
+    const f = W.food[i], dx = f.x - h.x, dy = f.y - h.y;
+    if (dx * dx + dy * dy < r2) {
+      s.grow += f.v * 1.4;
+      s.score += f.v;
+      W.food.splice(i, 1);
+      W.events.push({ t: "eat", s, f });
+    }
+  }
+}
+function kill(W, s, by) {
+  if (!s.alive) return;
+  s.alive = false;
+  s.diedAt = W.time;
+  if (by && by !== s) by.kills++;
+  if (W.authority) for (let i = 0; i < s.pts.length; i += 3) {
+    const p = s.pts[i];
+    addFood(W, p.x + (W.rnd() - 0.5) * 12, p.y + (W.rnd() - 0.5) * 12, 2, s.hue);
+  }
+  W.events.push({ t: "dead", s, by });
+}
+var PERSONAS = [
+  { name: "greedy", look: 130, hunt: 0.15, margin: 180, boost: 0.25 },
+  { name: "hunter", look: 150, hunt: 0.9, margin: 200, boost: 0.6 },
+  { name: "careful", look: 190, hunt: 0.05, margin: 260, boost: 0.1 },
+  { name: "bold", look: 120, hunt: 0.5, margin: 160, boost: 0.45 }
+];
+var personaFor = (i) => PERSONAS[i % PERSONAS.length];
+var RAYS2 = [0, -260, 260, -560, 560, -900, 900, -1300, 1300];
+function rayFree(W, s, au, maxD) {
+  const h = s.pts[0], r = radius(s) * 0.9, c = COS[au], sn = SIN[au], R2 = (W.R - 30) * (W.R - 30);
+  for (let d = 16; d <= maxD; d += 16) {
+    const x = h.x + c * d, y = h.y + sn * d;
+    if (x * x + y * y > R2) return d * 0.7;
+    if (hitAt(W, x, y, r, s)) return d;
+  }
+  return maxD;
+}
+function think(W, s) {
+  const P = s.persona || PERSONAS[0];
+  const h = s.pts[0];
+  const futureR = zoneR(W.time + 6), dc2 = h.x * h.x + h.y * h.y;
+  if (dc2 > (futureR - P.margin) * (futureR - P.margin)) {
+    s.ta = atan2u(-h.y, -h.x);
+    s.boost = dc2 > (W.R - 60) * (W.R - 60) && s.len > 40;
+    return;
+  }
+  const ahead = rayFree(W, s, s.a, P.look * 1.6);
+  if (ahead < P.look) {
+    let best2 = s.a, bestD = -1;
+    const bias = W.rnd() < 0.5 ? 1 : -1;
+    for (const off of RAYS2) {
+      const au = wrap(s.a + off * bias);
+      const d = rayFree(W, s, au, P.look * 1.6) - Math.abs(off) / 40;
+      if (d > bestD) {
+        bestD = d;
+        best2 = au;
+      }
+    }
+    s.ta = best2;
+    s.boost = ahead < P.look * 0.45 && s.len > 50 && W.rnd() < P.boost;
+    return;
+  }
+  if (W.rnd() < P.hunt) {
+    let prey = null, pd = 380 * 380;
+    for (const o of W.snakes) {
+      if (o === s || !o.alive || o.len > s.len * 0.9) continue;
+      const oh = o.pts[0], dx = oh.x - h.x, dy = oh.y - h.y, d = dx * dx + dy * dy;
+      if (d < pd) {
+        pd = d;
+        prey = o;
+      }
+    }
+    if (prey) {
+      const oh = prey.pts[0], lead = 70 + Math.sqrt(pd) * 0.35;
+      const tx = oh.x + COS[prey.a] * lead, ty = oh.y + SIN[prey.a] * lead;
+      s.ta = atan2u(ty - h.y, tx - h.x);
+      s.boost = s.len > 70 && pd < 220 * 220 && W.rnd() < P.boost;
+      return;
+    }
+  }
+  let best = null, bv = 0;
+  for (const f of W.food) {
+    const dx = f.x - h.x, dy = f.y - h.y, d2 = dx * dx + dy * dy;
+    if (d2 > 520 * 520) continue;
+    const ang = Math.abs(diffU(s.a, atan2u(dy, dx)));
+    const v = f.v * f.v / (d2 + 900) * (ang > 1400 ? 0.35 : 1);
+    if (v > bv) {
+      bv = v;
+      best = f;
+    }
+  }
+  if (best) {
+    s.ta = atan2u(best.y - h.y, best.x - h.x);
+    s.boost = best.v > 1 && s.len > 80 && W.rnd() < P.boost * 0.5;
+  } else {
+    s.ta = wrap(s.ta + Math.floor((W.rnd() - 0.5) * 400));
+    s.boost = false;
+  }
+}
+function step(W, inputs) {
+  if (W.phase !== "play") return;
+  W.tick++;
+  W.time = W.tick * TICK;
+  if (W.authority) W.R = zoneR(W.time);
+  buildGrid(W);
+  for (const s of W.snakes) {
+    if (!s.alive || !s.local) continue;
+    if (s.bot) {
+      if (!W.authority) continue;
+      if (--s.aiT <= 0) {
+        s.aiT = 3;
+        think(W, s);
+      }
+    } else {
+      const inp = inputs?.get(s.id);
+      if (inp) {
+        s.ta = wrap(inp.ta);
+        s.boost = !!inp.boost;
+      }
+    }
+    moveSnake(W, s);
+    eat(W, s);
+    const h = s.pts[0];
+    if (h.x * h.x + h.y * h.y > W.R * W.R) {
+      s.len -= 40 * TICK;
+      s.hurt = true;
+      if (s.len < 12) kill(W, s, null);
+    } else s.hurt = false;
+  }
+  buildGrid(W);
+  for (const s of W.snakes) {
+    if (!s.alive || !s.local || s.bot && !W.authority) continue;
+    const h = s.pts[0], o = hitAt(W, h.x, h.y, radius(s) * 0.7, s);
+    if (!o) continue;
+    if (hitAt.head && o.alive) {
+      if (s.len > o.len + 1) kill(W, o, s);
+      else kill(W, s, o);
+    } else kill(W, s, o);
+  }
+  if (W.authority) {
+    topUpFood(W);
+    checkEnd(W);
+  }
+}
+function checkEnd(W) {
+  const alive = W.snakes.filter((s) => s.alive);
+  if (W.snakes.length > 1 && alive.length <= 1 || W.time >= MAX_TIME) {
+    const win = alive.sort((a, b) => b.len - a.len)[0] || [...W.snakes].sort((a, b) => (b.diedAt || 0) - (a.diedAt || 0))[0];
+    W.phase = "end";
+    W.winner = win ? win.id : null;
+    W.events.push({ t: "end" });
+  }
+}
+function decodeInputs(str) {
+  return String(str || "").split(";").filter(Boolean).map((x) => {
+    const [t, a, b] = x.split(":");
+    return [+t, +a, b === "1"];
+  });
+}
+var SOLO_BOTS = 9;
+function soloWorld(seed, player) {
+  const W = createWorld({ seed, authority: true });
+  const me = addSnake(W, { id: "me", name: player.name || "You", skin: player.skin, hue: 30 });
+  for (let i = 0; i < SOLO_BOTS; i++) addSnake(W, { id: "bot" + i, name: BOT_NAMES2[i % BOT_NAMES2.length], bot: true, skin: BOT_SKINS[i % BOT_SKINS.length], persona: personaFor(i) });
+  topUpFood(W);
+  return { W, me };
+}
+var BOT_SKINS = ["ember", "mint", "royal", "sunset", "zebra", "candy"];
+function replaySolo(seed, inputStr, maxTicks = Math.ceil(MAX_TIME / TICK) + 2) {
+  const { W, me } = soloWorld(seed, { name: "me" });
+  const changes = decodeInputs(inputStr);
+  let ci = 0;
+  const cur = { ta: me.a, boost: false };
+  const inputs = /* @__PURE__ */ new Map([["me", cur]]);
+  while (W.phase === "play" && me.alive && W.tick < maxTicks) {
+    while (ci < changes.length && changes[ci][0] <= W.tick) {
+      cur.ta = changes[ci][1];
+      cur.boost = changes[ci][2];
+      ci++;
+    }
+    step(W, inputs);
+    W.events.length = 0;
+  }
+  const ranking = [...W.snakes].sort((a, b) => b.alive - a.alive || (b.diedAt ?? 1e9) - (a.diedAt ?? 1e9) || b.len - a.len);
+  return { ticks: W.tick, alive: me.alive, won: W.winner === "me", peak: Math.round(me.peak), length: Math.round(me.len), kills: me.kills, place: me.alive ? 1 : W.snakes.filter((s) => s.alive || (s.diedAt ?? -1) > me.diedAt).length + 1, score: Math.round(me.peak) + me.kills * 50 + (W.winner === "me" ? 500 : 0) };
+}
+
+// public/games/serpent/skins.js
+var SKINS = [
+  { id: "ember", name: "Ember", price: 0, base: 28 },
+  { id: "mint", name: "Mint", price: 0, base: 150 },
+  { id: "royal", name: "Royal", price: 0, base: 255 },
+  { id: "sunset", name: "Sunset", price: 0, stripes: [18, 330] },
+  { id: "zebra", name: "Zebra", price: 0, stripes: [0, 0], mono: true },
+  { id: "candy", name: "Candy", price: 0, stripes: [345, 190] },
+  { id: "neon", name: "Neon Tube", price: 2500, neon: 175 },
+  { id: "tiger", name: "Tiger", price: 3e3, tiger: true },
+  { id: "lava", name: "Lava", price: 4e3, lava: true },
+  { id: "galaxy", name: "Galaxy", price: 6e3, galaxy: true },
+  { id: "rainbow", name: "Rainbow", price: 8e3, rainbow: true },
+  { id: "gold", name: "Solid Gold", price: 12e3, gold: true }
+];
+
 // server/function.mjs
 var db = createClient(Deno.env.get("SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"), { auth: { persistSession: false, autoRefreshToken: false } });
 var CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
@@ -10976,6 +11413,8 @@ async function rpc(p) {
       throw e;
     }
     if (/insufficient chips/.test(error.message)) fail3("Not enough chips in your wallet.");
+    if (/already owned/.test(error.message)) fail3("You already own that skin.");
+    if (/run already used/.test(error.message)) fail3("This run was already scored.");
     if (/game_tables_open_code/.test(error.message)) {
       const e = new Error("code");
       e.code = true;
@@ -11005,7 +11444,7 @@ async function tableOp(op, user, body, tableId) {
     const r = handle(t, { op, user, body, now, balances });
     const views = viewsFor(r.table, r.steps).map((v) => ({ table_id: r.table.id, ...v }));
     try {
-      const res = await rpc({ table: r.table, insert: op === "create", expected_seq: t ? t.seq : null, wallet: r.wallet, views, gone: r.gone, reveals: r.reveals });
+      const res = await rpc({ table: r.table, insert: op === "create", expected_seq: t ? t.seq : null, wallet: r.wallet, views, gone: r.gone, reveals: r.reveals, results: r.results });
       const mine = views.find((v) => v.user_id === user.id);
       return { view: mine ? mine.data : { id: r.table.id, status: "closed", left: true }, balance: res?.balances?.[user.id] };
     } catch (e) {
@@ -11076,6 +11515,43 @@ async function slotsOp(op, user, body, profile) {
   }
   fail3("Too many spins at once. Try again.");
 }
+async function serpentOp(op, user, body, profile) {
+  if (op === "serpent-start") {
+    const seed = crypto.getRandomValues(new Uint32Array(1))[0];
+    const id = crypto.randomUUID();
+    await rpc({ run_new: { id, user_id: user.id, seed } });
+    return { run: id, seed };
+  }
+  if (op === "serpent-submit") {
+    const inputs = String(body.inputs || "");
+    if (inputs.length > 12e4 || !/^[0-9:;]*$/.test(inputs)) fail3("That run log is not valid.");
+    if (typeof body.run !== "string" || !/^[0-9a-f-]{36}$/.test(body.run)) fail3("Unknown run.");
+    const { data: run } = await db.from("serpent_runs").select("id, seed, started_at, finished").eq("id", body.run).eq("user_id", user.id).maybeSingle();
+    if (!run) fail3("Unknown run.");
+    if (run.finished) fail3("This run was already scored.");
+    const res = replaySolo(Number(run.seed), inputs);
+    const elapsed = Date.now() - new Date(run.started_at).getTime();
+    if (res.ticks * TICK * 1e3 > elapsed + 3e3) fail3("That run finished faster than real time, so it was not ranked.");
+    await rpc({ run_finish: { id: run.id, user_id: user.id, score: res.score, peak: res.peak, kills: res.kills, won: res.won, ticks: res.ticks } });
+    const { data: best } = await db.from("serpent_runs").select("score").eq("user_id", user.id).eq("finished", true).order("score", { ascending: false }).limit(1);
+    const top2 = best?.[0]?.score ?? res.score;
+    const { data: above } = await db.from("serpent_runs").select("user_id").eq("finished", true).gt("score", top2).limit(2e3);
+    const rank2 = new Set((above || []).map((r) => r.user_id)).size + 1;
+    return { ...res, best: top2, rank: user.anon ? null : rank2, guest: !!user.anon };
+  }
+  if (op === "skins") {
+    const { data } = await db.from("user_skins").select("skin").eq("user_id", user.id);
+    return { owned: (data || []).map((r) => r.skin) };
+  }
+  if (op === "buy-skin") {
+    const sk = SKINS.find((s) => s.id === body.skin);
+    if (!sk || !sk.price) fail3("That skin is free or does not exist.");
+    if (Number(profile.chips) < sk.price) fail3(`You need ${sk.price.toLocaleString("en-US")} chips for ${sk.name}.`);
+    const res = await rpc({ skin: { user_id: user.id, skin: sk.id, price: sk.price }, wallet: [{ uid: user.id, delta: -sk.price, reason: "skin:" + sk.id }] });
+    return { ok: true, balance: res?.balances?.[user.id] };
+  }
+  fail3("Unknown request.");
+}
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   if (req.method !== "POST") return json({ error: "POST only" }, 405);
@@ -11088,12 +11564,13 @@ Deno.serve(async (req) => {
     if (!profile) return json({ error: "Your account is still being set up. Try again in a moment." }, 409);
     if (profile.banned) return json({ error: "This account is suspended." }, 403);
     const body = await req.json().catch(() => ({}));
-    if (JSON.stringify(body).length > 4e3) return json({ error: "Request too large." }, 413);
     const op = String(body.op || "");
-    const user = { id: u.id, name: profile.username };
+    if (JSON.stringify(body).length > (op === "serpent-submit" ? 13e4 : 4e3)) return json({ error: "Request too large." }, 413);
+    const user = { id: u.id, name: profile.username, anon: !!u.is_anonymous };
     reapStale().catch(() => {
     });
     if (["seeds", "clientseed", "rotate", "spin"].includes(op)) return json(await slotsOp(op, user, body, profile));
+    if (op.startsWith("serpent-") || op === "skins" || op === "buy-skin") return json(await serpentOp(op, user, body, profile));
     if (op === "mine") return json({ tables: await myOpenTables(u.id) });
     const casinoOnline = (game) => GAMES[game]?.casino && u.is_anonymous;
     if (op === "create") {

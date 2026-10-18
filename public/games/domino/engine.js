@@ -15,15 +15,21 @@ function deal(s, starter) {
   const k = s.n === 2 ? 7 : 5;
   s.hands = []; for (let i = 0; i < s.n; i++) s.hands.push(set.splice(0, k));
   s.bone = set; s.line = []; s.passes = 0;
-  if (starter == null) {
-    let best = -1; starter = 0;
-    s.hands.forEach((h, i) => h.forEach(t => { const v = t.a === t.b ? 100 + t.a : t.a + t.b; if (v > best) { best = v; starter = i; } }));
+  s.mustPlay = null;
+  if (starter == null) { // first round: the highest double (or heaviest tile) opens, and must be played first
+    let best = -1, tileId = null; starter = 0;
+    s.hands.forEach((h, i) => h.forEach(t => { const v = t.a === t.b ? 100 + t.a : t.a + t.b; if (v > best) { best = v; starter = i; tileId = t.id; } }));
+    s.mustPlay = tileId;
   }
-  s.turn = starter;
+  s.turn = starter; s.starter = starter;
 }
 function endRound(s, winner, blocked) {
   const totals = s.hands.map(h => h.reduce((x, t) => x + pipsOf(t), 0));
-  if (blocked) { const low = Math.min(...totals); winner = totals.indexOf(low); }
+  if (blocked) {
+    const low = Math.min(...totals), tied = totals.filter(v => v === low).length;
+    if (tied > 1) { s.last = { winner: -1, pts: 0, blocked, round: s.round }; s.msg = 'Blocked round tied · no points'; s.round++; deal(s, s.starter); return; }
+    winner = totals.indexOf(low);
+  }
   const pts = totals.reduce((x, v, i) => i === winner ? x : x + v, 0);
   s.scores[winner] += pts;
   s.last = { winner, pts, blocked, round: s.round };
@@ -45,6 +51,7 @@ export const engine = {
     const canPlay = hand.some(t => fits(s, t).length);
     if (a.type === 'play') {
       const i = hand.findIndex(t => t.id === a.id); if (i < 0) throw new Error('That tile is not in your hand.');
+      if (s.mustPlay != null && !s.line.length && a.id !== s.mustPlay) throw new Error('The opening tile must be your highest double.');
       const t = hand[i], sides = fits(s, t);
       if (!sides.length) throw new Error("That tile doesn't match either end.");
       const side = sides.includes(a.side) ? a.side : sides[0];
@@ -74,6 +81,7 @@ export const engine = {
   botDelay() { return 850; },
   bot(s, seat) {
     const hand = s.hands[seat];
+    if (s.mustPlay != null && !s.line.length) return { type: 'play', id: s.mustPlay, side: 'L' };
     const opts = hand.filter(t => fits(s, t).length).sort((x, y) => ((y.a === y.b) * 3 + pipsOf(y)) - ((x.a === x.b) * 3 + pipsOf(x)));
     if (!opts.length) return s.bone.length ? { type: 'draw' } : { type: 'pass' };
     const t = opts[0], sides = fits(s, t);

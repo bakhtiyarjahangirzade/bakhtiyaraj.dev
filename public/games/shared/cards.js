@@ -78,7 +78,12 @@ export function stdCard(c, o = {}) {
 export function arc(hand, n) {
   const kids = [...hand.children], mid = (kids.length - 1) / 2, spread = Math.min(4, 40 / Math.max(1, kids.length));
   kids.forEach((el, i) => { const d = i - mid; el.style.setProperty('--r', (d * spread).toFixed(2) + 'deg'); el.style.setProperty('--y', (Math.abs(d) ** 1.6 * 1.6).toFixed(1) + 'px'); });
-  hand.style.setProperty('--ov', n > 14 ? '-.62' : n > 10 ? '-.52' : n > 7 ? '-.4' : '-.22');
+  // overlap cards just enough to fit the space; never below a ~22px tappable slice (then the row scrolls)
+  const cw = kids[0]?.offsetWidth || 80, avail = Math.max(120, hand.clientWidth - 32);
+  let ov = n > 1 ? (avail - cw) / ((n - 1) * cw) - 1 : 0;
+  ov = Math.max(Math.min(ov, -.22), Math.max(-.8, 22 / cw - 1));
+  hand.style.setProperty('--ov', ov.toFixed(3));
+  if (!hand._arcRO) { hand._arcRO = new ResizeObserver(() => arc(hand, hand.children.length)); hand._arcRO.observe(hand); }
 }
 
 /* ---------- Dominoes ---------- */

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fair Play · BAKHY</title>
+<meta name="description" content="Re-check every card deal, wheel spin and slot spin on BAKHY from the revealed seeds.">
+<meta name="theme-color" content="#191816">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/rack.css">
+<link rel="stylesheet" href="/games/shared/game.css">
+<link rel="stylesheet" href="fair.css">
+<script type="module" src="verify.js"></script>
+</head>
+<body class="game">
+<header class="g-head chassis">
+  <a class="key key--sm" href="/?category=games">← Rack</a>
+  <div class="g-title"><span class="led green" aria-hidden="true"></span><h1 class="engraved">Fair Play</h1><span class="g-serial">BKY-F01</span></div>
+  <div class="g-tools" id="acc"></div>
+</header>
+<main id="app" class="fair">
+  <section class="chassis fair-intro">
+    <h2>How every result is decided</h2>
+    <p>All shuffles, wheel spins and slot spins happen on the BAKHY game server. Before a hand starts, the server picks a secret <b>server seed</b> and shows you only its SHA-256 fingerprint. Your browser adds its own random <b>client seed</b>. Every random number is <code>HMAC-SHA256(server seed, client seed : counter)</code>.</p>
+    <p>When the hand ends the server seed is revealed. This page re-deals the hand in your browser from the revealed seeds and the move log, and checks that it matches the fingerprint you saw before the hand and the table the server ended with. Nobody, including the site owner, can change a deal after the fingerprint is shown without this check failing.</p>
+  </section>
+  <section class="chassis fair-out" id="out" aria-live="polite"><p class="g-hint">Loading…</p></section>
+  <section class="chassis fair-manual">
+    <h2>Check a slot spin by hand</h2>
+    <form id="manual" class="acc-form">
+      <label for="m-seed">Server seed</label><input id="m-seed" name="seed" required autocomplete="off">
+      <label for="m-cs">Client seed</label><input id="m-cs" name="cs" required autocomplete="off">
+      <label for="m-n">Spin number (nonce)</label><input id="m-n" name="n" type="number" min="0" value="0" required>
+      <label for="m-m">Machine</label><select id="m-m" name="m"></select>
+      <button class="key key--amber" type="submit">Recompute</button>
+    </form>
+    <pre id="manual-out" class="fair-pre"></pre>
+  </section>
+</main>
+</body>
+</html>

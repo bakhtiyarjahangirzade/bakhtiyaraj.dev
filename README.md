@@ -111,3 +111,13 @@ existing backend, login system, or published notes from the placeholder sections
 ## License
 
 [MIT](LICENSE).
+
+## Game server and fair play
+
+Card games, casino tables and slot spins run on a Supabase Edge Function (`play`), not in the browser.
+
+- `server/core.mjs` runs tables: seats, bots, turn timers, chips moving between wallet and table. Each player only ever receives `engine.viewFor(state, seat)`; the full state stays in the `game_tables` table, which clients cannot read.
+- Every card, tile, wheel and reel comes from `HMAC-SHA256(server seed, client seed : counter)` (`public/games/shared/rng.js`). The server publishes the SHA-256 of its seed before a hand and reveals the seed after it; `/fair/` re-deals revealed hands in the browser.
+- Serpent Zone solo runs are deterministic (`public/games/serpent/sim.js`); the server replays the input log before a score reaches the leaderboard.
+- `npm run build:function` bundles `server/function.mjs` with the engines into `supabase/functions/play/index.js`. The deployed function imports that file from GitHub pinned to a commit.
+- `npm run dev:play` runs the same server core in memory for local play and testing (no Supabase needed).

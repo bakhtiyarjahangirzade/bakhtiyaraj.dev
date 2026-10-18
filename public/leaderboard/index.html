@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Leaderboard · BAKHY</title>
+<meta name="description" content="Top players on BAKHY: richest play-chip wallets, best Serpent Zone runs and most wins at the card tables.">
+<meta name="theme-color" content="#191816">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/rack.css">
+<link rel="stylesheet" href="/games/shared/game.css">
+<link rel="stylesheet" href="leaderboard.css">
+<script type="module" src="leaderboard.js"></script>
+</head>
+<body class="game">
+<header class="g-head chassis">
+  <a class="key key--sm" href="/?category=games">← Rack</a>
+  <div class="g-title"><span class="led green" aria-hidden="true"></span><h1 class="engraved">Leaderboard</h1><span class="g-serial">BKY-L01</span></div>
+  <div class="g-tools" id="acc"></div>
+</header>
+<main id="app" class="lb">
+  <div class="bank lb-tabs" role="tablist" id="tabs"></div>
+  <div class="lb-filter" id="filter" hidden>
+    <label class="label" for="game">Game</label>
+    <select id="game" class="g-input"></select>
+  </div>
+  <section class="chassis lb-board" aria-live="polite">
+    <p class="lb-what" id="what"></p>
+    <ol class="lb-list" id="list"><li class="lb-empty">Loading…</li></ol>
+  </section>
+  <p class="lb-note">Only registered players are ranked. Every number here is recorded by the BAKHY game server: wallet balances, Serpent Zone runs that the server replayed from your inputs, and card games the server dealt and decided. Play chips only, no real money.</p>
+</main>
+</body>
+</html>

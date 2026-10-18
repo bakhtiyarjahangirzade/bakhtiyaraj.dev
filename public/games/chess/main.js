@@ -5,7 +5,7 @@ import { chessUI } from './ui.js';
 mountGame({
   id: 'chess', title: 'Chess', serial: 'BKY-G01', tagline: 'Two players · online, same screen or vs bot',
   minPlayers: 2, maxPlayers: 2,
-  modes: ['bot', 'local', 'online'],
+  modes: ['bot', 'local', 'online'], serverModes: ['online'],
   defaults: { level: 2, players: 2 },
   options: [{ key: 'level', label: 'Bot level', modes: ['bot', 'online'], values: [[1, 'Easy'], [2, 'Medium'], [3, 'Hard']] }],
   rules: [

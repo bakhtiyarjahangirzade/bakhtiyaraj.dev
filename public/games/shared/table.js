@@ -1,5 +1,5 @@
 // Shared game shell: header, lobby (bots / same screen / online room), match controller, bots and online sync.
-import { Room, myId, newCode, cleanCode } from './net.js';
+import { myId, cleanCode, api, watchTable } from './net.js';
 import { pressFeedback, soundOn, setSound } from '/assets/sound.js';
 import * as acc from '/assets/account.js';
 import { mountAccount } from '/assets/account-ui.js';
@@ -46,47 +46,52 @@ class Match {
     for (const seat of this.engine.toAct(this.state)) {
       if (!this.seats[seat]?.bot) continue;
       const delay = (this.engine.botDelay?.(this.state, seat) ?? 750) + Math.random() * 450;
-      this.timers.push(setTimeout(() => {
+      this.timers.push(setTimeout(async () => {
         if (this.v !== v) return;
-        const a = this.engine.bot(this.state, seat, this.opts);
+        const a = await (this.engine.botAsync ? this.engine.botAsync(this.state, seat, this.opts) : this.engine.bot(this.state, seat, this.opts));
+        if (this.v !== v || this.stopped) return;
         if (a == null) return;
         try { this.dispatch(seat, a); } catch (e) { console.warn('bot move rejected', e); if (this.v === v) this.timers.push(setTimeout(() => this.v === v && this.scheduleBots(), 1200)); }
       }, delay));
     }
   }
-  stop() { this.timers.forEach(clearTimeout); }
+  stop() { this.stopped = true; this.timers.forEach(clearTimeout); }
 }
 
 /* ---------------- Shell ---------------- */
+// Modes: 'bot' and 'online' run on the game server (cfg.serverModes); 'local' (same screen) and,
+// for chess, 'bot' run in this browser because nothing is hidden and no chips are at stake.
 export function mountGame(cfg) {
   const app = $('#app');
-  const me = { id: myId(), name: store.get('name', 'Player ' + myId().slice(0, 3).toUpperCase()) };
+  const serverModes = cfg.serverModes || ['bot', 'online'];
+  const me = { id: myId(), name: store.get('name', 'Player') };
 
   // Header unit
   const led = h('span', { class: 'led green', 'aria-hidden': 'true' });
   const roomPlate = h('span', { class: 'plate', hidden: true });
-  const soundKey = h('button', { class: 'key key--sm', type: 'button', 'aria-pressed': String(soundOn()), onclick: () => { setSound(!soundOn()); soundKey.setAttribute('aria-pressed', String(soundOn())); soundKey.lastChild.textContent = soundOn() ? 'Sound on' : 'Sound off'; } }, h('span', { class: 'led' }), soundOn() ? 'Sound on' : 'Sound off');
+  const fairKey = h('button', { class: 'key key--sm', type: 'button', hidden: true, onclick: () => showFair() }, h('span', { class: 'led green' }), 'Fair play');
+  const soundKey = h('button', { class: 'key key--sm snd', type: 'button', 'aria-label': 'Sound', 'aria-pressed': String(soundOn()), onclick: () => { setSound(!soundOn()); soundKey.setAttribute('aria-pressed', String(soundOn())); soundKey.lastChild.textContent = soundOn() ? 'Sound on' : 'Sound off'; } }, h('span', { class: 'led' }), soundOn() ? 'Sound on' : 'Sound off');
   const header = h('header', { class: 'g-head chassis' },
     window.BAKHY_DESKTOP ? h('span', { class: 'mark-mini' }, 'BAKHY') : h('a', { class: 'key key--sm', href: '/?category=games' }, '← Rack'),
     h('div', { class: 'g-title' }, led, h('h1', { class: 'engraved' }, cfg.title), h('span', { class: 'g-serial' }, cfg.serial)),
-    h('div', { class: 'g-tools' }, roomPlate, soundKey));
+    h('div', { class: 'g-tools' }, roomPlate, fairKey, soundKey));
   app.before(header);
-  if (!window.BAKHY_DESKTOP) mountAccount(header.querySelector('.g-tools'));
-  acc.init().then(() => { const n = acc.displayName(); if (n && (!store.get('name', null) || store.get('nameFromAcc', false))) { me.name = n; store.set('name', n); store.set('nameFromAcc', true); const i = document.getElementById('pname'); if (i) i.value = n; } });
+  mountAccount(header.querySelector('.g-tools'));
+  acc.onChange(() => { const n = acc.displayName(); if (n) { me.name = n; const i = document.getElementById('pname'); if (i) i.value = n; } });
 
   const toast = h('p', { class: 'g-toast', role: 'status', 'aria-live': 'polite' });
   document.body.append(toast);
   let toastT;
   const say = (msg, ms = 2600) => { toast.textContent = msg; toast.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('show'), ms); };
 
-  let match = null, room = null, ui = null, session = null;
+  let match = null, ui = null, session = null, tableEl = null, overShown = null;
 
   /* ---------- Lobby ---------- */
   function lobby(prefill) {
     teardown();
     app.replaceChildren();
     led.className = 'led green';
-    roomPlate.hidden = true;
+    roomPlate.hidden = true; fairKey.hidden = true;
     const modes = cfg.modes;
     let mode = prefill?.room ? 'online' : store.get(cfg.id + '.mode', modes[0]);
     if (!modes.includes(mode)) mode = modes[0];
@@ -96,212 +101,269 @@ export function mountGame(cfg) {
     const modeKeys = modes.map(m => h('button', { class: 'key', role: 'radio', type: 'button', 'data-mode': m, 'aria-checked': String(m === mode), onclick: () => { mode = m; store.set(cfg.id + '.mode', m); pressFeedback(); paint(); } }, h('span', { class: 'led' }), MODE_LABEL[m]));
     const optBox = h('div', { class: 'g-opts' });
     const body = h('div', { class: 'g-lobby-body' });
+    const nameRow = h('div', { class: 'g-row' }, h('label', { class: 'label', for: 'pname' }, 'Your name'), nameIn);
 
     const screen = h('div', { class: 'bezel' }, h('div', { class: 'vfd g-marquee' },
       h('p', { class: 'g-big' }, cfg.title.toUpperCase()), h('p', { class: 'g-sub' }, cfg.tagline)));
     const panel = h('section', { class: 'g-lobby chassis' + (cfg.felt === 'red' ? ' red' : ''), 'aria-label': 'Game setup' },
       h('span', { class: 'screw tl' }), h('span', { class: 'screw tr' }), h('span', { class: 'screw bl' }), h('span', { class: 'screw br' }),
-      screen,
-      h('div', { class: 'g-row' }, h('label', { class: 'label', for: 'pname' }, 'Your name'), nameIn),
+      screen, nameRow,
       h('div', { class: 'g-row' }, h('span', { class: 'label' }, 'Mode'), h('div', { class: 'bank', role: 'radiogroup', 'aria-label': 'Game mode' }, modeKeys)),
       optBox, body,
-      h('details', { class: 'g-rules' }, h('summary', {}, 'How to play'), h('div', {}, ...cfg.rules.map(r => h('p', {}, r)))));
+      h('details', { class: 'g-rules' }, h('summary', {}, 'How to play'), h('div', {}, ...cfg.rules.map(r => h('p', {}, r)), serverModes.length ? h('p', { class: 'g-fair-note' }, 'Cards are shuffled on the server from a sealed seed. Each player only ever receives their own cards, and after every hand the seed is revealed so you can re-check the deal under Fair play.') : null)));
     app.append(panel);
 
     function paint() {
       modeKeys.forEach(k => k.setAttribute('aria-checked', String(k.dataset.mode === mode)));
+      nameRow.hidden = serverModes.includes(mode); // server tables use your account name
       optBox.replaceChildren(...optionControls(cfg, opts, mode));
       body.replaceChildren();
       if (mode === 'online') {
         const codeIn = h('input', { id: 'pcode', class: 'g-input g-code', maxlength: '4', placeholder: 'CODE', autocomplete: 'off', value: prefill?.room || '', 'aria-label': 'Room code', oninput: e => { e.target.value = cleanCode(e.target.value); } });
         body.append(
           h('div', { class: 'g-actions' },
-            h('button', { class: 'key key--amber', type: 'button', onclick: () => { save(); hostRoom(opts); } }, 'Create room'),
+            h('button', { class: 'key key--amber', type: 'button', onclick: e => { save(); guard(e.currentTarget, () => serverCreate('online', opts)); } }, 'Create room'),
             h('span', { class: 'g-or' }, 'or'),
             codeIn,
-            h('button', { class: 'key', type: 'button', onclick: () => { const c = cleanCode(codeIn.value); if (c.length !== 4) { say('Room codes have 4 characters.'); codeIn.focus(); return; } save(); joinRoom(c); } }, 'Join')),
+            h('button', { class: 'key', type: 'button', onclick: e => { const c = cleanCode(codeIn.value); if (c.length !== 4) { say('Room codes have 4 characters.'); codeIn.focus(); return; } save(); guard(e.currentTarget, () => serverJoin(c)); } }, 'Join')),
           h('p', { class: 'g-hint' }, 'Create a room and send the code or link to your friends. Empty seats can be filled with bots.'));
         if (prefill?.room) setTimeout(() => body.querySelector('.g-actions .key:not(.key--amber)')?.focus(), 50);
       } else {
-        body.append(h('div', { class: 'g-actions' }, h('button', { class: 'key key--amber', type: 'button', onclick: () => { save(); startLocal(mode, opts); } }, mode === 'local' ? 'Start on this screen' : 'Start game')));
+        body.append(h('div', { class: 'g-actions' }, h('button', { class: 'key key--amber', type: 'button', onclick: e => { save(); if (serverModes.includes(mode)) guard(e.currentTarget, () => serverCreate(mode, opts)); else startLocal(mode, opts); } }, mode === 'local' ? 'Start on this screen' : 'Start game')));
       }
+      if (serverModes.includes(mode)) body.append(h('p', { class: 'g-hint' }, cfg.casino ? 'You play with the chips in your wallet (top right). New visitors get 5,000 play chips.' : 'Plays on the BAKHY game server, so your hand stays private.'));
     }
     const save = () => store.set(cfg.id + '.opts', opts);
     paint();
+    const saved = store.get(LOCAL_KEY, null);
+    if (saved?.state && !prefill) {
+      body.prepend(h('div', { class: 'g-actions g-resume' }, h('button', { class: 'key key--amber', type: 'button', onclick: () => resumeLocal(saved) }, 'Resume your game'), h('button', { class: 'key key--sm', type: 'button', onclick: e => { store.set(LOCAL_KEY, null); e.currentTarget.parentElement.remove(); } }, 'Discard')));
+    }
+  }
+  // Disable a button while a server call runs; show errors as a toast.
+  async function guard(btn, fn) {
+    if (btn.disabled) return; btn.disabled = true; led.className = 'led amber blink';
+    try { await fn(); } catch (e) { say(e.message || 'Something went wrong.', 5000); led.className = 'led red'; if (e.needLogin) document.querySelector('.acc-plate')?.click(); }
+    finally { btn.disabled = false; if (led.className.includes('blink')) led.className = 'led green'; }
   }
 
-  /* ---------- Local / bots ---------- */
+  /* ---------- Local play (same screen, chess vs bot) ---------- */
   function startLocal(mode, opts) {
-    const n = mode === 'local' ? (opts.players || cfg.minPlayers) : (opts.players || cfg.minPlayers);
+    const n = opts.players || cfg.minPlayers;
     const seats = [];
     for (let i = 0; i < n; i++) {
-      if (i === 0) seats.push({ id: me.id, name: me.name, bot: false, chips: cfg.casino ? acc.balance() : undefined });
+      if (i === 0) seats.push({ id: me.id, name: me.name, bot: false });
       else if (mode === 'local') seats.push({ id: 'local' + i, name: 'Player ' + (i + 1), bot: false });
       else seats.push({ id: 'bot' + i, name: BOT_NAMES[(i - 1) % BOT_NAMES.length], bot: true });
     }
-    session = { kind: mode, seats, opts, host: true };
+    session = { kind: mode, seats, opts, local: true };
     begin();
+    match = new Match(cfg.engine, seats, opts, st => { drawLocal(st); saveLocal(st); });
+  }
+  // Games played only in this browser are saved so a reload does not throw them away.
+  const LOCAL_KEY = cfg.id + '.saved';
+  function saveLocal(st) { if (cfg.engine.over(st)) store.set(LOCAL_KEY, null); else store.set(LOCAL_KEY, { kind: session.kind, seats: session.seats, opts: session.opts, state: st }); }
+  function resumeLocal(saved) {
+    session = { kind: saved.kind, seats: saved.seats, opts: saved.opts, local: true };
+    begin();
+    match = Object.create(Match.prototype);
+    Object.assign(match, { engine: cfg.engine, seats: saved.seats, opts: saved.opts, v: 0, timers: [], state: saved.state, onChange: st => { drawLocal(st); saveLocal(st); } });
+    match.changed();
   }
   function begin() {
     app.replaceChildren();
-    const tableEl = h('section', { class: 'g-table', 'aria-label': cfg.title + ' table' });
+    tableEl = h('section', { class: 'g-table', 'aria-label': cfg.title + ' table' });
     app.append(tableEl);
     ui = cfg.ui(tableEl, { say, sound: pressFeedback });
-    if (session.host) {
-      match = new Match(cfg.engine, session.seats, session.opts, (st, v) => {
-        draw(st);
-        if (session.kind === 'online') room?.send({ t: 'state', v, state: st, seats: session.seats });
-      });
-    }
   }
-  function mySeat() {
-    if (session.kind === 'local') {
-      const acting = cfg.engine.toAct(session.state ?? match.state).filter(s => !session.seats[s].bot);
-      return acting.length ? acting[0] : (session.lastSeat ?? 0);
-    }
-    return session.seats.findIndex(s => s.id === me.id);
+  function localSeat(st) {
+    if (session.kind !== 'local') return 0;
+    const acting = cfg.engine.toAct(st).filter(s => !session.seats[s].bot);
+    return acting.length ? acting[0] : (session.lastSeat ?? 0);
   }
-  function draw(st) {
-    session.state = st;
-    const seat = mySeat(); session.lastSeat = seat;
-    ui.render(st, {
-      mySeat: seat, seats: session.seats, local: session.kind === 'local', opts: session.opts,
-      send: action => act(seat, action)
-    });
-    if (cfg.casino && seat >= 0 && session.seats[seat] && !session.seats[seat].bot && session.kind !== 'local' && cfg.casino.settled(st) && st.chips[seat] !== session.synced) { session.synced = st.chips[seat]; acc.setBalance(st.chips[seat], cfg.id); }
+  function drawLocal(st) {
+    const seat = localSeat(st); session.lastSeat = seat;
+    ui.render(st, { mySeat: seat, seats: session.seats, local: session.kind === 'local', opts: session.opts, send: a => { try { match.dispatch(seat, a); } catch (e) { say(e.message || 'That move is not allowed.'); } } });
     const res = cfg.engine.over(st);
-    if (res) showOver(res);
-    else if (overShown) { overShown.remove(); overShown = null; }
+    if (res) showOver(res, seat); else hideOver();
   }
-  function act(seat, action) {
-    if (session.host) {
-      try { match.dispatch(seat, action); }
-      catch (e) { say(e.message || 'That move is not allowed.'); }
-    } else room?.send({ t: 'act', id: me.id, action });
+
+  /* ---------- Server tables ---------- */
+  const seed = () => { const a = new Uint8Array(12); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join(''); };
+  async function serverCreate(mode, opts) {
+    await acc.ensurePlayer();
+    const r = await api('create', { game: cfg.id, mode, opts: { ...opts } });
+    let view = r.view;
+    if (mode !== 'online') view = (await api('start', { table: view.id, clientSeed: seed() })).view; // seed chosen after seeing the commitment
+    if (r.balance != null) acc.setKnownBalance(r.balance);
+    await attach(view);
+    if (mode === 'online') history.replaceState(null, '', '?room=' + view.code);
+    if (cfg.casino) acc.refresh();
+  }
+  async function serverJoin(code) {
+    await acc.ensurePlayer();
+    const r = await api('join', { code, game: cfg.id, clientSeed: seed() });
+    history.replaceState(null, '', '?room=' + code);
+    await attach(r.view);
+  }
+  async function attach(view) {
+    teardown(true);
+    session = { server: true, kind: view.mode, tableId: view.id, lastSeq: -1, queue: [], playing: false, view: null };
+    roomPlate.hidden = view.mode !== 'online'; roomPlate.textContent = 'Room ' + view.code;
+    fairKey.hidden = false;
+    const s = session;
+    s.unwatch = await watchTable(view.id, v => s === session && onView(v), st => { if (s !== session) return; if (st === 'SUBSCRIBED') { led.className = 'led green'; resync(); } if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT') led.className = 'led red'; });
+    onView(view);
+  }
+  function resync() { if (session?.server) api('sync', { table: session.tableId }).then(r => r.view && onView(r.view)).catch(() => {}); }
+  function onView(view) {
+    const s = session;
+    if (!s?.server || view.id !== s.tableId) return;
+    if (view.seq < s.lastSeq || (view.seq === s.lastSeq && view.status === s.view?.status && !view.left)) return;
+    const first = s.lastSeq < 0;
+    s.lastSeq = view.seq; s.view = view;
+    if (view.left || view.status === 'closed') { if (!s.leaving) say('The table was closed.', 4000); if (cfg.casino) acc.refresh(); lobby(); return; }
+    if (view.status === 'lobby') { hideOver(); waitingRoom(view); return; }
+    if (!tableEl || s.inLobby) { s.inLobby = false; begin(); }
+    const steps = view.steps || [];
+    if (steps.some(st => st.label === 'buy-in' || st.label === 'cash-out' || st.label === 'deal') || view.status === 'done') acc.refresh();
+    s.queue.push(...steps.map((st, i) => ({ ...st, view, instant: first || st.label === 'sync' || st.actor === view.you || i === 0 })));
+    pump();
+    armDeadline(view);
+  }
+  async function pump() {
+    const s = session; if (s.playing) return; s.playing = true;
+    while (s === session && s.queue.length) {
+      const st = s.queue.shift();
+      if (!st.instant && !matchMedia('(prefers-reduced-motion: reduce)').matches) await new Promise(r => setTimeout(r, Math.min(1100, cfg.engine.botDelay?.(st.state, st.actor) ?? 700) * (s.queue.length > 12 ? .35 : 1)));
+      if (s !== session) return;
+      drawServer(st.state, st.view);
+    }
+    s.playing = false;
+  }
+  function drawServer(st, view) {
+    session.state = st;
+    if (cfg.casino && st.chips) { const b = st.bets?.[view.you]; acc.setTableChips(view.left ? 0 : st.chips[view.you] + (st.phase === 'bet' ? (typeof b === 'number' ? b : Object.values(b || {}).reduce((x, y) => x + y, 0)) : 0)); }
+    ui.render(st, { mySeat: view.you, seats: view.seats, local: false, opts: view.opts, send: a => act(a) });
+    const res = cfg.engine.over(st);
+    if (res) showOver(res, view.you, view); else hideOver();
+  }
+  async function act(action) {
+    const s = session; if (!s?.server) return;
+    if (s.busy) return; s.busy = true;
+    try { const r = await api('act', { table: s.tableId, action, clientSeed: seed() }); if (r.balance != null) acc.setKnownBalance(r.balance); onView(r.view); }
+    catch (e) { say(e.message || 'That move is not allowed.'); if (/not running|does not exist/.test(e.message)) resync(); }
+    finally { s.busy = false; }
+  }
+  function armDeadline(view) {
+    const s = session; clearTimeout(s.deadlineT);
+    if (!view.deadline) return;
+    const wait = Math.max(1500, view.deadline - Date.now() + 700 + Math.random() * 1200);
+    s.deadlineT = setTimeout(async () => { if (s !== session) return; try { const r = await api('tick', { table: s.tableId }); onView(r.view); } catch {} if (s === session && s.view?.deadline) armDeadline({ deadline: Date.now() + 4000 }); }, wait);
+  }
+  async function leaveServer() {
+    const s = session; if (!s?.server) return;
+    s.leaving = true;
+    try { const r = await api('leave', { table: s.tableId }); if (cfg.casino) { if (r.balance != null) acc.setKnownBalance(r.balance); acc.refresh(); } } catch (e) { say(e.message); }
+  }
+  // Pick up a table you were sitting at before a reload.
+  async function resume() {
+    await acc.init();
+    if (!acc.current().user) return false;
+    try {
+      const { tables } = await api('mine');
+      for (const id of tables || []) {
+        const r = await api('sync', { table: id });
+        if (r.view?.game === cfg.id && r.view.status !== 'closed' && !r.view.left) { await attach(r.view); say('Welcome back to your table.'); return true; }
+      }
+    } catch {}
+    return false;
   }
 
   /* ---------- Game over ---------- */
-  let overShown = null;
-  function showOver(res) {
+  function hideOver() { if (overShown) { overShown.remove(); overShown = null; } }
+  function showOver(res, mySeat, view) {
     if (overShown) return;
-    const nm = t => (t || '').replace(/Seat (\d)/g, (m, d) => session.seats[d - 1]?.name || m);
-    res = { ...res, title: res.winner != null && !res.keepTitle && res.winner === mySeat() && session.kind !== 'local' ? 'You win!' : nm(res.title), detail: nm(res.detail) };
+    const seats = view ? view.seats : session.seats;
+    const nm = t => (t || '').replace(/Seat (\d)/g, (m, d) => seats[d - 1]?.name || m);
+    const isLocal = !view && session.kind === 'local';
+    res = { ...res, title: res.winner != null && !res.keepTitle && res.winner === mySeat && !isLocal ? 'You win!' : nm(res.title), detail: nm(res.detail) };
+    const canAgain = !view || view.mode !== 'online' || view.host === view.you;
     const box = h('div', { class: 'g-over', role: 'dialog', 'aria-modal': 'false', 'aria-label': 'Game over' },
       h('div', { class: 'bezel' }, h('div', { class: 'vfd g-over-screen' },
         h('p', { class: 'g-big' }, res.title), h('p', { class: 'g-sub' }, res.detail || ''))),
       h('div', { class: 'g-actions' },
-        session.host ? h('button', { class: 'key key--amber', type: 'button', onclick: () => { box.remove(); overShown = null; match.stop(); match = new Match(cfg.engine, session.seats, session.opts, match.onChange); } }, 'Play again') : h('p', { class: 'g-hint' }, 'Waiting for the host to start a new game.'),
-        h('button', { class: 'key', type: 'button', onclick: () => lobby() }, 'Leave table')));
+        canAgain ? h('button', { class: 'key key--amber', type: 'button', onclick: e => {
+          if (view) guard(e.currentTarget, async () => { const r = await api('again', { table: session.tableId, clientSeed: seed() }); hideOver(); onView(r.view); });
+          else { hideOver(); match.stop(); match = new Match(cfg.engine, session.seats, session.opts, match.onChange); }
+        } }, 'Play again') : h('p', { class: 'g-hint' }, 'Waiting for the host to start a new game.'),
+        h('button', { class: 'key', type: 'button', onclick: () => box.classList.toggle('peek') }, 'View table'),
+        h('button', { class: 'key', type: 'button', onclick: async () => { await leaveServer(); lobby(); } }, 'Leave table')));
     overShown = box; app.append(box);
     sfxWin();
   }
 
-  /* ---------- Online: host ---------- */
-  async function hostRoom(opts) {
-    const code = newCode();
-    session = { kind: 'online', host: true, code, opts, seats: [{ id: me.id, name: me.name, bot: false, chips: cfg.casino ? acc.balance() : undefined }], started: false };
-    await openRoom(code);
-    if (!room) return;
-    history.replaceState(null, '', '?room=' + code);
-    waitingRoom();
-    room.on('presence', peers => {
-      if (session.started) return;
-      // keep seats in join order, drop people who left, add newcomers
-      session.seats = session.seats.filter(s => s.bot || peers.some(p => p.id === s.id));
-      for (const p of peers) if (!session.seats.some(s => s.id === p.id) && session.seats.length < cfg.maxPlayers) session.seats.push({ id: p.id, name: p.name, bot: false, chips: p.chips });
-      for (const s of session.seats) { const p = peers.find(q => q.id === s.id); if (p) { s.name = p.name; if (p.chips != null) s.chips = p.chips; } }
-      broadcastLobby(); waitingRoom();
-    });
-    room.on('leave', id => {
-      if (!session.started) return;
-      const s = session.seats.find(q => q.id === id);
-      if (s && !s.bot) { s.bot = true; s.name += ' (bot)'; say(`${s.name.replace(' (bot)', '')} left. A bot took the seat.`); match?.scheduleBots(); room.send({ t: 'state', v: match.v, state: match.state, seats: session.seats }); draw(match.state); }
-    });
-    room.on('msg', m => {
-      if (m.t === 'hello') { broadcastLobby(); if (session.started) room.send({ t: 'state', v: match.v, state: match.state, seats: session.seats }); }
-      if (m.t === 'act' && session.started) {
-        const seat = session.seats.findIndex(s => s.id === m.id && !s.bot);
-        if (seat < 0) return;
-        try { match.dispatch(seat, m.action); } catch (e) { room.send({ t: 'error', to: m.id, msg: e.message || 'That move is not allowed.' }); }
-      }
-    });
-  }
-  function broadcastLobby() { room?.send({ t: 'lobby', seats: session.seats, opts: session.opts, started: session.started, host: me.id, max: cfg.maxPlayers }); }
-
-  /* ---------- Online: guest ---------- */
-  async function joinRoom(code) {
-    session = { kind: 'online', host: false, code, seats: [], started: false };
-    await openRoom(code);
-    if (!room) return;
-    history.replaceState(null, '', '?room=' + code);
-    let heard = false;
-    app.replaceChildren(h('section', { class: 'g-lobby chassis' }, h('p', { class: 'g-hint' }, `Looking for room ${code}…`)));
-    room.on('msg', m => {
-      if (m.t === 'lobby') {
-        heard = true; session.hostId = m.host; session.seats = m.seats; session.opts = m.opts;
-        if (!m.seats.some(s => s.id === me.id) && !m.started) { app.replaceChildren(h('section', { class: 'g-lobby chassis' }, h('p', { class: 'g-hint' }, 'This room is full.'), h('button', { class: 'key', onclick: () => lobby() }, 'Back'))); return; }
-        if (!session.started) waitingRoom();
-      }
-      if (m.t === 'state') {
-        heard = true; session.seats = m.seats;
-        if (!session.started) { session.started = true; begin(); }
-        if (session.seats.findIndex(s => s.id === me.id) < 0) say('You are watching this game.');
-        draw(m.state);
-      }
-      if (m.t === 'restart') { overShown?.remove(); overShown = null; }
-      if (m.t === 'error' && m.to === me.id) say(m.msg);
-    });
-    room.on('leave', id => { if (id === session.hostId) { say('The host left the room.', 6000); led.className = 'led red'; } });
-    room.send({ t: 'hello' });
-    setTimeout(() => { if (!heard) room?.send({ t: 'hello' }); }, 2000);
-    setTimeout(() => { if (!heard) { app.replaceChildren(h('section', { class: 'g-lobby chassis' }, h('p', { class: 'g-hint' }, `No host found for room ${code}. Check the code, or ask your friend to keep the room open.`), h('button', { class: 'key', onclick: () => lobby() }, 'Back'))); } }, 7000);
-  }
-
-  async function openRoom(code) {
-    led.className = 'led amber blink';
-    roomPlate.hidden = false; roomPlate.textContent = 'Room ' + code;
-    if (cfg.casino) me.chips = acc.balance();
-    room = new Room(cfg.id, code, me);
-    room.on('status', st => { if (st === 'SUBSCRIBED') led.className = 'led green'; if (st === 'CLOSED' || st === 'CHANNEL_ERROR') led.className = 'led red'; });
-    try { await room.connect(); }
-    catch (e) { say(e.message, 5000); room = null; led.className = 'led red'; lobby(); }
-  }
-
-  function waitingRoom() {
-    const isHost = session.host;
-    const link = location.origin + location.pathname + '?room=' + session.code;
+  /* ---------- Waiting room (online lobby) ---------- */
+  function waitingRoom(view) {
+    session.inLobby = true; tableEl = null;
+    const isHost = view.host === view.you;
+    const link = location.origin + location.pathname + '?room=' + view.code;
+    const g = { min: cfg.minPlayers, max: cfg.maxPlayers };
+    const call = (op, body = {}) => e => guard(e.currentTarget, async () => { const r = await api(op, { table: view.id, ...body, clientSeed: seed() }); onView(r.view); });
     const seats = [];
-    for (let i = 0; i < cfg.maxPlayers; i++) {
-      const s = session.seats[i];
+    for (let i = 0; i < g.max; i++) {
+      const s = view.seats[i];
       seats.push(h('li', { class: 'g-seat' + (s ? '' : ' empty') },
         h('span', { class: s ? (s.bot ? 'led amber' : 'led green') : 'led' }),
-        h('span', { class: 'g-seat-name' }, s ? s.name + (s.id === me.id ? ' (you)' : '') : 'Empty seat'),
-        isHost && s?.bot ? h('button', { class: 'key key--sm', type: 'button', onclick: () => { session.seats.splice(i, 1); broadcastLobby(); waitingRoom(); } }, 'Remove') : null,
-        isHost && !s && i === session.seats.length ? h('button', { class: 'key key--sm', type: 'button', onclick: () => { session.seats.push({ id: 'bot' + i + Date.now(), name: BOT_NAMES[i % BOT_NAMES.length], bot: true }); broadcastLobby(); waitingRoom(); } }, '+ Bot') : null));
+        h('span', { class: 'g-seat-name' }, s ? s.name + (i === view.you ? ' (you)' : '') + (i === view.host ? ' · host' : '') : 'Empty seat'),
+        isHost && s?.bot ? h('button', { class: 'key key--sm', type: 'button', onclick: call('unbot', { seat: i }) }, 'Remove') : null,
+        isHost && !s && i === view.seats.length ? h('button', { class: 'key key--sm', type: 'button', onclick: call('bot') }, '+ Bot') : null));
     }
-    const enough = session.seats.length >= cfg.minPlayers;
+    const enough = view.seats.length >= g.min;
+    const opts = { ...view.opts };
     app.replaceChildren(h('section', { class: 'g-lobby chassis', 'aria-label': 'Room' },
       h('span', { class: 'screw tl' }), h('span', { class: 'screw tr' }), h('span', { class: 'screw bl' }), h('span', { class: 'screw br' }),
-      h('div', { class: 'bezel' }, h('div', { class: 'vfd g-marquee' }, h('p', { class: 'label g-room-l' }, 'Room code'), h('p', { class: 'g-code-big' }, session.code))),
+      h('div', { class: 'bezel' }, h('div', { class: 'vfd g-marquee' }, h('p', { class: 'label g-room-l' }, 'Room code'), h('p', { class: 'g-code-big' }, view.code))),
       h('div', { class: 'g-actions' },
         h('button', { class: 'key', type: 'button', onclick: async () => { try { await navigator.clipboard.writeText(link); say('Invite link copied.'); } catch { say(link, 6000); } } }, 'Copy invite link'),
         h('span', { class: 'g-hint g-link' }, link)),
       h('ol', { class: 'g-seats' }, seats),
-      isHost ? h('div', { class: 'g-opts' }, ...optionControls(cfg, session.opts, 'online', () => broadcastLobby())) : null,
+      isHost ? h('div', { class: 'g-opts' }, ...optionControls(cfg, opts, 'online', () => api('opts', { table: view.id, opts }).then(r => onView(r.view)).catch(e => say(e.message)))) : null,
       h('div', { class: 'g-actions' },
-        isHost ? h('button', { class: 'key key--amber', type: 'button', disabled: !enough, onclick: () => { session.started = true; broadcastLobby(); begin(); } }, enough ? 'Start game' : `Need ${cfg.minPlayers - session.seats.length} more`) : h('p', { class: 'g-hint' }, 'Waiting for the host to start…'),
-        h('button', { class: 'key', type: 'button', onclick: () => lobby() }, 'Leave room'))));
+        isHost ? h('button', { class: 'key key--amber', type: 'button', disabled: !enough, onclick: call('start') }, enough ? 'Start game' : `Need ${g.min - view.seats.length} more`) : h('p', { class: 'g-hint' }, 'Waiting for the host to start…'),
+        h('button', { class: 'key', type: 'button', onclick: async () => { await leaveServer(); lobby(); } }, 'Leave room'))));
   }
 
-  function teardown() {
-    match?.stop(); match = null; overShown?.remove(); overShown = null;
-    if (room) { room.leave(); room = null; }
-    if (location.search) history.replaceState(null, '', location.pathname);
+  /* ---------- Fair play panel ---------- */
+  async function showFair() {
+    const v = session?.view; if (!v?.fair) return;
+    const f = v.fair;
+    const dlg = h('dialog', { class: 'acc-dlg g-fair' },
+      h('button', { class: 'acc-x', type: 'button', 'aria-label': 'Close', onclick: () => dlg.close() }, '×'),
+      h('p', { class: 'acc-title' }, 'Fair play'),
+      h('p', { class: 'acc-note' }, 'Before each hand the server commits to a secret seed by publishing its SHA-256 fingerprint. Your browser adds its own random seed with your moves. Every card comes from those two seeds, and when the hand ends the secret seed is revealed so anyone can re-deal it and compare.'),
+      h('dl', { class: 'g-fair-dl' },
+        h('dt', {}, 'This hand · fingerprint'), h('dd', {}, h('code', {}, f.commit || '—')),
+        h('dt', {}, 'Player seeds in this hand'), h('dd', {}, h('code', {}, f.clientSeed || '—')),
+        h('dt', {}, 'Next hand · fingerprint'), h('dd', {}, h('code', {}, f.next || '—')),
+        h('dt', {}, 'Hands revealed'), h('dd', {}, String(f.lastReveal || 0))),
+      h('div', { class: 'acc-actions' }, h('a', { class: 'key key--amber', href: '/fair/?table=' + v.id, target: '_blank', rel: 'noopener' }, 'Verify revealed hands')));
+    document.body.append(dlg); dlg.addEventListener('close', () => dlg.remove()); dlg.showModal();
   }
 
-  addEventListener('pagehide', () => room?.leave());
+  function teardown(keepServer) {
+    match?.stop(); match = null; hideOver();
+    if (session?.server) { clearTimeout(session.deadlineT); session.unwatch?.(); }
+    if (!keepServer) session = null;
+    tableEl = null; acc.setTableChips(0);
+    if (!keepServer && location.search) history.replaceState(null, '', location.pathname);
+  }
+
+  addEventListener('pagehide', () => {});
   const r = cleanCode(new URL(location.href).searchParams.get('room'));
   lobby(r.length === 4 ? { room: r } : null);
+  if (r.length === 4) { acc.init().then(() => { if (acc.current().user) serverJoin(r).catch(e => say(e.message, 5000)); }); }
+  else resume();
 }
 
 const MODE_LABEL = { bot: 'Vs bots', local: 'Same screen', online: 'Online room' };

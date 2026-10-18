@@ -16,7 +16,7 @@
 <header class="g-head chassis">
   <a class="key key--sm" href="/?category=games">← Rack</a>
   <div class="g-title"><span class="led green" id="led" aria-hidden="true"></span><h1 class="engraved">Serpent Zone</h1><span class="g-serial">BKY-G05</span></div>
-  <div class="g-tools" id="tools"><span class="plate" id="roomplate" hidden></span></div>
+  <div class="g-tools" id="tools"><span class="plate" id="roomplate" hidden></span><button class="key key--sm" id="fs" type="button" hidden>Full screen</button></div>
 </header>
 <main id="app">
   <div class="sz-stage" id="stage">
@@ -27,18 +27,33 @@
       <div class="sz-len"><span>Length</span><b id="lenTxt">0</b></div>
       <ol class="sz-board" id="board"></ol>
     </div>
+    <div class="sz-touch" id="touch" hidden aria-hidden="true">
+      <div class="sz-stick" id="stick"><span class="sz-knob" id="knob"></span></div>
+      <button class="sz-boost" id="boostBtn" type="button">BOOST</button>
+    </div>
     <div class="sz-menu" id="menu">
       <h2>Serpent Zone</h2>
       <p class="sz-sub">Eat glowing orbs to grow. Hit another serpent's body and you're out. The arena keeps shrinking — be the last one coiled.</p>
-      <label class="label" for="nm">Your name</label>
-      <input id="nm" class="g-input" maxlength="14" autocomplete="nickname">
-      <div class="sz-btns">
-        <button class="key key--amber" id="solo" type="button">Play vs bots</button>
-        <button class="key" id="create" type="button">Create online room</button>
+      <div class="sz-menu-grid">
+        <div class="sz-col">
+          <label class="label" for="nm">Your name</label>
+          <input id="nm" class="g-input" maxlength="14" autocomplete="nickname">
+          <div class="sz-btns">
+            <button class="key key--amber" id="solo" type="button">Play vs bots</button>
+            <button class="key" id="create" type="button">Create online room</button>
+          </div>
+          <div class="sz-join"><input id="code" class="g-input g-code" maxlength="4" placeholder="CODE" aria-label="Room code"><button class="key" id="join" type="button">Join</button></div>
+          <div class="sz-lobby" id="lobby" hidden></div>
+          <p class="sz-help" id="help">Steer with the mouse. Hold the mouse button or Space to boost (it costs length). Arrow keys also steer.</p>
+        </div>
+        <div class="sz-col">
+          <p class="label">Skin</p>
+          <div class="sz-skins" id="skins" role="radiogroup" aria-label="Skin"></div>
+          <p class="sz-help" id="skinMsg"></p>
+          <p class="label">Top serpents <a class="sz-lb-link" href="/leaderboard/?tab=serpent">full leaderboard</a></p>
+          <ol class="sz-top" id="top"><li class="sz-help">Loading…</li></ol>
+        </div>
       </div>
-      <div class="sz-join"><input id="code" class="g-input g-code" maxlength="4" placeholder="CODE" aria-label="Room code"><button class="key" id="join" type="button">Join</button></div>
-      <div class="sz-lobby" id="lobby" hidden></div>
-      <p class="sz-help">Steer with the mouse or touch. Hold the mouse button, Space or a second finger to boost (it costs length). Arrow keys also steer.</p>
     </div>
     <div class="sz-over" id="over" hidden></div>
   </div>

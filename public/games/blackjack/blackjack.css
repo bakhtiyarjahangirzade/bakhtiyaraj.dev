@@ -49,7 +49,7 @@ button.chip:hover,button.chip:focus-visible{transform:translateY(-4px)}
 @media (max-width:900px){
   .bj-felt{min-height:560px;border-radius:24px}.bj-table,.bj-table::before{border-radius:24px}
   .bj-arc{display:none}
-  .bj-spot{width:120px}
+  .bj-spot{width:104px}
   .bj-hands .bj-hand{--cw:38px}
   .bj-who .nameplate{max-width:110px;overflow:hidden}
 }

@@ -19,10 +19,11 @@ export function mountAccount(host) {
   document.body.append(dlg);
   let lastBal = null;
   acc.onChange(s => {
-    const b = acc.balance();
+    const b = acc.balance() + acc.onTable();
     if (lastBal != null && b !== lastBal) { bal.classList.remove('up', 'down'); void bal.offsetWidth; bal.classList.add(b > lastBal ? 'up' : 'down'); countTo(bal, lastBal, b); } else bal.textContent = fmt(b);
     lastBal = b;
-    who.textContent = s.profile ? s.profile.username + (s.profile.role === 'admin' ? ' · admin' : '') : 'Guest · sign in';
+    who.textContent = s.profile ? (acc.onTable() ? `${fmt(acc.onTable())} on table` : acc.isGuest() ? 'Guest · register' : s.profile.username + (s.profile.role === 'admin' ? ' · admin' : '')) : 'Sign in';
+    bal.hidden = !s.profile; coin.hidden = !s.profile;
     if (dlg.open) render();
   });
   acc.init();
@@ -35,12 +36,13 @@ export function mountAccount(host) {
     dlg.replaceChildren();
     const add = (...k) => dlg.append(...k.filter(x => x != null && x !== false));
     const close = el('button', { class: 'acc-x', type: 'button', 'aria-label': 'Close', onclick: () => dlg.close() }, '×');
-    if (s.profile) {
-      const today = new Date().toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10);
+    if (s.profile && !acc.isGuest()) {
       add(close, el('div', { class: 'acc-head' }, el('span', { class: 'acc-coin big' }, 'B'), el('div', {}, el('p', { class: 'acc-name' }, s.profile.username), el('p', { class: 'acc-chips' }, fmt(s.profile.chips) + ' chips'))),
         el('p', { class: 'acc-note' }, 'Play chips only — they have no money value and cannot be bought or cashed out.'),
         el('div', { class: 'acc-actions' },
           el('button', { class: 'key key--amber', type: 'button', disabled: s.profile.last_bonus === today, onclick: async () => { try { await acc.claimBonus(); msg = '+1,000 chips added.'; } catch (e) { msg = e.message; } render(); } }, s.profile.last_bonus === today ? 'Bonus claimed today' : 'Claim daily +1,000'),
+          el('a', { class: 'key', href: '/leaderboard/' }, 'Leaderboard'),
           s.profile.role === 'admin' ? el('a', { class: 'key', href: '/admin/' }, 'Admin panel') : null,
           el('button', { class: 'key', type: 'button', onclick: async () => { await acc.signOut(); msg = ''; render(); } }, 'Sign out')),
         el('form', { class: 'acc-form row', onsubmit: async e => { e.preventDefault(); try { await acc.rename(e.target.uname.value.trim()); msg = 'Name updated.'; } catch (er) { msg = er.message; } render(); } },
@@ -54,7 +56,7 @@ export function mountAccount(host) {
       e.preventDefault(); const f = e.target; const submit = f.querySelector('[type=submit]'); submit.disabled = true;
       try {
         if (tab === 'in') { await acc.signIn(f.email.value.trim(), f.pw.value); msg = ''; }
-        else if (tab === 'up') { const r = await acc.signUp(f.email.value.trim(), f.pw.value, f.uname.value.trim()); msg = r.needsConfirm ? 'Check your email and open the confirmation link, then sign in.' : 'Welcome! 5,000 chips are on the house.'; if (r.needsConfirm) tab = 'in'; }
+        else if (tab === 'up') { const r = await acc.signUp(f.email.value.trim(), f.pw.value, f.uname.value.trim()); msg = r.upgraded ? 'Check your email and open the confirmation link. Your guest chips stay with this account.' : r.needsConfirm ? 'Check your email and open the confirmation link, then sign in.' : 'Welcome! 5,000 chips are on the house.'; if (r.needsConfirm && !r.upgraded) tab = 'in'; }
         else { await acc.resetPassword(f.email.value.trim()); msg = 'If that email has an account, a reset link is on its way.'; tab = 'in'; }
       } catch (er) { msg = er.message; }
       render();
@@ -64,7 +66,11 @@ export function mountAccount(host) {
       tab !== 'reset' ? [el('label', { for: 'acc-p' }, 'Password'), el('input', { id: 'acc-p', name: 'pw', type: 'password', autocomplete: tab === 'up' ? 'new-password' : 'current-password', minlength: '6', required: true })] : null,
       el('button', { class: 'key key--amber', type: 'submit' }, tab === 'in' ? 'Sign in' : tab === 'up' ? 'Create account' : 'Send reset link'),
       tab === 'in' ? el('button', { class: 'acc-link', type: 'button', onclick: () => { tab = 'reset'; msg = ''; render(); } }, 'Forgot password?') : null);
-    add(close, el('p', { class: 'acc-title' }, 'Your BAKHY account'), el('p', { class: 'acc-note' }, `Keep your chips across games and devices. Guests play with ${fmt(acc.balance())} chips saved in this browser. Play chips only, no real money.`), tabs, form, msg ? el('p', { class: 'acc-msg', role: 'status' }, msg) : null);
+    const guest = s.profile && acc.isGuest();
+    add(close, el('p', { class: 'acc-title' }, guest ? 'Playing as a guest' : 'Your BAKHY account'),
+      el('p', { class: 'acc-note' }, guest ? `You have ${fmt(acc.balance())} play chips on this browser's guest account. Register to keep them on any device — your chips come with you.` : 'Sign in to keep your chips across games and devices, or just open a game: you get a guest account with 5,000 play chips. Play chips only, no real money.'),
+      guest ? el('div', { class: 'acc-actions' }, el('button', { class: 'key key--amber', type: 'button', disabled: s.profile.last_bonus === today, onclick: async () => { try { await acc.claimBonus(); msg = '+1,000 chips added.'; } catch (e) { msg = e.message; } render(); } }, s.profile.last_bonus === today ? 'Bonus claimed today' : 'Claim daily +1,000'), el('a', { class: 'key', href: '/leaderboard/' }, 'Leaderboard')) : null,
+      tabs, form, msg ? el('p', { class: 'acc-msg', role: 'status' }, msg) : null);
     setTimeout(() => dlg.querySelector('input')?.focus(), 30);
   }
 }

@@ -23,7 +23,7 @@ export function pokerUI(root, { say }) {
         h('span', { class: 'pk-blinds' }, `Blinds ${st.sb}/${st.bb} · Hand ${st.handNo}`));
       fill(seatsEl, ...Array.from({ length: n }, (_, i) => {
         const rel = (i - my + n) % n, ang = (90 + rel * 360 / n) * Math.PI / 180;
-        const x = 50 + 41 * Math.cos(ang), y = 50 + 37 * Math.sin(ang);
+        const xr = matchMedia('(max-width: 600px)').matches ? 36 : 41; const x = 50 + xr * Math.cos(ang), y = 50 + 37 * Math.sin(ang);
         const busted = st.chips[i] <= 0 && !st.inHand[i];
         const showCards = i === ctx.mySeat || (over && st.result?.shown && st.inHand[i] && !st.folded[i]);
         const av = h('span', { class: 'avatar' + (st.turn === i ? '' : '') }); av.style.backgroundImage = `url(${avatarUrl(ctx.seats[i])})`;

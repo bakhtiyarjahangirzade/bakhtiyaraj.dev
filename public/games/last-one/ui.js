@@ -10,6 +10,7 @@ export function lastOneUI(root, { say }) {
   const T = tableShell(root, { felt: 'red' });
   const picker = h('div', { class: 'lo-picker', hidden: true, role: 'dialog', 'aria-label': 'Choose a color' });
   root.append(picker);
+  picker.addEventListener('keydown', e => { if (e.key === 'Escape') { picker.hidden = true; e.stopPropagation(); } if (e.key === 'Tab') { const f = [...picker.querySelectorAll('button')]; const i = f.indexOf(document.activeElement); if (e.shiftKey && i <= 0) { f.at(-1).focus(); e.preventDefault(); } else if (!e.shiftKey && i === f.length - 1) { f[0].focus(); e.preventDefault(); } } });
 
   function face(c, o = {}) {
     const col = c.c === 'w' ? (c.wild || 'w') : c.c;

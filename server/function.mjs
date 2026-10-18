@@ -4,6 +4,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { handle, viewsFor, UserError } from './core.mjs';
 import { GAMES } from '../public/games/shared/fair.js';
 import { doSpin, freshSeeds, cleanClientSeed } from './slots.mjs';
+import { replaySolo, TICK } from '../public/games/serpent/sim.js';
+import { SKINS } from '../public/games/serpent/skins.js';
 
 const db = createClient(Deno.env.get('SUPABASE_URL'), Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false, autoRefreshToken: false } });
 const CORS = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
@@ -16,6 +18,8 @@ async function rpc(p) {
   if (error) {
     if (/conflict/.test(error.message)) { const e = new Error('conflict'); e.conflict = true; throw e; }
     if (/insufficient chips/.test(error.message)) fail('Not enough chips in your wallet.');
+    if (/already owned/.test(error.message)) fail('You already own that skin.');
+    if (/run already used/.test(error.message)) fail('This run was already scored.');
     if (/game_tables_open_code/.test(error.message)) { const e = new Error('code'); e.code = true; throw e; }
     throw new Error(error.message);
   }
@@ -42,7 +46,7 @@ async function tableOp(op, user, body, tableId) {
     const r = handle(t, { op, user, body, now, balances });
     const views = viewsFor(r.table, r.steps).map(v => ({ table_id: r.table.id, ...v }));
     try {
-      const res = await rpc({ table: r.table, insert: op === 'create', expected_seq: t ? t.seq : null, wallet: r.wallet, views, gone: r.gone, reveals: r.reveals });
+      const res = await rpc({ table: r.table, insert: op === 'create', expected_seq: t ? t.seq : null, wallet: r.wallet, views, gone: r.gone, reveals: r.reveals, results: r.results });
       const mine = views.find(v => v.user_id === user.id);
       return { view: mine ? mine.data : { id: r.table.id, status: 'closed', left: true }, balance: res?.balances?.[user.id] };
     } catch (e) {
@@ -100,6 +104,45 @@ async function slotsOp(op, user, body, profile) {
   fail('Too many spins at once. Try again.');
 }
 
+/* ---------------- Serpent Zone: ranked solo runs and skins ---------------- */
+async function serpentOp(op, user, body, profile) {
+  if (op === 'serpent-start') {
+    const seed = crypto.getRandomValues(new Uint32Array(1))[0];
+    const id = crypto.randomUUID();
+    await rpc({ run_new: { id, user_id: user.id, seed } });
+    return { run: id, seed };
+  }
+  if (op === 'serpent-submit') {
+    const inputs = String(body.inputs || '');
+    if (inputs.length > 120000 || !/^[0-9:;]*$/.test(inputs)) fail('That run log is not valid.');
+    if (typeof body.run !== 'string' || !/^[0-9a-f-]{36}$/.test(body.run)) fail('Unknown run.');
+    const { data: run } = await db.from('serpent_runs').select('id, seed, started_at, finished').eq('id', body.run).eq('user_id', user.id).maybeSingle();
+    if (!run) fail('Unknown run.');
+    if (run.finished) fail('This run was already scored.');
+    const res = replaySolo(Number(run.seed), inputs);
+    const elapsed = Date.now() - new Date(run.started_at).getTime();
+    if (res.ticks * TICK * 1000 > elapsed + 3000) fail('That run finished faster than real time, so it was not ranked.');
+    await rpc({ run_finish: { id: run.id, user_id: user.id, score: res.score, peak: res.peak, kills: res.kills, won: res.won, ticks: res.ticks } });
+    const { data: best } = await db.from('serpent_runs').select('score').eq('user_id', user.id).eq('finished', true).order('score', { ascending: false }).limit(1);
+    const top = best?.[0]?.score ?? res.score;
+    const { data: above } = await db.from('serpent_runs').select('user_id').eq('finished', true).gt('score', top).limit(2000);
+    const rank = new Set((above || []).map(r => r.user_id)).size + 1;
+    return { ...res, best: top, rank: user.anon ? null : rank, guest: !!user.anon };
+  }
+  if (op === 'skins') {
+    const { data } = await db.from('user_skins').select('skin').eq('user_id', user.id);
+    return { owned: (data || []).map(r => r.skin) };
+  }
+  if (op === 'buy-skin') {
+    const sk = SKINS.find(s => s.id === body.skin);
+    if (!sk || !sk.price) fail('That skin is free or does not exist.');
+    if (Number(profile.chips) < sk.price) fail(`You need ${sk.price.toLocaleString('en-US')} chips for ${sk.name}.`);
+    const res = await rpc({ skin: { user_id: user.id, skin: sk.id, price: sk.price }, wallet: [{ uid: user.id, delta: -sk.price, reason: 'skin:' + sk.id }] });
+    return { ok: true, balance: res?.balances?.[user.id] };
+  }
+  fail('Unknown request.');
+}
+
 Deno.serve(async req => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json({ error: 'POST only' }, 405);
@@ -111,12 +154,13 @@ Deno.serve(async req => {
     if (!profile) return json({ error: 'Your account is still being set up. Try again in a moment.' }, 409);
     if (profile.banned) return json({ error: 'This account is suspended.' }, 403);
     const body = await req.json().catch(() => ({}));
-    if (JSON.stringify(body).length > 4000) return json({ error: 'Request too large.' }, 413);
     const op = String(body.op || '');
-    const user = { id: u.id, name: profile.username };
+    if (JSON.stringify(body).length > (op === 'serpent-submit' ? 130000 : 4000)) return json({ error: 'Request too large.' }, 413);
+    const user = { id: u.id, name: profile.username, anon: !!u.is_anonymous };
     reapStale().catch(() => {});
 
     if (['seeds', 'clientseed', 'rotate', 'spin'].includes(op)) return json(await slotsOp(op, user, body, profile));
+    if (op.startsWith('serpent-') || op === 'skins' || op === 'buy-skin') return json(await serpentOp(op, user, body, profile));
     if (op === 'mine') return json({ tables: await myOpenTables(u.id) });
     // Guest (anonymous) accounts can play everything vs bots, but not casino tables with other people:
     // otherwise throwaway guests could feed their welcome chips to one account at a poker table.

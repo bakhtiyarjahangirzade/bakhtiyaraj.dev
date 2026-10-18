@@ -48,15 +48,17 @@ export const engine = {
     const hand = s.hands[seat];
     if (a.type === 'draw') {
       if (s.drew) throw new Error('You already drew. Play the card or pass.');
-      drawCards(s, seat, 1); s.drew = true; s.exposed = s.exposed === seat ? null : s.exposed;
-      const c = hand[hand.length - 1];
-      if (!c || !playable(s, c)) { s.drew = false; s.turn = next(s); s.msg = 'Drew and passed'; }
+      const before = hand.length;
+      drawCards(s, seat, 1); s.drew = true; s.exposed = null; // the chance to catch a missed LAST! ends when play moves on
+      const c = hand.length > before ? hand[hand.length - 1] : null;
+      if (!c) { s.drew = false; s.turn = next(s); s.msg = 'No cards left to draw · passed'; }
+      else if (!playable(s, c)) { s.drew = false; s.turn = next(s); s.msg = 'Drew and passed'; }
       else s.msg = 'Drew a card';
       return s;
     }
     if (a.type === 'pass') {
       if (!s.drew) throw new Error('Draw a card first.');
-      s.drew = false; s.turn = next(s); s.msg = 'Passed'; return s;
+      s.drew = false; s.exposed = null; s.turn = next(s); s.msg = 'Passed'; return s;
     }
     if (a.type === 'play') {
       const i = hand.findIndex(c => c.id === a.id); if (i < 0) throw new Error('That card is not in your hand.');

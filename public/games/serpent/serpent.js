@@ -1,196 +1,216 @@
-// Serpent Zone: a snake battle royale with a shrinking arena. Solo vs bots or online rooms (Supabase broadcast).
-// The room creator is the host: it owns food, bots and the zone clock. Every player simulates their own serpent.
-import { Room, myId, newCode, cleanCode } from '/games/shared/net.js';
+// Serpent Zone client: rendering, input (mouse, keys, touch joystick), solo runs that the server re-plays
+// for the leaderboard, and online rooms over Supabase broadcast (host owns bots, food and the zone clock).
+import { Room, myId, newCode, cleanCode, api, getClient } from '/games/shared/net.js';
 import { mountAccount } from '/assets/account-ui.js';
 import * as acc from '/assets/account.js';
+import * as S from './sim.js';
+import { SKINS, skinById, segColor, glowOf, drawPreview } from './skins.js';
 
 const $ = s => document.querySelector(s);
 const cv = $('#cv'), g = cv.getContext('2d');
-const SEG = 7, SPEED = 165, BOOST = 300, TURN = 3.4, START_LEN = 28;
-const R0 = 1500, RMIN = 220, SHRINK_FROM = 15, SHRINK_TO = 190, MAX_TIME = 240;
-const BOT_NAMES = ['Relay', 'Diode', 'Valve', 'Fuse', 'Coil', 'Quartz', 'Ohm', 'Volt', 'Flux', 'Pulse'];
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const touchUI = matchMedia('(pointer: coarse)').matches;
+const store = { get(k, d) { try { const v = localStorage.getItem('bakhy.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('bakhy.' + k, JSON.stringify(v)); } catch {} } };
 mountAccount($('#tools'));
-acc.init().then(() => { if (acc.displayName() && !localStorage.getItem('bakhy.name')) $('#nm').value = acc.displayName(); });
 
-const me = { id: myId(), name: (() => { try { return JSON.parse(localStorage.getItem('bakhy.name')) || 'Player'; } catch { return 'Player'; } })() };
+const me = { id: myId(), name: store.get('name', 'Player'), skin: store.get('serpentSkin', 'ember') };
 $('#nm').value = me.name;
-$('#nm').addEventListener('input', e => { me.name = e.target.value.trim() || 'Player'; try { localStorage.setItem('bakhy.name', JSON.stringify(me.name)); } catch {} });
+$('#nm').addEventListener('input', e => { me.name = e.target.value.trim() || 'Player'; store.set('name', me.name); });
+acc.onChange(s => { if (s.profile && !acc.isGuest() && !store.get('nameSet', false)) { me.name = s.profile.username; $('#nm').value = me.name; } loadSkins(); });
+$('#nm').addEventListener('change', () => store.set('nameSet', true));
 
-/* ---------------- world ---------------- */
-let W = null;            // { time, R, food: Map, snakes: Map, phase, host, winner }
-let room = null, isHost = true, mySnake = null, lastSend = 0, lastWorld = 0, lastFoodFull = 0, foodSeq = 0;
-const eatQueue = [], deadQueue = [];
-const rnd = (a, b) => a + Math.random() * (b - a);
-const hueFor = id => { let h = 0; for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
-function zoneR(t) { if (t < SHRINK_FROM) return R0; const k = Math.min(1, (t - SHRINK_FROM) / (SHRINK_TO - SHRINK_FROM)); return R0 + (RMIN - R0) * k; }
-function spawnPoint(R) { const a = rnd(0, Math.PI * 2), d = Math.sqrt(Math.random()) * R * .7; return { x: Math.cos(a) * d, y: Math.sin(a) * d }; }
-function newSnake(id, name, bot, R) {
-  const p = spawnPoint(R), a = Math.atan2(-p.y, -p.x) + rnd(-.6, .6);
-  const pts = []; for (let i = 0; i < START_LEN; i++) pts.push({ x: p.x - Math.cos(a) * i * SEG, y: p.y - Math.sin(a) * i * SEG });
-  return { id, name, bot, hue: bot ? (BOT_NAMES.indexOf(name) * 37 + 20) % 360 : hueFor(id), a, ta: a, pts, len: START_LEN, grow: 0, alive: true, boost: false, score: 0, aiT: 0 };
+/* ---------------- skins ---------------- */
+let owned = new Set(SKINS.filter(s => !s.price).map(s => s.id));
+async function loadSkins() {
+  try { if (acc.current().user) { const r = await api('skins'); owned = new Set([...SKINS.filter(s => !s.price).map(s => s.id), ...(r.owned || [])]); } } catch {}
+  if (!owned.has(me.skin)) me.skin = 'ember';
+  paintSkins();
 }
-const radius = s => 7 + Math.min(13, s.len / 45);
-function addFood(x, y, v = 1, h) { const id = ++foodSeq + (isHost ? 0 : 1e6); const f = { id, x, y, v, h: h ?? Math.floor(rnd(0, 360)) }; W.food.set(id, f); return f; }
-function topUpFood() { const target = Math.round(220 + W.R / 6); let tries = 0; while (W.food.size < target && tries++ < 200) { const p = spawnPoint(W.R / .72); addFood(p.x, p.y, Math.random() < .12 ? 3 : 1); } }
+function paintSkins() {
+  const box = $('#skins'); box.replaceChildren();
+  for (const sk of SKINS) {
+    const c = document.createElement('canvas'); c.width = 120; c.height = 44;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'sz-skin' + (owned.has(sk.id) ? '' : ' locked'); b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(me.skin === sk.id));
+    const cap = document.createElement('span'); cap.textContent = sk.name + (owned.has(sk.id) ? '' : ' · ' + sk.price.toLocaleString('en-US'));
+    b.append(c, cap);
+    b.onclick = async () => {
+      if (owned.has(sk.id)) { me.skin = sk.id; store.set('serpentSkin', sk.id); paintSkins(); return; }
+      if (!confirmBuy(sk)) return;
+      try { await acc.ensurePlayer(); const r = await api('buy-skin', { skin: sk.id }); owned.add(sk.id); me.skin = sk.id; store.set('serpentSkin', sk.id); acc.setKnownBalance(r.balance); $('#skinMsg').textContent = `${sk.name} unlocked.`; paintSkins(); }
+      catch (e) { $('#skinMsg').textContent = e.message; if (e.needLogin) document.querySelector('.acc-plate')?.click(); }
+    };
+    box.append(b); drawPreview(c, sk);
+  }
+}
+let pendingBuy = null;
+function confirmBuy(sk) { if (pendingBuy === sk.id) { pendingBuy = null; return true; } pendingBuy = sk.id; $('#skinMsg').textContent = `Tap ${sk.name} again to buy it for ${sk.price.toLocaleString('en-US')} play chips.`; return false; }
+paintSkins();
+setInterval(() => { if (!$('#menu').hidden) $('#skins').querySelectorAll('canvas').forEach((c, i) => drawPreview(c, SKINS[i])); }, 120);
+
+/* ---------------- top list ---------------- */
+async function loadTop() {
+  const ol = $('#top');
+  try {
+    const sb = await getClient(); const { data, error } = await sb.rpc('leaderboard', { kind: 'serpent', lim: 5 });
+    if (error) throw error;
+    ol.replaceChildren(...(data?.length ? data : []).map(r => { const li = document.createElement('li'); const n = document.createElement('span'); n.textContent = r.username; const b = document.createElement('b'); b.textContent = r.score.toLocaleString('en-US'); li.append(n, b); return li; }));
+    if (!data?.length) ol.innerHTML = '<li class="sz-help">No runs yet — be the first.</li>';
+  } catch { ol.innerHTML = '<li class="sz-help">Leaderboard is offline.</li>'; }
+}
+loadTop();
 
 /* ---------------- input ---------------- */
-let pointer = null, boostHeld = false, keyTurn = 0;
-cv.addEventListener('pointermove', e => { pointer = { x: e.offsetX, y: e.offsetY }; });
-cv.addEventListener('pointerdown', e => { pointer = { x: e.offsetX, y: e.offsetY }; if (e.pointerType === 'mouse' || e.isPrimary === false) boostHeld = true; activeTouches.add(e.pointerId); if (activeTouches.size > 1) boostHeld = true; });
+let pointer = null, boostHeld = false, keyTurn = 0, stickAngle = null;
 const activeTouches = new Set();
-addEventListener('pointerup', e => { activeTouches.delete(e.pointerId); if (activeTouches.size < 2) boostHeld = false; });
+cv.addEventListener('pointermove', e => { if (e.pointerType !== 'touch' || !touchUI) pointer = { x: e.offsetX, y: e.offsetY }; });
+cv.addEventListener('pointerdown', e => { if (e.pointerType === 'touch' && touchUI) return; pointer = { x: e.offsetX, y: e.offsetY }; if (e.pointerType === 'mouse') boostHeld = true; activeTouches.add(e.pointerId); if (activeTouches.size > 1) boostHeld = true; });
+addEventListener('pointerup', e => { activeTouches.delete(e.pointerId); if (activeTouches.size < 2 && !btnBoost) boostHeld = false; });
 addEventListener('keydown', e => { if (e.target.closest('input')) return; if (e.code === 'Space') { boostHeld = true; e.preventDefault(); } if (e.code === 'ArrowLeft') keyTurn = -1; if (e.code === 'ArrowRight') keyTurn = 1; });
 addEventListener('keyup', e => { if (e.code === 'Space') boostHeld = false; if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') keyTurn = 0; });
 
-/* ---------------- simulation ---------------- */
-function steer(s, dt) {
-  let d = ((s.ta - s.a + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
-  s.a += Math.max(-TURN * dt, Math.min(TURN * dt, d));
+// Touch: a floating joystick on the left of the screen and a boost button on the right.
+let btnBoost = false;
+if (touchUI) {
+  $('#help').textContent = 'Drag anywhere on the left to steer, hold BOOST on the right to speed up (it costs length).';
+  const stage = $('#stage'), stick = $('#stick'), knob = $('#knob');
+  let stickId = null, sx = 0, sy = 0;
+  stage.addEventListener('touchstart', e => {
+    if ($('#menu').hidden === false || !$('#over').hidden) return;
+    for (const t of e.changedTouches) {
+      if (t.target.closest('#boostBtn')) continue;
+      if (stickId == null && t.clientX < innerWidth * .62) { stickId = t.identifier; sx = t.clientX; sy = t.clientY; const r = stage.getBoundingClientRect(); stick.style.left = (sx - r.left) + 'px'; stick.style.top = (sy - r.top) + 'px'; stick.classList.add('on'); knob.style.transform = ''; }
+    }
+    e.preventDefault();
+  }, { passive: false });
+  stage.addEventListener('touchmove', e => {
+    for (const t of e.changedTouches) if (t.identifier === stickId) {
+      const dx = t.clientX - sx, dy = t.clientY - sy, d = Math.hypot(dx, dy), m = Math.min(d, 46);
+      if (d > 8) stickAngle = Math.atan2(dy, dx);
+      knob.style.transform = `translate(${d ? dx / d * m : 0}px, ${d ? dy / d * m : 0}px)`;
+    }
+    e.preventDefault();
+  }, { passive: false });
+  const end = e => { for (const t of e.changedTouches) if (t.identifier === stickId) { stickId = null; stick.classList.remove('on'); } };
+  stage.addEventListener('touchend', end); stage.addEventListener('touchcancel', end);
+  const bb = $('#boostBtn');
+  bb.addEventListener('touchstart', e => { btnBoost = boostHeld = true; bb.classList.add('on'); e.preventDefault(); e.stopPropagation(); }, { passive: false });
+  const off = e => { btnBoost = boostHeld = false; bb.classList.remove('on'); e.preventDefault(); };
+  bb.addEventListener('touchend', off); bb.addEventListener('touchcancel', off);
+  const fs = $('#fs'); if (document.documentElement.requestFullscreen) { fs.hidden = false; fs.onclick = () => { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen({ navigationUI: 'hide' }).then(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch(() => {}); }; }
 }
-function moveSnake(s, dt) {
-  const speed = s.boost && s.len > 20 ? BOOST : SPEED;
-  const head = s.pts[0];
-  const nx = head.x + Math.cos(s.a) * speed * dt, ny = head.y + Math.sin(s.a) * speed * dt;
-  const h = { x: nx, y: ny };
-  if (s.pts.length < 2 || Math.hypot(nx - s.pts[1].x, ny - s.pts[1].y) >= SEG) s.pts.unshift(h); else s.pts[0] = h;
-  while (s.pts.length > Math.max(2, Math.round(s.len))) s.pts.pop();
-  if (s.grow > 0) { const k = Math.min(s.grow, 8 * dt * 10); s.len += k; s.grow -= k; }
-  if (s.boost && s.len > 20) { s.len -= 6 * dt; s.dropT = (s.dropT || 0) + dt; if (s.dropT > .25 && isHost) { s.dropT = 0; const t = s.pts[s.pts.length - 1]; addFood(t.x, t.y, 1, s.hue); } }
-}
-function bodyHit(x, y, r, other, skipHead) {
-  const or = radius(other);
-  for (let i = skipHead ? 6 : 0; i < other.pts.length; i += 2) { const p = other.pts[i]; if ((p.x - x) ** 2 + (p.y - y) ** 2 < (r + or * .8) ** 2) return true; }
-  return false;
-}
-function kill(s) {
-  if (!s.alive) return; s.alive = false; s.diedAt = W.time;
-  if (isHost) for (let i = 0; i < s.pts.length; i += 3) { const p = s.pts[i]; addFood(p.x + rnd(-6, 6), p.y + rnd(-6, 6), 2, s.hue); }
-  else deadQueue.push({ id: s.id, pts: s.pts.filter((_, i) => i % 3 === 0).map(p => [Math.round(p.x), Math.round(p.y)]), hue: s.hue });
-  if (s === mySnake) { shake = 18; showOver(false); }
-}
-function ai(s, dt) {
-  s.aiT -= dt; if (s.aiT > 0) return; s.aiT = .12;
-  const h = s.pts[0], dc = Math.hypot(h.x, h.y);
-  if (dc > W.R - 160) { s.ta = Math.atan2(-h.y, -h.x); s.boost = false; return; }
-  // danger look-ahead
-  const look = { x: h.x + Math.cos(s.a) * 70, y: h.y + Math.sin(s.a) * 70 };
-  for (const o of W.snakes.values()) if (o.alive && o !== s && bodyHit(look.x, look.y, 16, o, false)) { s.ta = s.a + (Math.random() < .5 ? 1.6 : -1.6); s.boost = false; return; }
-  let best = null, bd = 420 ** 2;
-  for (const f of W.food.values()) { const d = (f.x - h.x) ** 2 + (f.y - h.y) ** 2; if (d < bd) { bd = d; best = f; } }
-  if (best) s.ta = Math.atan2(best.y - h.y, best.x - h.x); else s.ta += rnd(-.4, .4);
-  s.boost = best && best.v > 1 && bd < 150 ** 2 && s.len > 60 && Math.random() < .3;
-}
-function eat(s) {
-  const h = s.pts[0], r = radius(s) + 8;
-  for (const f of W.food.values()) if ((f.x - h.x) ** 2 + (f.y - h.y) ** 2 < r * r) { s.grow += f.v * 1.4; s.score += f.v; W.food.delete(f.id); if (!isHost) eatQueue.push(f.id); if (s === mySnake) blip(f.v); }
-}
-function step(dt) {
-  if (!W || W.phase !== 'play') return;
-  if (isHost) { W.time += dt; W.R = zoneR(W.time); }
-  // me
-  if (mySnake && mySnake.alive) {
-    if (pointer) { const ang = Math.atan2(pointer.y - cv.clientHeight / 2, pointer.x - cv.clientWidth / 2); mySnake.ta = ang; }
-    if (keyTurn) mySnake.ta = mySnake.a + keyTurn * .6;
-    mySnake.boost = boostHeld;
-  }
-  for (const s of W.snakes.values()) {
-    if (!s.alive) continue;
-    if (s.remote) continue;
-    if (s.bot) { if (!isHost) continue; ai(s, dt); }
-    steer(s, dt); moveSnake(s, dt); eat(s);
-    const h = s.pts[0];
-    if (Math.hypot(h.x, h.y) > W.R) { s.len -= 40 * dt; if (s === mySnake) shake = Math.max(shake, 4); if (s.len < 12) kill(s); }
-  }
-  // collisions (each machine checks the serpents it simulates)
-  for (const s of W.snakes.values()) {
-    if (!s.alive || s.remote || (s.bot && !isHost)) continue;
-    const h = s.pts[0], r = radius(s) * .7;
-    for (const o of W.snakes.values()) { if (o === s || !o.alive) continue; if (bodyHit(h.x, h.y, r, o, false)) { kill(s); break; } }
-  }
-  if (isHost) { topUpFood(); checkEnd(); }
-}
-function checkEnd() {
-  const alive = [...W.snakes.values()].filter(s => s.alive);
-  const total = W.snakes.size;
-  if ((total > 1 && alive.length <= 1) || W.time > MAX_TIME) {
-    const win = alive.sort((a, b) => b.len - a.len)[0] || [...W.snakes.values()].sort((a, b) => (b.diedAt || 0) - (a.diedAt || 0))[0];
-    W.phase = 'end'; W.winner = win ? win.id : null; broadcastWorld(true); showOver(true);
-  }
+// Turn the current controls into a target angle (integer units) for my serpent.
+function myInput(s) {
+  let ta = s.ta;
+  if (stickAngle != null && touchUI) ta = Math.round(stickAngle / (Math.PI * 2) * S.A);
+  else if (pointer) ta = Math.round(Math.atan2(pointer.y - cv.clientHeight / 2, pointer.x - cv.clientWidth / 2) / (Math.PI * 2) * S.A);
+  if (keyTurn) ta = s.a + keyTurn * 600;
+  return { ta: ((ta % S.A) + S.A) % S.A, boost: boostHeld };
 }
 
-/* ---------------- networking ---------------- */
-const snap = s => ({ id: s.id, name: s.name, bot: s.bot, hue: s.hue, len: Math.round(s.len), alive: s.alive, score: s.score, a: +s.a.toFixed(2), pts: s.pts.filter((_, i) => i % 2 === 0).map(p => [Math.round(p.x), Math.round(p.y)]) });
+/* ---------------- game state ---------------- */
+let W = null, mySnake = null, room = null, isHost = true, run = null, acc0 = 0, lastSend = 0, lastWorld = 0, lastFoodFull = 0;
+const eatQueue = [], deadQueue = [];
+const inputs = new Map();
+
+async function startSolo() {
+  leave();
+  let seed = (crypto.getRandomValues(new Uint32Array(1))[0]) >>> 0, ranked = false;
+  try { await acc.ensurePlayer(); const r = await api('serpent-start'); seed = r.seed; run = { id: r.run, changes: [], last: null, ranked: true }; ranked = true; }
+  catch { run = { id: null, changes: [], last: null, ranked: false }; }
+  const w = S.soloWorld(seed, { name: me.name, skin: me.skin });
+  W = w.W; mySnake = w.me; mySnake.id = me.id; mySnake.name = me.name; mySnake.skin = me.skin;
+  isHost = true; enterPlay(ranked ? 'Ranked run · score goes to the leaderboard' : 'Practice run (offline) · not ranked');
+}
+function enterPlay(note) {
+  $('#menu').hidden = true; $('#over').hidden = true; $('#hud').hidden = false; $('#touch').hidden = !touchUI;
+  document.body.classList.add('sz-playing'); acc0 = 0; last = performance.now();
+  if (note) toast(note);
+}
+let toastT; function toast(t) { const el = $('#ztoast') || Object.assign(document.createElement('p'), { id: 'ztoast', className: 'g-toast' }); if (!el.isConnected) document.body.append(el); el.textContent = t; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 2600); }
+
+// Advance the world in fixed steps and record my input changes for the server replay.
+function tick() {
+  if (!W || W.phase !== 'play') return;
+  if (mySnake && mySnake.alive) {
+    const inp = myInput(mySnake);
+    inputs.set(mySnake.id, inp);
+    if (run && !room) { const k = inp.ta + ':' + inp.boost; if (k !== run.last) { run.last = k; run.changes.push([W.tick, inp.ta, inp.boost]); } }
+  }
+  S.step(W, inputs);
+  for (const e of W.events) {
+    if (e.t === 'eat' && e.s === mySnake) blip(e.f.v);
+    if (e.t === 'eat' && !W.authority) eatQueue.push(e.f.id);
+    if (e.t === 'dead' && !W.authority) deadQueue.push({ id: e.s.id, pts: e.s.pts.filter((_, i) => i % 3 === 0).map(p => [Math.round(p.x), Math.round(p.y)]), hue: e.s.hue });
+    if (e.t === 'dead' && e.s === mySnake) { shake = 18; finishRun(false); }
+    if (e.t === 'end') { if (room) broadcastWorld(true); finishRun(true); }
+  }
+  W.events.length = 0;
+}
+async function finishRun(final) {
+  const r0 = run; run = run && !room ? { ...run, done: true } : run;
+  showOver(final, null);
+  if (!r0 || room || !r0.ranked || r0.sent) return;
+  r0.sent = true;
+  try {
+    const res = await api('serpent-submit', { run: r0.id, inputs: S.encodeInputs(r0.changes), ticks: W.tick });
+    showOver(final, res);
+    loadTop();
+  } catch (e) { showOver(final, { error: e.message }); }
+}
+
+/* ---------------- online rooms ---------------- */
+const snap = s => ({ id: s.id, name: s.name, bot: s.bot, hue: s.hue, skin: s.skin, len: Math.round(s.len), alive: s.alive, score: s.score, a: s.a, pts: s.pts.filter((_, i) => i % 2 === 0).map(p => [Math.round(p.x), Math.round(p.y)]) });
 function broadcastWorld(full) {
-  if (!room || !isHost) return;
+  if (!room || !isHost || !W) return;
   const now = performance.now();
-  const msg = { t: 'w', time: +W.time.toFixed(2), R: Math.round(W.R), phase: W.phase, winner: W.winner || null, bots: [...W.snakes.values()].filter(s => s.bot).map(snap) };
-  if (full || now - lastFoodFull > 900) { lastFoodFull = now; msg.food = [...W.food.values()].map(f => [f.id, Math.round(f.x), Math.round(f.y), f.v, f.h]); }
+  const msg = { t: 'w', tick: W.tick, R: Math.round(W.R), phase: W.phase, winner: W.winner || null, bots: W.snakes.filter(s => s.bot).map(snap) };
+  if (full || now - lastFoodFull > 900) { lastFoodFull = now; msg.food = W.food.map(f => [f.id, Math.round(f.x), Math.round(f.y), f.v, f.h]); }
   room.send(msg);
 }
 function sendMine() {
   if (!room) return;
   if (mySnake) room.send({ t: 'p', s: snap(mySnake) });
   if (eatQueue.length) room.send({ t: 'eat', ids: eatQueue.splice(0) });
-  if (deadQueue.length) for (const d of deadQueue.splice(0)) room.send({ t: 'dead', ...d });
+  for (const d of deadQueue.splice(0)) room.send({ t: 'dead', ...d });
 }
 function applySnap(o) {
-  let s = W.snakes.get(o.id);
-  if (!s) { s = { ...o, remote: true, grow: 0 }; W.snakes.set(o.id, s); }
-  s.name = o.name; s.hue = o.hue; s.len = o.len; s.alive = o.alive; s.score = o.score; s.a = o.a; s.bot = o.bot;
-  s.pts = o.pts.flatMap(([x, y], i, arr) => { const n = arr[i + 1]; return n ? [{ x, y }, { x: (x + n[0]) / 2, y: (y + n[1]) / 2 }] : [{ x, y }]; });
-  s.remote = true;
+  let s = W.snakes.find(x => x.id === o.id);
+  if (!s) { s = { id: o.id, pts: [], local: false, grow: 0, peak: 0, kills: 0 }; W.snakes.push(s); }
+  if (s.local) return;
+  Object.assign(s, { name: String(o.name).slice(0, 14), bot: !!o.bot, hue: +o.hue || 0, skin: skinById(o.skin).id, len: +o.len || 0, alive: !!o.alive, score: +o.score || 0, a: +o.a || 0 });
+  s.pts = (o.pts || []).slice(0, 2000).flatMap(([x, y], i, arr) => { const n = arr[i + 1]; return n ? [{ x, y }, { x: (x + n[0]) / 2, y: (y + n[1]) / 2 }] : [{ x, y }]; });
 }
 function onMsg(m) {
   if (!W) return;
-  if (m.t === 'p' && m.s.id !== me.id) applySnap(m.s);
+  if (m.t === 'p' && m.s?.id !== me.id) applySnap(m.s);
   if (m.t === 'w' && !isHost) {
-    W.time = m.time; W.R = m.R;
-    for (const b of m.bots) applySnap(b);
-    if (m.food) { W.food = new Map(m.food.map(([id, x, y, v, h]) => [id, { id, x, y, v, h }])); }
+    W.tick = m.tick; W.time = m.tick * S.TICK; W.R = m.R;
+    for (const b of m.bots || []) applySnap(b);
+    if (m.food) W.food = m.food.map(([id, x, y, v, h]) => ({ id, x, y, v, h }));
     if (m.phase === 'end' && W.phase !== 'end') { W.phase = 'end'; W.winner = m.winner; showOver(true); }
-    if (m.phase === 'play' && W.phase !== 'play') W.phase = 'play';
   }
-  if (m.t === 'eat' && isHost) m.ids.forEach(id => W.food.delete(id));
-  if (m.t === 'dead' && isHost) { m.pts.forEach(([x, y]) => addFood(x, y, 2, m.hue)); const s = W.snakes.get(m.id); if (s) s.alive = false; }
-  if (m.t === 'start' && !isHost) startRound(m.players, false);
+  if (m.t === 'eat' && isHost) { const ids = new Set(m.ids); W.food = W.food.filter(f => !ids.has(f.id)); }
+  if (m.t === 'dead' && isHost) { (m.pts || []).slice(0, 400).forEach(([x, y]) => S.addFood(W, x, y, 2, m.hue)); const s = W.snakes.find(x => x.id === m.id); if (s) s.alive = false; }
+  if (m.t === 'start' && !isHost) startRoomRound(m.seed, false, m.bots);
   if (m.t === 'hello' && isHost) { lobbyList(); if (W.phase === 'play') broadcastWorld(true); }
 }
-
-/* ---------------- rounds & menus ---------------- */
-function startRound(players, host) {
-  isHost = host;
-  W = { time: 0, R: R0, food: new Map(), snakes: new Map(), phase: 'play', winner: null };
-  mySnake = newSnake(me.id, me.name, false, R0); mySnake.hue = hueFor(me.id);
-  W.snakes.set(me.id, mySnake);
-  if (host) {
-    const bots = players.bots ?? 7;
-    for (let i = 0; i < bots; i++) { const b = newSnake('bot' + i, BOT_NAMES[i % BOT_NAMES.length], true, R0); W.snakes.set(b.id, b); }
-    topUpFood();
-  }
-  $('#menu').hidden = true; $('#over').hidden = true; $('#hud').hidden = false;
-  if (host && room) { room.send({ t: 'start', players }); broadcastWorld(true); }
+function startRoomRound(seed, host, bots) {
+  isHost = host; run = null;
+  W = S.createWorld({ seed, authority: host });
+  mySnake = S.addSnake(W, { id: me.id, name: me.name, skin: me.skin, hue: 30 });
+  if (host) { for (let i = 0; i < bots; i++) S.addSnake(W, { id: 'bot' + i, name: S.BOT_NAMES[i % S.BOT_NAMES.length], bot: true, skin: S.BOT_SKINS[i % S.BOT_SKINS.length], persona: S.personaFor(i) }); }
+  enterPlay(null);
+  if (host && room) { room.send({ t: 'start', seed, bots }); broadcastWorld(true); }
 }
-function showOver(final) {
-  const o = $('#over');
-  const ranking = [...W.snakes.values()].sort((a, b) => (b.alive - a.alive) || (b.len - a.len));
-  const win = W.snakes.get(W.winner);
-  o.replaceChildren();
-  const h2 = document.createElement('h2'); h2.textContent = final ? (W.winner === me.id ? 'You win!' : `${win?.name || 'Nobody'} wins`) : 'You got coiled';
-  const p = document.createElement('p'); p.textContent = final ? `Final length ${Math.round(mySnake?.len || 0)} · rank ${ranking.findIndex(s => s.id === me.id) + 1} of ${ranking.length}` : `Length ${Math.round(mySnake.len)}. Keep watching or start again.`;
-  const btns = document.createElement('div'); btns.className = 'sz-btns';
-  if (isHost || !room) { const again = document.createElement('button'); again.className = 'key key--amber'; again.type = 'button'; again.textContent = room ? 'New round for everyone' : 'Play again'; again.onclick = () => startRound({ bots: botCount() }, true); btns.append(again); }
-  else { const w = document.createElement('p'); w.className = 'sz-help'; w.textContent = 'Waiting for the host to start a new round.'; btns.append(w); }
-  const menu = document.createElement('button'); menu.className = 'key'; menu.type = 'button'; menu.textContent = 'Menu'; menu.onclick = () => { leave(); };
-  btns.append(menu);
-  if (!final) { const watch = document.createElement('button'); watch.className = 'key'; watch.type = 'button'; watch.textContent = 'Watch'; watch.onclick = () => { o.hidden = true; }; btns.append(watch); }
-  o.append(h2, p, btns); o.hidden = false;
+const botCount = () => room ? Math.max(2, 8 - room.peers().length) : S.SOLO_BOTS;
+function leave() {
+  room?.leave(); room = null; W = null; mySnake = null; run = null;
+  $('#over').hidden = true; $('#hud').hidden = true; $('#menu').hidden = false; $('#lobby').hidden = true; $('#roomplate').hidden = true; $('#touch').hidden = true;
+  document.body.classList.remove('sz-playing');
+  if (location.search) history.replaceState(null, '', location.pathname);
 }
-const botCount = () => room ? Math.max(2, 8 - (room.peers().length)) : 9;
-function leave() { room?.leave(); room = null; W = null; mySnake = null; $('#over').hidden = true; $('#hud').hidden = true; $('#menu').hidden = false; $('#lobby').hidden = true; $('#roomplate').hidden = true; history.replaceState(null, '', location.pathname); }
-
-$('#solo').onclick = () => { leave(); startRound({ bots: 9 }, true); };
-$('#create').onclick = async () => { const code = newCode(); await openRoom(code, true); };
+$('#solo').onclick = () => startSolo();
+$('#create').onclick = async () => { await openRoom(newCode(), true); };
 $('#join').onclick = async () => { const c = cleanCode($('#code').value); if (c.length !== 4) return; await openRoom(c, false); };
 $('#code').addEventListener('input', e => { e.target.value = cleanCode(e.target.value); });
 async function openRoom(code, host) {
@@ -201,102 +221,131 @@ async function openRoom(code, host) {
   $('#led').className = 'led green';
   $('#roomplate').hidden = false; $('#roomplate').textContent = 'Room ' + code;
   history.replaceState(null, '', '?room=' + code);
-  room.on('msg', onMsg);
-  room.on('presence', lobbyList);
-  W = W || { time: 0, R: R0, food: new Map(), snakes: new Map(), phase: 'lobby' };
-  lobbyList(code);
-  room.send({ t: 'hello' });
+  room.on('msg', onMsg); room.on('presence', () => lobbyList());
+  W = W || { phase: 'lobby', snakes: [], food: [] };
+  lobbyList(); room.send({ t: 'hello' });
 }
-function lobbyList(code) {
+function lobbyList() {
   const box = $('#lobby'); box.hidden = false; box.replaceChildren();
-  const c = document.createElement('div'); c.className = 'code'; c.textContent = room?.code || code || ''; box.append(c);
+  const c = document.createElement('div'); c.className = 'code'; c.textContent = room?.code || ''; box.append(c);
   const link = document.createElement('p'); link.className = 'sz-help'; link.textContent = location.origin + location.pathname + '?room=' + (room?.code || ''); box.append(link);
   const ul = document.createElement('ul'); (room?.peers() || []).forEach(p => { const li = document.createElement('li'); li.textContent = '● ' + p.name + (p.id === me.id ? ' (you)' : ''); ul.append(li); }); box.append(ul);
-  if (isHost) { const b = document.createElement('button'); b.className = 'key key--amber'; b.type = 'button'; b.textContent = 'Start round'; b.onclick = () => startRound({ bots: botCount() }, true); box.append(b); }
+  if (isHost) { const b = document.createElement('button'); b.className = 'key key--amber'; b.type = 'button'; b.textContent = 'Start round'; b.onclick = () => startRoomRound(crypto.getRandomValues(new Uint32Array(1))[0], true, botCount()); box.append(b); }
   else { const w = document.createElement('p'); w.className = 'sz-help'; w.textContent = 'Waiting for the host to start…'; box.append(w); }
 }
-{ const r = cleanCode(new URL(location.href).searchParams.get('room')); if (r.length === 4) { $('#code').value = r; } }
+{ const r = cleanCode(new URL(location.href).searchParams.get('room')); if (r.length === 4) $('#code').value = r; }
+
+/* ---------------- game over ---------------- */
+function showOver(final, res) {
+  if (!W) return;
+  const o = $('#over');
+  const ranking = [...W.snakes].sort((a, b) => (b.alive - a.alive) || (b.len - a.len));
+  const win = W.snakes.find(s => s.id === W.winner);
+  o.replaceChildren();
+  const h2 = document.createElement('h2'); h2.textContent = final ? (W.winner === me.id ? 'You win!' : `${win?.name || 'Nobody'} wins`) : 'You got coiled';
+  const p = document.createElement('p'); p.textContent = `Length ${Math.round(mySnake?.len || 0)} · best ${Math.round(mySnake?.peak || 0)} · ${mySnake?.kills || 0} kills · rank ${ranking.findIndex(s => s.id === me.id) + 1} of ${ranking.length}`;
+  const sc = document.createElement('p'); sc.className = 'sz-score';
+  if (res?.score != null) sc.textContent = `Verified score ${res.score.toLocaleString('en-US')}` + (res.rank ? ` · #${res.rank} on the leaderboard` : '') + (res.best ? ` · your best ${res.best.toLocaleString('en-US')}` : '');
+  else if (res?.error) sc.textContent = 'Score not saved: ' + res.error;
+  else if (!room && run?.ranked) sc.textContent = 'Checking your run on the server…';
+  const btns = document.createElement('div'); btns.className = 'sz-btns';
+  const mk = (txt, cls, fn) => { const b = document.createElement('button'); b.className = 'key ' + cls; b.type = 'button'; b.textContent = txt; b.onclick = fn; btns.append(b); return b; };
+  if (!room) mk('Play again', 'key--amber', () => startSolo());
+  else if (isHost) mk('New round for everyone', 'key--amber', () => startRoomRound(crypto.getRandomValues(new Uint32Array(1))[0], true, botCount()));
+  else { const w = document.createElement('p'); w.className = 'sz-help'; w.textContent = 'Waiting for the host to start a new round.'; btns.append(w); }
+  mk('Menu', '', () => { leave(); loadTop(); });
+  if (!final) mk('Watch', '', () => { o.hidden = true; });
+  o.append(h2, p, sc, btns); o.hidden = false;
+}
 
 /* ---------------- rendering ---------------- */
-let shake = 0, cam = { x: 0, y: 0, z: 1 };
-let actx;
-function blip(v) { try { const A = window.AudioContext || window.webkitAudioContext; actx ||= new A(); const t = actx.currentTime, o = actx.createOscillator(), gn = actx.createGain(); o.frequency.value = 520 + v * 180 + Math.random() * 60; gn.gain.setValueAtTime(.04, t); gn.gain.exponentialRampToValueAtTime(.0001, t + .08); o.connect(gn).connect(actx.destination); o.start(t); o.stop(t + .1); } catch {} }
+let shake = 0, cam = { x: 0, y: 0, z: 1 }, actx;
+function blip(v) { if (reduced) return; try { const AC = window.AudioContext || window.webkitAudioContext; actx ||= new AC(); const t = actx.currentTime, o = actx.createOscillator(), gn = actx.createGain(); o.frequency.value = 520 + v * 180 + Math.random() * 60; gn.gain.setValueAtTime(.04, t); gn.gain.exponentialRampToValueAtTime(.0001, t + .08); o.connect(gn).connect(actx.destination); o.start(t); o.stop(t + .1); } catch {} }
 function resize() { const d = Math.min(2, devicePixelRatio || 1); cv.width = cv.clientWidth * d; cv.height = cv.clientHeight * d; g.setTransform(d, 0, 0, d, 0, 0); }
-addEventListener('resize', resize); resize();
-function draw(now) {
+addEventListener('resize', resize); new ResizeObserver(resize).observe(cv); resize();
+function headAt(s, alpha) { // extrapolate the head between fixed steps so motion stays smooth at 30 Hz
+  const h = s.pts[0]; if (!s.local || !s.alive || W.phase !== 'play') return h;
+  const sp = (s.boost && s.len > 20 ? S.BOOST : S.SPEED) * S.TICK * alpha;
+  return { x: h.x + S.COS[s.a] * sp, y: h.y + S.SIN[s.a] * sp };
+}
+function draw(now, alpha) {
   const w = cv.clientWidth, h = cv.clientHeight;
   g.fillStyle = '#0b0d12'; g.fillRect(0, 0, w, h);
-  if (!W) { drawIdle(now, w, h); return; }
-  const target = (mySnake && mySnake.alive) ? mySnake : [...W.snakes.values()].filter(s => s.alive).sort((a, b) => b.len - a.len)[0] || mySnake;
-  if (target) { const hd = target.pts[0]; cam.x += (hd.x - cam.x) * .15; cam.y += (hd.y - cam.y) * .15; const zt = Math.max(.5, Math.min(1, 1.05 - target.len / 1600)) * Math.min(1, Math.max(.6, w / 1100)); cam.z += (zt - cam.z) * .05; }
+  if (!W || !W.snakes.length) { drawIdle(now, w, h); return; }
+  const target = (mySnake && mySnake.alive) ? mySnake : W.snakes.filter(s => s.alive).sort((a, b) => b.len - a.len)[0] || mySnake;
+  if (target) { const hd = headAt(target, alpha); cam.x += (hd.x - cam.x) * .18; cam.y += (hd.y - cam.y) * .18; const small = Math.min(w, h) < 520 ? .78 : 1; const zt = Math.max(.45, Math.min(1, 1.05 - target.len / 1600)) * Math.min(1, Math.max(.6, Math.max(w, h) / 1100)) * small; cam.z += (zt - cam.z) * .05; }
   g.save();
-  const sx = shake ? rnd(-shake, shake) : 0, sy = shake ? rnd(-shake, shake) : 0; shake *= .85; if (shake < .5) shake = 0;
+  const sx = shake ? (Math.random() - .5) * 2 * shake : 0, sy = shake ? (Math.random() - .5) * 2 * shake : 0; shake *= .85; if (shake < .5) shake = 0;
   g.translate(w / 2 + sx, h / 2 + sy); g.scale(cam.z, cam.z); g.translate(-cam.x, -cam.y);
-  // hex grid
   const grid = 60, x0 = cam.x - w / 2 / cam.z, y0 = cam.y - h / 2 / cam.z, x1 = cam.x + w / 2 / cam.z, y1 = cam.y + h / 2 / cam.z;
   g.fillStyle = '#141824';
   for (let y = Math.floor(y0 / grid) * grid; y < y1; y += grid) for (let x = Math.floor(x0 / grid) * grid + ((y / grid) % 2 ? grid / 2 : 0); x < x1; x += grid) { g.beginPath(); g.arc(x, y, 2.2, 0, 7); g.fill(); }
-  // outside zone
   g.save(); g.beginPath(); g.rect(x0 - 50, y0 - 50, x1 - x0 + 100, y1 - y0 + 100); g.arc(0, 0, W.R, 0, Math.PI * 2, true); g.fillStyle = 'rgba(255,40,80,.16)'; g.fill(); g.restore();
-  g.lineWidth = 6 / cam.z; g.strokeStyle = `rgba(255,70,110,${.6 + .3 * Math.sin(now / 200)})`; g.shadowColor = '#ff2d55'; g.shadowBlur = 20; g.beginPath(); g.arc(0, 0, W.R, 0, 7); g.stroke(); g.shadowBlur = 0;
-  // food
-  for (const f of W.food.values()) {
+  g.lineWidth = 6 / cam.z; g.strokeStyle = `rgba(255,70,110,${.6 + .3 * Math.sin(now / 200)})`; g.shadowColor = '#ff2d55'; g.shadowBlur = reduced ? 0 : 20; g.beginPath(); g.arc(0, 0, W.R, 0, 7); g.stroke(); g.shadowBlur = 0;
+  for (const f of W.food) {
     if (f.x < x0 - 20 || f.x > x1 + 20 || f.y < y0 - 20 || f.y > y1 + 20) continue;
     const r = 3 + f.v * 1.8 + Math.sin(now / 300 + f.id) * .8;
-    g.fillStyle = `hsl(${f.h} 100% 65%)`; g.shadowColor = `hsl(${f.h} 100% 60%)`; g.shadowBlur = reduced ? 0 : 12; g.beginPath(); g.arc(f.x, f.y, r, 0, 7); g.fill();
+    g.fillStyle = `hsl(${f.h} 100% 65%)`; if (!reduced && f.v > 1) { g.shadowColor = `hsl(${f.h} 100% 60%)`; g.shadowBlur = 12; } else g.shadowBlur = 0;
+    g.beginPath(); g.arc(f.x, f.y, r, 0, 7); g.fill();
   }
   g.shadowBlur = 0;
-  // serpents
-  const list = [...W.snakes.values()].filter(s => s.alive).sort((a, b) => a.len - b.len);
-  for (const s of list) drawSnake(s, now);
+  for (const s of W.snakes.filter(s => s.alive).sort((a, b) => a.len - b.len)) drawSnake(s, now, alpha, x0, y0, x1, y1);
   g.restore();
-  // HUD
-  const alive = [...W.snakes.values()].filter(s => s.alive).length;
-  $('#aliveTxt').textContent = alive;
-  $('#lenTxt').textContent = Math.round(mySnake?.len || 0);
-  const left = Math.max(0, SHRINK_TO - W.time);
-  $('#zoneTxt').textContent = W.time < SHRINK_FROM ? `closes in ${Math.ceil(SHRINK_FROM - W.time)}s` : left > 0 ? `${Math.round(W.R)}m · ${Math.ceil(left)}s` : 'final ring';
-  if (now - (draw.lb || 0) > 400) {
-    draw.lb = now;
-    const board = $('#board'); board.replaceChildren(...[...W.snakes.values()].sort((a, b) => (b.alive - a.alive) || b.len - a.len).slice(0, 8).map(s => { const li = document.createElement('li'); li.className = (s.id === me.id ? 'me ' : '') + (s.alive ? '' : 'dead'); li.innerHTML = ''; const n = document.createElement('span'); n.textContent = s.name; const l = document.createElement('b'); l.textContent = Math.round(s.len); li.append(n, l); return li; }));
-  }
+  hud(now);
 }
-function drawSnake(s, now) {
-  const r = radius(s), pts = s.pts; if (!pts.length) return;
-  const glow = s.boost && !reduced;
+function drawSnake(s, now, alpha, x0, y0, x1, y1) {
+  const r = S.radius(s), pts = s.pts; if (!pts.length) return;
+  const sk = skinById(s.skin), glow = (s.boost || sk.neon != null) && !reduced ? glowOf(sk) || `hsl(${s.hue} 100% 60%)` : null;
+  const head = headAt(s, alpha);
   for (let i = pts.length - 1; i >= 0; i--) {
-    const p = pts[i], k = i / pts.length;
-    const light = 55 + 12 * Math.sin(i * .6 - now / 120);
-    g.fillStyle = `hsl(${s.hue} 85% ${light - k * 18}%)`;
-    if (glow && i % 3 === 0) { g.shadowColor = `hsl(${s.hue} 100% 60%)`; g.shadowBlur = 14; } else g.shadowBlur = 0;
-    g.beginPath(); g.arc(p.x, p.y, r * (1 - k * .35), 0, 7); g.fill();
+    const p = i === 0 ? head : pts[i];
+    if (p.x < x0 - 40 || p.x > x1 + 40 || p.y < y0 - 40 || p.y > y1 + 40) continue;
+    g.fillStyle = segColor(sk, i, pts.length, now, s.hue);
+    if (glow && i % 4 === 0) { g.shadowColor = glow; g.shadowBlur = s.boost ? 16 : 8; } else g.shadowBlur = 0;
+    g.beginPath(); g.arc(p.x, p.y, r * (1 - i / pts.length * .35), 0, 7); g.fill();
   }
   g.shadowBlur = 0;
-  const h = pts[0], a = s.a;
+  const a = S.toRad(s.a);
   for (const side of [-1, 1]) {
-    const ex = h.x + Math.cos(a + side * .55) * r * .55, ey = h.y + Math.sin(a + side * .55) * r * .55;
+    const ex = head.x + Math.cos(a + side * .55) * r * .55, ey = head.y + Math.sin(a + side * .55) * r * .55;
     g.fillStyle = '#fff'; g.beginPath(); g.arc(ex, ey, r * .36, 0, 7); g.fill();
     g.fillStyle = '#111'; g.beginPath(); g.arc(ex + Math.cos(a) * r * .14, ey + Math.sin(a) * r * .14, r * .18, 0, 7); g.fill();
   }
+  if (s.hurt && s.local) { g.strokeStyle = 'rgba(255,60,90,.8)'; g.lineWidth = 3; g.beginPath(); g.arc(head.x, head.y, r + 4, 0, 7); g.stroke(); }
   g.font = '600 13px Controls, sans-serif'; g.textAlign = 'center'; g.fillStyle = 'rgba(255,255,255,.8)';
-  g.fillText(s.name, h.x, h.y - r - 10);
+  g.fillText(s.name, head.x, head.y - r - 10);
 }
-const idle = Array.from({ length: 6 }, (_, i) => ({ hue: i * 60, a: i, r: 120 + i * 30 }));
+function hud(now) {
+  if (now - (hud.t || 0) < 200) return; hud.t = now;
+  const alive = W.snakes.filter(s => s.alive).length;
+  $('#aliveTxt').textContent = alive;
+  $('#lenTxt').textContent = Math.round(mySnake?.len || 0);
+  const left = Math.max(0, S.SHRINK_TO - W.time);
+  $('#zoneTxt').textContent = W.time < S.SHRINK_FROM ? `closes in ${Math.ceil(S.SHRINK_FROM - W.time)}s` : left > 0 ? `${Math.round(W.R)}m · ${Math.ceil(left)}s` : 'final ring';
+  const board = $('#board');
+  board.replaceChildren(...[...W.snakes].sort((a, b) => (b.alive - a.alive) || b.len - a.len).slice(0, touchUI ? 5 : 8).map(s => { const li = document.createElement('li'); li.className = (s.id === me.id ? 'me ' : '') + (s.alive ? '' : 'dead'); const n = document.createElement('span'); n.textContent = s.name; const l = document.createElement('b'); l.textContent = Math.round(s.len); li.append(n, l); return li; }));
+}
+const idle = Array.from({ length: 6 }, (_, i) => ({ sk: SKINS[i * 2], a: i, r: 120 + i * 30 }));
 function drawIdle(now, w, h) {
   g.save(); g.translate(w / 2, h / 2);
-  for (const s of idle) { for (let k = 0; k < 40; k++) { const t = now / 1600 + s.a - k * .03; g.fillStyle = `hsla(${s.hue} 90% 60% / ${1 - k / 40})`; g.beginPath(); g.arc(Math.cos(t) * s.r * 1.6, Math.sin(t * 1.3) * s.r, 9 - k * .15, 0, 7); g.fill(); } }
-  g.restore();
+  for (const s of idle) for (let k = 39; k >= 0; k--) { const t = now / 1600 + s.a - k * .03; g.globalAlpha = 1 - k / 40; g.fillStyle = segColor(s.sk, k, 40, now, 30); g.beginPath(); g.arc(Math.cos(t) * s.r * 1.6, Math.sin(t * 1.3) * s.r, 9 - k * .15, 0, 7); g.fill(); }
+  g.globalAlpha = 1; g.restore();
 }
 let last = performance.now();
 function loop(now) {
-  const dt = Math.min(.05, (now - last) / 1000); last = now;
-  step(dt);
-  if (room && W && W.phase === 'play') {
-    if (now - lastSend > 66) { lastSend = now; sendMine(); }
-    if (isHost && now - lastWorld > 100) { lastWorld = now; broadcastWorld(false); }
+  const dt = Math.min(.25, (now - last) / 1000); last = now;
+  if (W && W.phase === 'play' && W.snakes.length) {
+    acc0 += dt;
+    while (acc0 >= S.TICK) { tick(); acc0 -= S.TICK; if (!W) break; }
+    if (room && W) {
+      if (now - lastSend > 66) { lastSend = now; sendMine(); }
+      if (isHost && now - lastWorld > 100) { lastWorld = now; broadcastWorld(false); }
+    }
   }
-  draw(now);
+  draw(now, W ? Math.min(1, acc0 / S.TICK) : 0);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 addEventListener('pagehide', () => room?.leave());
+// Pause-proof ranked runs: if the tab is hidden the world keeps its clock, so a run can't be slowed down.
+document.addEventListener('visibilitychange', () => { last = performance.now(); });
