@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { handle, viewsFor } from '../server/core.mjs';
-import { GAMES, replay } from '../public/games/shared/fair.js';
+import { GAMES, replay, canon } from '../public/games/shared/fair.js';
 
 const U = { id: 'u-1', name: 'alice' }, V = { id: 'u-2', name: 'bob' };
 let clock = 1_000_000;
@@ -12,7 +12,7 @@ function call(t, op, user, body = {}, wallet) {
   for (const st of r.steps) wallet.states.set(st.state.seq + ':' + r.table.seq, st.state);
   wallet.reveals.push(...r.reveals);
   wallet.views = viewsFor(r.table, r.steps);
-  return r.table;
+  return JSON.parse(canon(r.table)); // the database stores jsonb, which reorders keys
 }
 
 // Nothing in a seat's view may identify a card/tile it should not see.

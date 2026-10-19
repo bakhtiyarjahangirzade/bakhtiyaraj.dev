@@ -10345,6 +10345,7 @@ var engine7 = {
 engine7.viewFor = (s, seat) => ({ ...s, deck: [], hole: s.hole.map((h, i) => i === seat || s.phase === "result" && s.result?.shown && s.inHand[i] && !s.folded[i] ? h : h.map(() => null)) });
 
 // public/games/shared/fair.js
+var canon = (v) => Array.isArray(v) ? "[" + v.map(canon).join(",") + "]" : v && typeof v === "object" ? "{" + Object.keys(v).sort().filter((k) => v[k] !== void 0).map((k) => JSON.stringify(k) + ":" + canon(v[k])).join(",") + "}" : JSON.stringify(v ?? null);
 var sum = (o) => Object.values(o || {}).reduce((a, b) => a + b, 0);
 var int = (v, lo, hi, d) => {
   v = Math.floor(+v);
@@ -10532,7 +10533,7 @@ var Ctx = class {
   }
   rotate() {
     const f = this.t.fair, cur = f.cur;
-    this.reveals.push({ table_id: this.t.id, seg: cur.seg, game: this.t.game, members: this.t.seats.filter(isHuman).map((s) => s.uid), data: { game: this.t.game, seg: cur.seg, seed: cur.seed, commit: cur.commit, clientSeed: cur.clientSeed, setup: cur.setup, startState: cur.startState, actions: cur.actions, endSeq: this.t.seq, endHash: commitOf(JSON.stringify(this.t.state)) } });
+    this.reveals.push({ table_id: this.t.id, seg: cur.seg, game: this.t.game, members: this.t.seats.filter(isHuman).map((s) => s.uid), data: { game: this.t.game, seg: cur.seg, seed: cur.seed, commit: cur.commit, clientSeed: cur.clientSeed, setup: cur.setup, startState: cur.startState, actions: cur.actions, endSeq: this.t.seq, endHash: commitOf(canon(this.t.state)) } });
     f.lastReveal = cur.seg;
     this.begin(null);
   }
@@ -10741,7 +10742,12 @@ function handle(t, req) {
       const seat = t.seats[i];
       seat.away = false;
       seat.timeouts = 0;
-      const a = sanitize(body.action);
+      let a;
+      try {
+        a = sanitize(body.action);
+      } catch (e) {
+        fail(e.message || "Bad move.");
+      }
       if (a.type === "rebuy") {
         rebuy(ctx, i, balances);
       } else {

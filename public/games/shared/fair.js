@@ -9,6 +9,8 @@ import { engine as blackjack } from '../blackjack/engine.js';
 import { engine as roulette } from '../roulette/engine.js';
 import { engine as poker } from '../poker/engine.js';
 
+// Key-order independent JSON (the database stores tables as jsonb, which reorders object keys).
+export const canon = v => Array.isArray(v) ? '[' + v.map(canon).join(',') + ']' : v && typeof v === 'object' ? '{' + Object.keys(v).sort().filter(k => v[k] !== undefined).map(k => JSON.stringify(k) + ':' + canon(v[k])).join(',') + '}' : JSON.stringify(v ?? null);
 const sum = o => Object.values(o || {}).reduce((a, b) => a + b, 0);
 const int = (v, lo, hi, d) => { v = Math.floor(+v); return Number.isFinite(v) && v >= lo && v <= hi ? v : d; };
 const pick = (v, list, d) => list.includes(v) ? v : d;
@@ -92,7 +94,7 @@ export function replay(r) {
   return withRng(rng, () => {
     let s = r.startState ? JSON.parse(JSON.stringify(r.startState)) : g.engine.setup(r.setup.n, r.setup.opts);
     for (const { seat, a } of r.actions) s = apply(r.game, s, seat, a);
-    if (r.endHash && commitOf(JSON.stringify(s)) !== r.endHash) throw new Error('Replaying the log gives a different table than the server had.');
+    if (r.endHash && commitOf(canon(s)) !== r.endHash) throw new Error('Replaying the log gives a different table than the server had.');
     return s;
   });
 }

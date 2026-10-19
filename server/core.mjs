@@ -6,7 +6,7 @@
 //  - Bots decide from the same redacted view a human in that seat would see.
 //  - Every random draw comes from a committed seed (commit published before the client seed is known).
 //  - Chips move only here: buy-in from the wallet into the table, cash-out back. Tables never mint chips for people.
-import { GAMES, segmentEnd, sanitize, apply } from '../public/games/shared/fair.js';
+import { GAMES, segmentEnd, sanitize, apply, canon } from '../public/games/shared/fair.js';
 import { seeded, withRng, randomSeed, commitOf } from '../public/games/shared/rng.js';
 
 export class UserError extends Error {}
@@ -54,7 +54,7 @@ class Ctx {
   }
   rotate() {
     const f = this.t.fair, cur = f.cur;
-    this.reveals.push({ table_id: this.t.id, seg: cur.seg, game: this.t.game, members: this.t.seats.filter(isHuman).map(s => s.uid), data: { game: this.t.game, seg: cur.seg, seed: cur.seed, commit: cur.commit, clientSeed: cur.clientSeed, setup: cur.setup, startState: cur.startState, actions: cur.actions, endSeq: this.t.seq, endHash: commitOf(JSON.stringify(this.t.state)) } });
+    this.reveals.push({ table_id: this.t.id, seg: cur.seg, game: this.t.game, members: this.t.seats.filter(isHuman).map(s => s.uid), data: { game: this.t.game, seg: cur.seg, seed: cur.seed, commit: cur.commit, clientSeed: cur.clientSeed, setup: cur.setup, startState: cur.startState, actions: cur.actions, endSeq: this.t.seq, endHash: commitOf(canon(this.t.state)) } });
     f.lastReveal = cur.seg;
     this.begin(null);
   }
@@ -235,7 +235,7 @@ export function handle(t, req) {
       if (t.status !== 'playing' || !t.state) fail('The game is not running.');
       const i = mustSeat(t, user.id);
       const seat = t.seats[i]; seat.away = false; seat.timeouts = 0;
-      const a = sanitize(body.action);
+      let a; try { a = sanitize(body.action); } catch (e) { fail(e.message || 'Bad move.'); }
       if (a.type === 'rebuy') { rebuy(ctx, i, balances); }
       else {
         if (a.type.startsWith('_')) fail('Bad move.');
