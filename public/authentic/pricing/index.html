@@ -3,63 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pricing · Authentic</title>
+<title>Pricing — Authentic</title>
 <meta name="description" content="Free during beta. Plans for students, teachers and institutions.">
-<meta property="og:title" content="Pricing · Authentic">
+<meta property="og:title" content="Pricing — Authentic">
 <meta property="og:description" content="Free during beta. Plans for students, teachers and institutions.">
-<meta name="theme-color" content="#14213d">
+<meta name="theme-color" content="#000000">
 <link rel="icon" href="/authentic/assets/icon.svg" type="image/svg+xml">
+<link rel="preload" href="/authentic/assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/authentic/assets/authentic.css">
+<script src="/authentic/assets/site.js"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="top"><div class="wrap">
-<a class="logo" href="/authentic/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="var(--ink)"/><path d="M9 24 16 7l7 17" fill="none" stroke="var(--paper)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="m11.5 18.2 3.2 3 6.2-7" fill="none" stroke="var(--hl)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Authentic <small>Beta</small></a>
-<nav class="nav" aria-label="Main"><a href="/authentic/features/">Features</a><a href="/authentic/pricing/" aria-current=page>Pricing</a><a href="/authentic/#accuracy">Accuracy</a><a class="btn btn-primary keep" href="/authentic/check/">Check a file</a></nav>
-</div></header>
+<div class="gnav"><div class="wrap">
+<a class="mark" href="/" aria-label="BAKHY home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="#f5f5f7"/><path d="M9 24 16 7l7 17" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="m11.5 18.2 3.2 3 6.2-7" fill="none" stroke="#2997ff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+<nav aria-label="Global"><a href="/authentic/">Authentic</a><a class="gopt" href="/authentic/features/">Features</a><a href="/authentic/pricing/">Pricing</a><a class="gopt" href="/authentic/privacy/">Privacy</a><a href="/authentic/check/">Check</a></nav>
+</div></div>
+<div class="lnav"><div class="wrap">
+<a class="title" href="/authentic/">Authentic<small>Beta</small></a>
+<nav aria-label="Authentic"><a href="/authentic/">Overview</a><a href="/authentic/#how">How it works</a><a href="/authentic/features/">Features</a><a href="/authentic/pricing/" aria-current="page">Pricing</a><a class="pill-sm" href="/authentic/check/">Check a file</a></nav>
+</div></div>
 <main id="main">
 
-<section class="hero hero-sm"><div class="wrap center">
-<p class="eyebrow">Pricing</p>
-<h1>Simple plans. Free during beta.</h1>
-<p class="lede">Every feature is free while Authentic is in beta. Paid plans start when it leaves beta; early users keep a discount.</p>
-</div></section>
-<section class="pt-s"><div class="wrap">
-<div class="beta-note"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5"/></svg><p class="m0"><b>Beta:</b> all plans are free with fair use (40 checks per hour). Prices below are what the plans will cost after beta.</p></div>
-<div class="center"><div class="toggle" role="group" aria-label="Billing period"><button type="button" aria-pressed="true" data-period="m">Monthly</button><button type="button" aria-pressed="false" data-period="y">Yearly · save 20%</button></div></div>
+<section class="sec center"><div class="wrap-lg">
+<h1 class="display reveal">Pick your plan.</h1>
+<p class="lead reveal d1">Everything is free while Authentic is in beta. Early users keep a discount when paid plans start.</p>
+<div class="billing reveal d2" role="group" aria-label="Billing period"><button type="button" aria-pressed="true" data-period="m">Monthly</button><button type="button" aria-pressed="false" data-period="y">Yearly · save 20%</button></div>
 <div class="plans">
-<article class="plan">
-<h3>Free</h3><p class="who">Try it on a few assignments</p><p class="price"><span data-m="$0" data-y="$0">$0</span> <small data-unit>/ month</small></p>
-<ul><li>20 checks per month</li><li>Files up to 10 MB</li><li>Paragraph analysis and 98% range</li><li>Trace and hidden-text scan</li></ul>
-<a class="btn btn-ghost" href="/authentic/check/">Start checking</a></article>
-<article class="plan">
-<h3>Student</h3><p class="who">Check your own drafts before you submit</p><p class="price"><span data-m="$4" data-y="$3.20">$4</span> <small data-unit>/ month</small></p>
-<ul><li>60 checks per month</li><li>See which paragraphs may be questioned</li><li>Shareable report for your teacher</li><li>Drafts never stored</li></ul>
-<a class="btn btn-ghost" href="/authentic/check/">Start checking</a></article>
-<article class="plan featured">
-<span class="pill ok tag">Most popular</span><h3>Teacher</h3><p class="who">For individual teachers and tutors</p><p class="price"><span data-m="$9" data-y="$7.20">$9</span> <small data-unit>/ month</small></p>
-<ul><li>500 checks per month</li><li>Everything in Free</li><li>Printable PDF reports</li><li>Batch upload (coming soon)</li><li>Priority support</li></ul>
-<a class="btn btn-primary" href="/authentic/check/">Start free in beta</a></article>
-<article class="plan">
-<h3>Institution</h3><p class="who">Universities, schools and departments</p><p class="price">Custom</p>
-<ul><li>Unlimited checks for staff</li><li>Moodle, Canvas and Blackboard</li><li>SSO and admin dashboard</li><li>Calibration on your own past essays</li><li>Data processing agreement</li></ul>
-<a class="btn btn-ghost" href="mailto:bakhtiyaraj@code.edu.az?subject=Authentic">Contact us</a></article>
-</div>
+<article class="plan reveal"><h3>Free</h3><p class="who">Try it on a few assignments.</p><p class="price"><span data-m="$0" data-y="$0">$0</span><small data-unit>/mo</small></p><p class="now">Free during beta</p><ul><li>20 checks a month</li><li>Files up to 10 MB</li><li>Paragraph analysis</li><li>Trace and hidden-text scan</li></ul><a class="pill secondary" href="/authentic/check/">Start checking</a></article>
+<article class="plan reveal"><h3>Student</h3><p class="who">Check your own drafts first.</p><p class="price"><span data-m="$4" data-y="$3.20">$4</span><small data-unit>/mo</small></p><p class="now">Free during beta</p><ul><li>60 checks a month</li><li>See what may be questioned</li><li>Shareable report</li><li>Drafts never stored</li></ul><a class="pill secondary" href="/authentic/check/">Start checking</a></article>
+<article class="plan featured reveal"><span class=badge>Most popular</span><h3>Teacher</h3><p class="who">For teachers and tutors.</p><p class="price"><span data-m="$9" data-y="$7.20">$9</span><small data-unit>/mo</small></p><p class="now">Free during beta</p><ul><li>500 checks a month</li><li>Everything in Free</li><li>Printable PDF reports</li><li>Batch upload, soon</li><li>Priority support</li></ul><a class="pill" href="/authentic/check/">Start free in beta</a></article>
+<article class="plan reveal"><h3>Institution</h3><p class="who">Schools and universities.</p><p class="price">Custom</p><p class="now">Free during beta</p><ul><li>Unlimited staff checks</li><li>Moodle, Canvas, Blackboard</li><li>SSO and admin dashboard</li><li>Calibrated on your essays</li><li>Data processing agreement</li></ul><a class="pill secondary" href="mailto:bakhtiyaraj@code.edu.az?subject=Authentic">Contact us</a></article>
+</div></div></section>
+<section class="sec alt"><div class="wrap">
+<div class="sec-head reveal"><h2 class="headline">Compare plans.</h2></div>
+<div class="scroll-x reveal"><table class="compare"><thead><tr><th>Feature</th><th>Free</th><th>Student</th><th>Teacher</th><th>Institution</th></tr></thead><tbody>
+<tr><td>Checks per month</td><td>20</td><td>60</td><td>500</td><td>Unlimited</td></tr><tr><td>Paragraph analysis and 98% range</td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td></tr><tr><td>Trace and hidden-text scan</td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td></tr><tr><td>Printable PDF report</td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td><td class="y"><span class="sr">Included</span></td></tr><tr><td>Batch upload</td><td class="n"><span class="sr">Not included</span></td><td class="n"><span class="sr">Not included</span></td><td>Soon</td><td class="y"><span class="sr">Included</span></td></tr><tr><td>Mac and Windows app</td><td class="n"><span class="sr">Not included</span></td><td>Soon</td><td>Soon</td><td>Soon</td></tr><tr><td>LMS integration and SSO</td><td class="n"><span class="sr">Not included</span></td><td class="n"><span class="sr">Not included</span></td><td class="n"><span class="sr">Not included</span></td><td class="y"><span class="sr">Included</span></td></tr><tr><td>Calibration on your own essays</td><td class="n"><span class="sr">Not included</span></td><td class="n"><span class="sr">Not included</span></td><td class="n"><span class="sr">Not included</span></td><td class="y"><span class="sr">Included</span></td></tr>
+</tbody></table></div>
+<p class="tiny center">Prices in US dollars, excluding tax. Beta limit: 40 checks per hour per network.</p>
 </div></section>
-<section><div class="wrap narrow">
-<div class="section-head"><h2>Pricing questions</h2></div>
-<details><summary>What counts as a check?</summary><p>One uploaded file or one pasted text, of any length up to 10 MB.</p></details>
-<details><summary>Is there a limit during beta?</summary><p>Fair use only: up to 40 checks per hour from one network. Contact us if you need more for a whole class.</p></details>
-<details><summary>Can our university calibrate the model on its own essays?</summary><p>Yes. With your permission, anonymised essays written before 2020 can be used to calibrate the model to your students’ writing, which narrows the ranges and lowers false alarms.</p></details>
-<details><summary>Do you offer discounts for schools in developing regions?</summary><p>Yes. Get in touch and tell us about your school.</p></details>
-</div></section>
+<section class="sec"><div class="wrap"><div class="faq">
+<details><summary>What counts as a check?</summary><p>One uploaded file or one pasted text, up to 10 MB.</p></details>
+<details><summary>Can our university calibrate on its own essays?</summary><p>Yes. With permission, anonymised essays written before 2020 can calibrate the model to your students, which narrows ranges and lowers false alarms.</p></details>
+<details><summary>Do you offer discounts for schools?</summary><p>Yes, including for schools in developing regions. Get in touch.</p></details>
+</div></div></section>
 
 </main>
 <footer class="foot"><div class="wrap">
-<div><a class="logo" href="/authentic/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="var(--ink)"/><path d="M9 24 16 7l7 17" fill="none" stroke="var(--paper)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="m11.5 18.2 3.2 3 6.2-7" fill="none" stroke="var(--hl)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Authentic</a><p>AI-writing analysis for teachers and students. Made by <a href="/">BAKHY</a>.</p></div>
-<nav aria-label="Footer"><a href="/authentic/features/">Features</a><a href="/authentic/pricing/">Pricing</a><a href="/authentic/#accuracy">Accuracy</a><a href="/authentic/#faq">FAQ</a><a href="mailto:bakhtiyaraj@code.edu.az?subject=Authentic">Contact</a></nav>
-<p>Results are probabilities, not proof. Never use them as the only basis for an academic decision.</p>
+<div class="notes">
+<p>Authentic reports probabilities, not proof. Never use a result as the only basis for an academic decision.</p>
+<p>Accuracy figures are measured on 12,554 held-out documents for model 2026.10-v1. See <a href="/authentic/#accuracy">Accuracy</a> for the method and known limits.</p>
+</div>
+<div class="cols">
+<div><h4>Product</h4><ul><li><a href="/authentic/">Overview</a></li><li><a href="/authentic/features/">Features</a></li><li><a href="/authentic/pricing/">Pricing</a></li><li><a href="/authentic/check/">Check a file</a></li></ul></div>
+<div><h4>How it works</h4><ul><li><a href="/authentic/#how">The pipeline</a></li><li><a href="/authentic/#training">Training data</a></li><li><a href="/authentic/#accuracy">Accuracy</a></li><li><a href="/authentic/#faq">FAQ</a></li></ul></div>
+<div><h4>For</h4><ul><li><a href="/authentic/pricing/">Teachers</a></li><li><a href="/authentic/pricing/">Students</a></li><li><a href="/authentic/pricing/">Universities</a></li></ul></div>
+<div><h4>About</h4><ul><li><a href="/">BAKHY</a></li><li><a href="mailto:bakhtiyaraj@code.edu.az?subject=Authentic">Contact</a></li><li><a href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev" rel="noopener">Source code</a></li></ul></div>
+</div>
+<div class="legal-row"><span>Copyright © 2026 BAKHY. All rights reserved.</span>
+<nav aria-label="Legal"><a href="/authentic/privacy/">Privacy Policy</a><a href="/authentic/terms/">Terms of Use</a><a href="/authentic/cookies/">Cookie Policy</a><button type="button" class="linkbtn" data-cookie-settings>Cookie Settings</button></nav></div>
 </div></footer>
-<script type="module" src="/authentic/assets/pricing.js"></script>
+<script type="module" src="/authentic/assets/home.js"></script><script type="module" src="/authentic/assets/pricing.js"></script>
 </body>
 </html>
