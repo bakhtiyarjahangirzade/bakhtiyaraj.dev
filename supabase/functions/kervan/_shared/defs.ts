@@ -228,23 +228,45 @@ export const CBS: CbDef[] = [
 ];
 export const CB: Record<CbId, CbDef> = Object.fromEntries(CBS.map((b) => [b.id, b])) as Record<CbId, CbDef>;
 
+// ---------- dünya harikaları (dünyada yalnızca bir kez) ----------
+export type WonderId = 'piramit' | 'bahce' | 'kutuphane' | 'sur' | 'kolezyum' | 'ayasofya' | 'carsi' | 'leonardo' | 'tacmahal' | 'suveys' | 'eyfel' | 'sinema' | 'iss' | 'fuzyon';
+export interface WonderFx { build?: number; growth?: number; science?: number; defense?: number; happy?: number; route?: number; routeSlot?: number; prod?: number; gold?: number; seaSpeed?: number; noBarb?: number }
+export interface WonderDef { id: WonderId; name: string; icon: string; era: number; tech: TechId; gold: number; mat: Q; turns: number; desc: string; fx: WonderFx }
+export const WONDERS: WonderDef[] = [
+  { id: 'piramit', name: 'Piramitler', icon: '🔺', era: 1, tech: 'madencilik', gold: 220, mat: { stone: 60 }, turns: 10, desc: 'Tüm yapılar %15 ucuz.', fx: { build: 0.85 } },
+  { id: 'bahce', name: 'Asma Bahçeler', icon: '🌿', era: 1, tech: 'comlekcilik', gold: 200, mat: { stone: 30, wood: 30 }, turns: 9, desc: 'Nüfus %20 hızlı büyür.', fx: { growth: 1.2 } },
+  { id: 'kutuphane', name: 'Büyük Kütüphane', icon: '📜', era: 2, tech: 'felsefe', gold: 420, mat: { stone: 70 }, turns: 10, desc: 'Bilim +%15.', fx: { science: 1.15 } },
+  { id: 'sur', name: 'Çin Seddi', icon: '🧱', era: 2, tech: 'insaat', gold: 380, mat: { stone: 110 }, turns: 10, desc: 'Şehir savunması +%40; toprağının yakınında haydut kampı kurulamaz.', fx: { defense: 1.4, noBarb: 1 } },
+  { id: 'kolezyum', name: 'Kolezyum', icon: '🏟️', era: 2, tech: 'para', gold: 420, mat: { stone: 90 }, turns: 10, desc: 'Memnuniyet +%12.', fx: { happy: 0.12 } },
+  { id: 'ayasofya', name: 'Ayasofya', icon: '🕌', era: 3, tech: 'lonca', gold: 700, mat: { stone: 130, planks: 40 }, turns: 12, desc: 'Memnuniyet +%10, altın +%10.', fx: { happy: 0.1, gold: 1.1 } },
+  { id: 'carsi', name: 'Kapalıçarşı', icon: '🏮', era: 3, tech: 'kervansaray', gold: 650, mat: { stone: 80, planks: 40, cloth: 20 }, turns: 12, desc: 'Ticaret yolu geliri +%25, +1 yol yuvası.', fx: { route: 1.25, routeSlot: 1 } },
+  { id: 'leonardo', name: "Leonardo'nun Atölyesi", icon: '🛠️', era: 4, tech: 'matbaa', gold: 1100, mat: { tools: 30, paper: 30 }, turns: 12, desc: 'Üretim +%10.', fx: { prod: 1.1 } },
+  { id: 'tacmahal', name: 'Tac Mahal', icon: '🏯', era: 4, tech: 'bankacilik', gold: 1200, mat: { stone: 200, cloth: 30 }, turns: 12, desc: 'Memnuniyet +%15.', fx: { happy: 0.15 } },
+  { id: 'suveys', name: 'Süveyş Kanalı', icon: '⚓', era: 5, tech: 'buhar', gold: 2200, mat: { steel: 40, machinery: 6 }, turns: 14, desc: 'Gemiler %50 hızlı, +1 yol yuvası.', fx: { seaSpeed: 1.5, routeSlot: 1 } },
+  { id: 'eyfel', name: 'Eyfel Kulesi', icon: '🗼', era: 5, tech: 'celik', gold: 2000, mat: { steel: 80 }, turns: 14, desc: 'Memnuniyet +%10, altın +%15.', fx: { happy: 0.1, gold: 1.15 } },
+  { id: 'sinema', name: 'Sinema Stüdyoları', icon: '🎬', era: 6, tech: 'elektrik', gold: 3500, mat: { steel: 60, plastics: 40 }, turns: 14, desc: 'Altın +%25.', fx: { gold: 1.25 } },
+  { id: 'iss', name: 'Uluslararası Uzay İstasyonu', icon: '🛰️', era: 7, tech: 'bilgisayar', gold: 6000, mat: { electronics: 40, steel: 80 }, turns: 16, desc: 'Bilim +%25.', fx: { science: 1.25 } },
+  { id: 'fuzyon', name: 'Füzyon Reaktörü', icon: '🔆', era: 8, tech: 'fuzyon', gold: 9000, mat: { robots: 10, steel: 120 }, turns: 16, desc: 'Üretim +%25.', fx: { prod: 1.25 } },
+];
+export const WONDER: Record<WonderId, WonderDef> = Object.fromEntries(WONDERS.map((w) => [w.id, w])) as Record<WonderId, WonderDef>;
+
 // ---------- birlikler ----------
 export type UnitId = 'settler' | 'scout' | 'warrior' | 'archer' | 'spearman' | 'swordsman' | 'knight' | 'musketeer' | 'infantry' | 'artillery' | 'tank' | 'mech' | 'robotarmy';
 export interface UnitDef {
   id: UnitId; name: string; icon: string; tech: TechId | null; era: number;
-  str: number; moves: number; gold: number; cost: Q; upkeep: number; civil?: boolean; sight: number; desc: string;
+  str: number; moves: number; gold: number; cost: Q; upkeep: number; civil?: boolean; sight: number; desc: string; range?: number;
 }
 export const UNITS: UnitDef[] = [
   { id: 'settler', name: 'Göçmenler', icon: '🏕️', tech: null, era: 0, str: 0, moves: 2, gold: 30, cost: { food: 25 }, upkeep: 0, civil: true, sight: 2, desc: 'Yeni şehir kurar (şehirden 1 nüfus alır).' },
   { id: 'scout', name: 'Öncü', icon: '🧭', tech: null, era: 0, str: 2, moves: 3, gold: 15, cost: { food: 4 }, upkeep: 0.2, civil: true, sight: 3, desc: 'Keşif yapar; savaşmaz.' },
   { id: 'warrior', name: 'Savaşçı', icon: '🪓', tech: null, era: 0, str: 8, moves: 2, gold: 20, cost: { food: 5 }, upkeep: 0.5, sight: 2, desc: 'Taş baltalı kabile savaşçısı.' },
-  { id: 'archer', name: 'Okçu', icon: '🏹', tech: 'hayvancilik', era: 0, str: 11, moves: 2, gold: 30, cost: { wood: 4, food: 4 }, upkeep: 0.6, sight: 2, desc: 'Uzaktan saldırır.' },
+  { id: 'archer', name: 'Okçu', icon: '🏹', tech: 'hayvancilik', era: 0, str: 11, moves: 2, gold: 30, cost: { wood: 4, food: 4 }, upkeep: 0.6, sight: 2, range: 2, desc: 'İki hex öteden karşılık almadan ok atar.' },
   { id: 'spearman', name: 'Tunç mızrakçı', icon: '🔱', tech: 'tunc', era: 1, str: 16, moves: 2, gold: 45, cost: { bronze: 1, food: 5 }, upkeep: 0.8, sight: 2, desc: 'Tunç uçlu mızrak ve kalkan.' },
   { id: 'swordsman', name: 'Kılıçlı piyade', icon: '⚔️', tech: 'silahcilik', era: 2, str: 24, moves: 2, gold: 70, cost: { weapons: 1, food: 6 }, upkeep: 1, sight: 2, desc: 'Demir kılıç, lejyon düzeni.' },
   { id: 'knight', name: 'Şövalye', icon: '🐎', tech: 'feodalite', era: 3, str: 34, moves: 4, gold: 110, cost: { weapons: 2, food: 8 }, upkeep: 1.4, sight: 2, desc: 'Ağır zırhlı atlı.' },
   { id: 'musketeer', name: 'Tüfekli', icon: '🔫', tech: 'barut', era: 4, str: 46, moves: 2, gold: 150, cost: { gunpowder: 1, weapons: 1 }, upkeep: 1.8, sight: 2, desc: 'Barutlu tüfek.' },
   { id: 'infantry', name: 'Piyade', icon: '🎖️', tech: 'tufek', era: 5, str: 62, moves: 2, gold: 220, cost: { gunpowder: 2, steel: 1 }, upkeep: 2.4, sight: 2, desc: 'Yivli tüfek, siper.' },
-  { id: 'artillery', name: 'Topçu', icon: '💣', tech: 'celik', era: 5, str: 70, moves: 2, gold: 300, cost: { steel: 3, gunpowder: 2 }, upkeep: 3, sight: 2, desc: 'Şehirlere karşı çok güçlü.' },
+  { id: 'artillery', name: 'Topçu', icon: '💣', tech: 'celik', era: 5, str: 70, moves: 2, gold: 300, cost: { steel: 3, gunpowder: 2 }, upkeep: 3, sight: 2, range: 2, desc: 'İki hex öteden bombalar; şehirlere karşı çok güçlü.' },
   { id: 'tank', name: 'Tank', icon: '🛡️', tech: 'motorlu', era: 6, str: 92, moves: 4, gold: 600, cost: { steel: 4, fuel: 3 }, upkeep: 4, sight: 2, desc: 'Zırhlı paletli araç.' },
   { id: 'mech', name: 'Mekanize piyade', icon: '🚙', tech: 'bilgisayar', era: 7, str: 116, moves: 4, gold: 900, cost: { steel: 3, electronics: 1, fuel: 2 }, upkeep: 5, sight: 3, desc: 'Zırhlı araç ve dronlar.' },
   { id: 'robotarmy', name: 'Robot birliği', icon: '🤖', tech: 'robotik', era: 8, str: 150, moves: 4, gold: 1500, cost: { robots: 2, fuel: 2 }, upkeep: 6, sight: 3, desc: 'Otonom savaş makineleri.' },

@@ -19,7 +19,7 @@ export const FEATURE_NAMES: Record<string, string> = { forest: 'Orman', jungle: 
 
 export interface Hex {
   i: number; c: number; r: number; x: number; z: number; lon: number; lat: number;
-  land: boolean; country: number; terrain: Terrain; feature: Feature; elev: number;
+  land: boolean; country: number; terrain: Terrain; feature: Feature; elev: number; river: boolean;
   res: Record<ResKey, number>; prov: number; coast: boolean; nb: number[];
 }
 
@@ -40,6 +40,7 @@ export interface WorldMap {
   regionOf: Int16Array;
   regions: RegionStatic[];
   towns: TownStatic[];
+  rivers: number[][]; // kaynaktan denize hex dizileri
 }
 
 // ---------- Türkçe ülke adları (sık görülenler) ----------
@@ -157,6 +158,39 @@ const OIL: Box[] = [
   { lon: [3, 9], lat: [4, 7] }, { lon: [64, 80], lat: [58, 66] }, { lon: [-120, -110], lat: [53, 59] }, { lon: [1, 8], lat: [56, 62] },
   { lon: [5, 11], lat: [27, 32] }, { lon: [16, 22], lat: [27, 31] }, { lon: [-152, -146], lat: [69, 71] }, { lon: [100, 118], lat: [-2, 4] },
 ];
+const RIVERS: [number, number][][] = [
+  [[33, -2], [32.5, 3], [31.5, 9], [32.5, 15.6], [33.5, 19], [32.9, 24], [31.2, 30], [31, 31.6]], // Nil
+  [[42, 38], [43.1, 36.3], [44.4, 33.3], [46.5, 31], [48.2, 29.9]], // Dicle
+  [[39, 39.5], [38.5, 36.8], [40.5, 35], [43, 33.7], [45.5, 31.5], [47, 30.5], [48.2, 29.9]], // Fırat
+  [[80, 32], [77, 34.5], [74, 35.5], [72, 33.5], [71.5, 30], [68.5, 26], [67.5, 23.8]], // İndus
+  [[79, 30.9], [80.3, 27], [83, 25.5], [86, 25.3], [88.5, 23.5], [89.5, 21.8]], // Ganj
+  [[96, 35], [101.7, 36], [104, 37], [107, 40.5], [110.5, 39], [110.5, 35], [113, 34.8], [116, 36], [118.8, 37.7]], // Sarı Irmak
+  [[92, 33], [98, 31], [102, 27], [104.6, 28.8], [107, 29.6], [111.3, 30.7], [114.3, 30.6], [117, 31], [121.8, 31.4]], // Yangtze
+  [[8.5, 48], [11, 48.8], [16.4, 48.2], [19, 47.5], [20, 45.3], [22.5, 44.6], [25.5, 43.7], [28, 45], [29.8, 45.2]], // Tuna
+  [[9.5, 46.9], [8, 47.6], [7.6, 48.6], [8.3, 49.9], [7, 50.9], [6.2, 51.8], [4.1, 51.9]], // Ren
+  [[33, 57], [37, 57.5], [40, 57.7], [44, 56.3], [48.7, 55.8], [49.2, 53.2], [46, 51.5], [44.5, 48.7], [48, 46.3], [48.5, 45.8]], // Volga
+  [[33, 55], [30.5, 53.9], [30.5, 50.5], [33, 49], [34.5, 47.5], [32.5, 46.5]], // Dinyeper
+  [[38, 54], [39.2, 51.7], [41, 49.5], [39.4, 47.1]], // Don
+  [[-95.2, 47.2], [-93.2, 45], [-91, 43], [-91, 40], [-90.2, 38.6], [-89.2, 37], [-90, 35], [-91.2, 32.3], [-90.1, 30], [-89.3, 29]], // Mississippi
+  [[-73, -4.5], [-70, -4], [-65, -3.5], [-60, -3.1], [-55, -2.3], [-52, -1.5], [-49.5, -0.3]], // Amazon
+  [[-10.5, 9.5], [-8, 12.6], [-4, 14.5], [-1, 16.5], [1.5, 13], [4.5, 11], [6.5, 7.5], [6.2, 4.2]], // Nijer
+  [[27, -9], [26, -3], [25, 0.5], [22, 1.5], [18, -1], [16, -4.3], [12.4, -6]], // Kongo
+  [[94, 33], [99, 26], [100.5, 21], [102.5, 17.9], [105.8, 15.1], [105.5, 11.5], [106.6, 9.5]], // Mekong
+  [[86, 51], [83, 53.5], [82, 56], [76, 60.8], [69, 61], [66, 66.5], [66.5, 69]], // Obi
+  [[95, 51], [92.5, 54.5], [92, 58], [89.5, 62], [87, 66], [83, 71]], // Yenisey
+  [[107, 54], [113, 58], [123, 61], [129.7, 62], [127, 66], [126, 70], [127, 72.6]], // Lena
+  [[118, 51.5], [124, 53], [127.5, 50.2], [132, 48], [135, 48.5], [137, 50.5], [140.6, 52.9]], // Amur
+  [[-79.5, 43.3], [-76.5, 44.2], [-73.6, 45.5], [-71.2, 46.8], [-68, 48.6], [-64.5, 49.5]], // St. Lawrence
+  [[-47.5, -20], [-51, -22], [-54.6, -25.6], [-58.8, -27.5], [-60.7, -32.9], [-58.4, -34.2]], // Parana
+  [[24, -11.5], [23.5, -15.5], [25.8, -17.9], [28.5, -16.5], [32, -15.6], [35.5, -17.5], [36.6, -18.9]], // Zambezi
+  [[4.7, 47.6], [3, 48.4], [2.3, 48.85], [1, 49.3], [0.1, 49.45]], // Sen
+  [[7.2, 44.7], [9, 45.1], [11, 45], [12.5, 44.95]], // Po
+  [[38.5, 39.7], [36, 39.2], [34, 39.6], [34.3, 41], [35.9, 41.8]], // Kızılırmak
+  [[73, 37.3], [68, 37.2], [65, 38.5], [61, 40.5], [59.5, 43.6]], // Amuderya
+  [[71, 41], [69, 40.8], [68, 42], [66, 43.7], [61.5, 46.1]], // Siriderya
+  [[-63.5, 2.5], [-66, 4], [-67.5, 6.3], [-64, 8], [-60.8, 8.7]], // Orinoko
+  [[97.5, 26], [96, 22], [95.5, 18], [95, 15.8]], // İravadi
+];
 const inBox = (lon: number, lat: number, b: Box) => lon >= b.lon[0] && lon <= b.lon[1] && lat >= b.lat[0] && lat <= b.lat[1];
 
 function segDist(px: number, py: number, ax: number, ay: number, bx: number, by: number) {
@@ -200,7 +234,7 @@ export function generateWorld(seed: number): WorldMap {
       }
       hexes[i] = {
         i, c, r, x, z, lon, lat, land: country > 0, country, terrain: 'deep', feature: null, elev: 0,
-        res: Object.fromEntries(RES_KEYS.map((k) => [k, 0])) as Record<ResKey, number>, prov: -1, coast: false, nb,
+        res: Object.fromEntries(RES_KEYS.map((k) => [k, 0])) as Record<ResKey, number>, prov: -1, coast: false, nb, river: false,
       };
     }
   }
@@ -254,6 +288,38 @@ export function generateWorld(seed: number): WorldMap {
       oil: clamp((OIL.some((b) => inBox(h.lon, h.lat, b)) ? 0.8 : 0) + (T === 'desert' || T === 'tundra' ? 0.12 : 0.02) + fbm(h.lon / 3, h.lat / 3, 9191, 2) * 0.25 - 0.12 + jit() * 0.5),
       sugar: clamp((SUGAR.some((b) => inBox(h.lon, h.lat, b)) ? 0.75 : Math.abs(h.lat) < 23 ? 0.3 : 0.02) * (T === 'grass' || T === 'plains' ? 1 : 0.3) * (F === 'jungle' ? 0.6 : 1) + (h.coast ? 0.06 : 0) + jit()),
     };
+  }
+
+  // nehirler: gerçek büyük nehirlerin kabaca yatağı; nehir hex'leri daha verimli
+  const rivers: number[][] = [];
+  for (const pts of RIVERS) {
+    const seq: number[] = [];
+    const push = (i: number) => { if (seq[seq.length - 1] !== i) seq.push(i); };
+    for (let k = 0; k < pts.length - 1; k++) {
+      const [a1, b1] = pts[k], [a2, b2] = pts[k + 1];
+      const n = Math.max(1, Math.ceil(Math.hypot(a2 - a1, b2 - b1) / 0.6));
+      for (let t = 0; t <= n; t++) push(lonLatToHex(a1 + ((a2 - a1) * t) / n, b1 + ((b2 - b1) * t) / n));
+    }
+    // ardışık hex'leri komşu yap (gerekirse BFS ile bağla)
+    const path: number[] = [];
+    for (const i of seq) {
+      const last = path[path.length - 1];
+      if (last === undefined || hexes[last].nb.includes(i)) { path.push(i); continue; }
+      const prev = new Map<number, number>([[last, -1]]); const q = [last];
+      while (q.length && !prev.has(i)) { const c = q.shift()!; for (const j of hexes[c].nb) if (!prev.has(j)) { prev.set(j, c); q.push(j); } }
+      const mid: number[] = []; let c = prev.get(i);
+      while (c !== undefined && c !== last && c >= 0) { mid.push(c); c = prev.get(c); }
+      path.push(...mid.reverse(), i);
+    }
+    const land: number[] = [];
+    for (const i of path) { if (!hexes[i].land) { if (land.length > 2) { land.push(i); break; } continue; } land.push(i); }
+    if (land.length < 3) continue;
+    for (const i of land) if (hexes[i].land) {
+      const h = hexes[i]; h.river = true;
+      h.res.fertility = Math.min(1, h.res.fertility + (h.terrain === 'desert' ? 0.55 : 0.3));
+      if (h.terrain === 'desert') h.terrain = 'plains';
+    }
+    rivers.push(land);
   }
 
   // şehirler
@@ -399,7 +465,7 @@ export function generateWorld(seed: number): WorldMap {
   const regionOf = new Int16Array(n);
   for (const h of hexes) { height[h.i] = h.land ? h.elev : -0.2; regionOf[h.i] = h.prov; }
   return {
-    seed, N: COLS, COLS, ROWS, W: COLS * SQ3, H: ROWS * 1.5, hexes, height, regionOf, regions, towns,
+    seed, N: COLS, COLS, ROWS, W: COLS * SQ3, H: ROWS * 1.5, hexes, height, regionOf, regions, towns, rivers,
   };
 }
 

@@ -5,7 +5,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
 import { actBots } from './_shared/bots.ts';
 import { C, fmtYear, yearOfTurn } from './_shared/defs.ts';
 import { CULTURES } from './_shared/cultures.ts';
-import { addRealm, applyAction, getMap, newGame, tick, type Action, type GameState } from './_shared/sim.ts';
+import { addRealm, applyAction, getMap, migrate, newGame, tick, type Action, type GameState } from './_shared/sim.ts';
 
 const SB_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -72,7 +72,7 @@ async function mutate(roomId: string, fn: (s: GameState) => unknown) {
   for (let i = 0; i < 4; i++) {
     const { data, error } = await admin.from('kervan_worlds').select('state, version').eq('id', roomId).single();
     if (error || !data) throw new Error('Oda bulunamadı');
-    const s = data.state as GameState;
+    const s = migrate(data.state as GameState);
     getMap(s.seed);
     const out = fn(s);
     const players = s.realms.filter((r) => r.kind === 'player').length;
@@ -180,7 +180,7 @@ Deno.serve(async (req) => {
     if (op === 'load') {
       const { data: sv } = await admin.from('kervan_saves').select('name, state').eq('id', String(body.save)).eq('user_id', user.id).maybeSingle();
       if (!sv) return json({ error: 'Kayıt bulunamadı' }, 404);
-      const s = sv.state as GameState;
+      const s = migrate(sv.state as GameState);
       const id = `coop-${crypto.randomUUID().slice(0, 8)}`;
       const name = String(sv.name).split(' · ')[0].slice(0, 32);
       s.roomName = name;
@@ -215,7 +215,7 @@ Deno.serve(async (req) => {
       }
       await admin.from('kervan_players').update({ last_seen: new Date().toISOString() }).eq('world_id', roomId).eq('user_id', user.id);
       const { data: w } = await admin.from('kervan_worlds').select('state, version, last_tick').eq('id', roomId).single();
-      return json({ state: w!.state, realmId: me!.house_id, ...meta(w!.version), lastTick: w!.last_tick });
+      return json({ state: migrate(w!.state as GameState), realmId: me!.house_id, ...meta(w!.version), lastTick: w!.last_tick });
     }
     if (!me) return json({ error: 'Bu odada kabilen yok' }, 403);
     await admin.from('kervan_players').update({ last_seen: new Date().toISOString() }).eq('world_id', roomId).eq('user_id', user.id);
@@ -227,10 +227,12 @@ Deno.serve(async (req) => {
       const lt = w!.last_tick;
       if (!adv && w!.version === since) return json({ unchanged: true, realmId: me.house_id, ...meta(w!.version), lastTick: lt });
       const { data: full } = await admin.from('kervan_worlds').select('state, version').eq('id', roomId).single();
-      return json({ state: full!.state, realmId: me.house_id, ...meta(full!.version), lastTick: lt });
+      return json({ state: migrate(full!.state as GameState), realmId: me.house_id, ...meta(full!.version), lastTick: lt });
     }
     if (op === 'action') {
       const action = body.action as Action;
+      const { count: recent } = await admin.from('kervan_actions').select('id', { count: 'exact', head: true }).eq('user_id', user.id).gte('at', new Date(Date.now() - 10000).toISOString());
+      if ((recent ?? 0) > 25) return json({ error: 'Çok hızlı: birkaç saniye bekle' }, 429);
       const r = await mutate(roomId, (st) => {
         const R = st.realms[me!.house_id]; if (R) R.away = false;
         return applyAction(st, me!.house_id, action);
