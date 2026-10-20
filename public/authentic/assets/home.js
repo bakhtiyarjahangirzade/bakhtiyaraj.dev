@@ -10,20 +10,22 @@ async function demo(root) {
   for (;;) {
     paras.forEach((p) => p.classList.remove('hot', 'warm', 'found'));
     flags.forEach((f) => f.classList.remove('show'));
-    band.style.left = '0%'; band.style.width = '0%'; dot.style.left = '0%'; num.textContent = '0–0';
+    band.style.left = '0%'; band.style.width = '0%'; dot.style.left = '0%'; num.textContent = '—';
+    const running = [6, 7, 38, 52, 49, 49]; let k = 0;
     await wait(700);
     scan.style.opacity = '1';
     for (const p of paras) {
       scan.style.transform = `translateY(${p.offsetTop + p.offsetHeight - 64}px)`;
-      scan.style.transition = reduced ? 'none' : 'transform .7s cubic-bezier(.28,.11,.32,1), opacity .4s';
-      await wait(750);
+      scan.style.transition = reduced ? 'none' : 'transform 1.1s cubic-bezier(.28,.11,.32,1), opacity .4s';
+      await wait(1250);
+      num.textContent = `≈${running[k]}`; dot.style.left = `${running[k++]}%`;
       if (p.hasAttribute('data-hot')) p.classList.add('hot');
       if (p.hasAttribute('data-warm')) p.classList.add('warm');
       if (p.hasAttribute('data-ghost')) { p.classList.add('found'); flags[0].classList.add('show'); }
     }
     scan.style.opacity = '0';
     flags[1].classList.add('show');
-    const lo = 41, hi = 79, est = 60;
+    const lo = 48, hi = 72, est = 60;
     band.style.left = `${lo}%`; band.style.width = `${hi - lo}%`; dot.style.left = `${est}%`;
     const t0 = performance.now();
     await new Promise((res) => {

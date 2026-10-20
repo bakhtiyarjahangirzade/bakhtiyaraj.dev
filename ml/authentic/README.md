@@ -26,6 +26,24 @@ exactly; `tests/authentic.test.mjs` checks parity against `tests/fixtures/authen
 the service, retrain on commercially licensed data (for example your own anonymised pre-2020 student
 work, with permission) and drop the non-commercial sets.
 
+## v3 (2026.10-v3): more 2025-era data, calibrated and adaptive ranges
+
+- 405 essays by a 2025-era model (`gen_1..9`), now including grade-9 writing, learner English
+  (Spanish, Chinese, Arabic, Russian, Turkish, Azerbaijani, Korean, Persian L1), and essays that were
+  polished then roughened. Split 70/15/15 so calibration and test also contain modern text (`ens2.py`).
+- Paragraph scores go through isotonic calibration (fitted on half the calibration split), so a
+  "70% AI" paragraph is right about 70% of the time.
+- Ranges use normalised split-conformal (`conf2.py`): half-width = q[bucket] x (sqrt(u) + 0.05), where
+  u is the word-weighted mean of p(1-p). Confident documents get narrow ranges.
+
+| Test | v2 | v3 |
+| --- | --- | --- |
+| Mean range width (essays + modern, 98%) | 0.48 | 0.29 |
+| Coverage of the 98% range | 98.7% | 98.3% |
+| 2025-era essays, unseen prompts (40) | 35/40 | 36/40 |
+| Unseen models (ArguGPT OOD) | 96.2% | 97.4% |
+| Human essays with lower bound > 50% | 0.00% | 0.07% |
+
 ## v2 (2026.10-v2): ensemble
 
 Sweep over C, modern-essay weight, hash size and character n-grams (`tune.py`). The final model is

@@ -113,7 +113,18 @@ function unpack(m) {
 
 // model.json: { v, q (conformal half-widths per paragraph bucket), models: [{ kind, weight, nf, s, b, w }] }
 export function loadModel(json) {
-  return { v: json.v, q: json.q, parts: json.models.map(unpack) };
+  return { v: json.v, q: json.q, conformal: json.conformal, iso: json.iso, parts: json.models.map(unpack) };
+}
+
+// Isotonic calibration: raw ensemble score -> probability that the paragraph is AI-written.
+function calibrate(model, p) {
+  const t = model.iso;
+  if (!t || !t.length) return p;
+  if (p <= t[0][0]) return t[0][1];
+  for (let i = 1; i < t.length; i++) {
+    if (p <= t[i][0]) { const [x0, y0] = t[i - 1], [x1, y1] = t[i]; return x1 === x0 ? y1 : y0 + (y1 - y0) * (p - x0) / (x1 - x0); }
+  }
+  return t[t.length - 1][1];
 }
 
 function partProb(m, text) {
@@ -141,11 +152,17 @@ export function analyze(model, text) {
   if (!segs.length || words < 80) {
     return { status: 'too_short', words, segments: [], minWords: 80 };
   }
-  const items = segs.map((s, i) => ({ i, words: pyWords(s).length, p: prob(model, s), text: s }));
+  const items = segs.map((s, i) => ({ i, words: pyWords(s).length, p: calibrate(model, prob(model, s)), text: s }));
   const W = items.reduce((a, x) => a + x.words, 0);
   const share = items.reduce((a, x) => a + x.words * x.p, 0) / W;
-  const q = model.q[String(segBucket(items.length))];
-  const lo = Math.max(0, share - q), hi = Math.min(1, share + q);
+  const bucket = String(segBucket(items.length));
+  let half;
+  if (model.conformal && model.conformal.mode === 'adaptive') {
+    // Normalised split-conformal: the range scales with how unsure the paragraph scores are.
+    const u = items.reduce((a, x) => a + (x.words / W) * x.p * (1 - x.p), 0);
+    half = model.conformal.q[bucket] * (Math.sqrt(u) + model.conformal.eps);
+  } else half = model.q[bucket];
+  const lo = Math.max(0, share - half), hi = Math.min(1, share + half);
   let verdict;
   if (hi <= 0.2) verdict = 'human';
   else if (lo >= 0.8) verdict = 'ai';

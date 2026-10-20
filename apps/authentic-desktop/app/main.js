@@ -14,7 +14,7 @@ const $ = (s) => document.querySelector(s);
 const items = []; // { id, name, status: 'run'|'done'|'err', data?, error? }
 let current = null, seq = 0;
 
-$('#model-info').innerHTML = `Model <b>${esc(model.v)}</b><br>Trained on <b>28,531</b> documents · 13 AI models<br>Runs offline on this computer`;
+$('#model-info').innerHTML = `Model <b>${esc(model.v)}</b><br>Trained on <b>28,602</b> documents · 13 AI models<br>Runs offline on this computer`;
 
 function unzip(bytes) {
   let total = 0;

@@ -8,12 +8,12 @@ UPDATED = 'October 20, 2026'
 
 # Training facts (model 2026.10-v1), from ml/authentic. Keep in sync when retraining.
 T = {
-    'docs': '28,531', 'human': '10,236', 'ai': '18,295', 'paras': '123,505', 'words': '17.7M',
-    'models': '13', 'test_docs': '12,554', 'version': '2026.10-v2',
+    'docs': '28,602', 'human': '10,236', 'ai': '18,366', 'paras': '123,709', 'words': '17.7M',
+    'models': '13', 'test_docs': '12,663', 'version': '2026.10-v3',
 }
 SOURCES = [  # (name, note, human, ai)
     ('Student essays', 'English learners vs GPT models', 2764, 2813),
-    ('2025-era assignments', 'Essays, reports, reflections', 0, 225),
+    ('2025-era assignments', 'Essays, reports, learner English', 0, 296),
     ('Reddit answers', 'Explain-like-I’m-five', 1868, 3546),
     ('WikiHow guides', 'How-to writing', 1741, 3715),
     ('Wikipedia', 'Encyclopedic prose', 1656, 3183),
@@ -193,13 +193,14 @@ page('', 'Authentic — Know what’s real.', 'Authentic checks essays, reports 
 <p class="lead">Every number comes from documents the model never saw while training.</p></div>
 <div class="acc-grid">
 <div class="reveal"><b>99%</b><span>of essays classified correctly</span></div>
-<div class="reveal d1"><b>98.7%</b><span>of 98% ranges contained the true AI share</span></div>
-<div class="reveal d2"><b>0.01%</b><span>of human essays reported as mostly AI</span></div>
-<div class="reveal d3"><b>96%</b><span>of essays from unseen AI models caught</span></div>
+<div class="reveal d1"><b>98.3%</b><span>of 98% ranges contained the true AI share</span></div>
+<div class="reveal d2"><b>&lt;0.1%</b><span>of human essays reported as mostly AI</span></div>
+<div class="reveal d3"><b>97%</b><span>of essays from unseen AI models caught</span></div>
 </div>
 <dl class="limits reveal">
 <div><dt>Unedited AI essay, 300+ words</dt><dd>Reliably detected.</dd></div>
-<div><dt>Newest models told to “write like a student”</dt><dd>Harder. 35 of 40 caught in our latest test. We retrain as new models ship.</dd></div>
+<div><dt>Newest models told to “write like a student”</dt><dd>Harder. 36 of 40 caught in our latest test. We retrain as new models ship.</dd></div>
+<div><dt>Range width</dt><dd>Adaptive: about 29 points on average, 40% narrower than v2. Confident texts get tight ranges, uncertain ones stay wide.</dd></div>
 <div><dt>Slides and short answers</dt><dd>Less text means wider ranges.</dd></div>
 <div><dt>Heavily rewritten or mixed sentence by sentence</dt><dd>Often “inconclusive”, on purpose.</dd></div>
 <div><dt>Scientific abstracts and very formal prose</dt><dd>Higher false-alarm risk. Use extra care.</dd></div>
@@ -241,7 +242,7 @@ page('features', 'Features — Authentic', 'Paragraph-level AI analysis, calibra
 <div class="sec-head reveal"><p class="eyebrow">Writing analysis</p><h2 class="headline">See exactly where<br>the AI part starts.</h2></div>
 <div class="bento">
 <article class="tile w3 reveal"><p class="kicker">Paragraph scores</p><h3>Every paragraph, its own score.</h3><p>Text is split into 50–220 word paragraphs and highlighted, so mixed essays are easy to discuss.</p></article>
-<article class="tile w3 reveal d1"><p class="kicker">Calibrated range</p><h3>98% confidence. Verified.</h3><p>Conformal calibration on held-out essays. Longer texts get narrower ranges.</p></article>
+<article class="tile w3 reveal d1"><p class="kicker">Adaptive range</p><h3>98% confidence. As narrow as the evidence allows.</h3><p>Calibrated probabilities and adaptive conformal ranges: confident texts get tight ranges, uncertain ones honest wide ones.</p></article>
 <article class="tile w3 dark reveal"><p class="kicker">Clear verdicts</p><h3>Or a clear “we don’t know”.</h3><p>Likely human, mostly human, mixed, mostly AI, likely AI. Or inconclusive when the evidence is thin.</p></article>
 <article class="tile w3 reveal d1"><p class="kicker">Model card</p><h3>{T['docs']} documents. {T['models']} AI models.</h3><p>Every report shows the model version and how it was tested.</p></article>
 </div></div></section>
