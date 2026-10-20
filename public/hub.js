@@ -91,6 +91,15 @@ const glow = (ctx, a = 1) => { ctx.shadowColor = `rgba(255,160,40,${0.7 * a})`; 
 const col = a => `rgba(${AMBER},${a})`;
 
 const screens = {
+  authentic(ctx, w, h, t) {
+    glow(ctx, .6); const x0 = 14, lines = 6, lh = (h - 28) / lines, scan = (t * .5) % 1;
+    for (let i = 0; i < lines; i++) { const y = 16 + i * lh, len = (w * .5) * (i % 3 === 2 ? .6 : 1), hot = i === 2 || i === 3;
+      ctx.fillStyle = col(hot ? .85 : .3); ctx.fillRect(x0, y, len, Math.max(3, lh * .32)); }
+    ctx.fillStyle = col(.9); ctx.fillRect(x0 - 4, 12 + scan * (h - 24), w * .5 + 8, 1.5);
+    const pct = 30 + Math.round(40 * (0.5 + 0.5 * Math.sin(t * .7)));
+    ctx.font = `400 ${h * .32}px Segment, monospace`; ctx.textAlign = 'right'; ctx.fillStyle = col(1); ctx.fillText(String(pct).padStart(2, '0'), w - 26, h * .62);
+    ctx.font = '500 11px Controls'; ctx.fillText('%', w - 12, h * .62); ctx.textAlign = 'left'; ctx.fillStyle = col(.7); ctx.fillText('AI SHARE · 98%', w * .62, 18);
+  },
   blackjack(ctx, w, h, t) {
     glow(ctx); const cw = h * .38, ch = h * .54, n = 2 + Math.floor(t / 1.2) % 3;
     for (let i = 0; i < n; i++) { ctx.save(); ctx.translate(w * .32 + i * cw * .5, h * .55); ctx.rotate((i - 1) * .08); card(ctx, cw, ch, ['A', 'K', '7', '3'][i], 1, i % 2 ? '♥' : '♠'); ctx.restore(); }

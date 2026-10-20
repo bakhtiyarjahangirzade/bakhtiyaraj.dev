@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check a file · Authentic</title>
+<meta name="description" content="Upload a .docx, .pptx, .pdf or .txt assignment and get a paragraph-level AI-writing report.">
+<meta property="og:title" content="Check a file · Authentic">
+<meta property="og:description" content="Upload a .docx, .pptx, .pdf or .txt assignment and get a paragraph-level AI-writing report.">
+<meta name="theme-color" content="#14213d">
+<link rel="icon" href="/authentic/assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/authentic/assets/authentic.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="wrap">
+<a class="logo" href="/authentic/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="var(--ink)"/><path d="M9 24 16 7l7 17" fill="none" stroke="var(--paper)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="m11.5 18.2 3.2 3 6.2-7" fill="none" stroke="var(--hl)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Authentic <small>Beta</small></a>
+<nav class="nav" aria-label="Main"><a href="/authentic/features/">Features</a><a href="/authentic/pricing/">Pricing</a><a href="/authentic/#accuracy">Accuracy</a><a class="btn btn-primary keep" href="/authentic/check/">Check a file</a></nav>
+</div></header>
+<main id="main">
+
+<section class="checker"><div class="wrap">
+<p class="eyebrow">Checker</p>
+<h1 class="h1-sm">Check an assignment</h1>
+<p class="lede">English text, at least 80 words. Files are processed in memory and not stored.</p>
+<div id="input">
+<div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="true" aria-controls="pane-file" id="tab-file">Upload file</button><button type="button" role="tab" aria-selected="false" aria-controls="pane-text" id="tab-text">Paste text</button></div>
+<div id="pane-file" role="tabpanel" aria-labelledby="tab-file">
+<label class="drop" id="drop" for="file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg><strong>Drop a file here or click to choose</strong><span class="muted">.docx · .pptx · .pdf · .txt · up to 10 MB</span></label>
+<input type="file" id="file" class="hidden" accept=".docx,.pptx,.pdf,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain">
+</div>
+<div id="pane-text" role="tabpanel" aria-labelledby="tab-text" class="hidden">
+<label for="text" class="skip">Text to check</label><textarea id="text" placeholder="Paste the assignment text here…"></textarea>
+<div class="row"><button class="btn btn-primary" id="go" type="button">Check text</button><span class="muted" id="count">0 words</span></div>
+</div>
+</div>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+<div id="result" class="result hidden"></div>
+</div></section>
+
+</main>
+<footer class="foot"><div class="wrap">
+<div><a class="logo" href="/authentic/"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="var(--ink)"/><path d="M9 24 16 7l7 17" fill="none" stroke="var(--paper)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="m11.5 18.2 3.2 3 6.2-7" fill="none" stroke="var(--hl)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Authentic</a><p>AI-writing analysis for teachers and students. Made by <a href="/">BAKHY</a>.</p></div>
+<nav aria-label="Footer"><a href="/authentic/features/">Features</a><a href="/authentic/pricing/">Pricing</a><a href="/authentic/#accuracy">Accuracy</a><a href="/authentic/#faq">FAQ</a><a href="mailto:bakhtiyaraj@code.edu.az?subject=Authentic">Contact</a></nav>
+<p>Results are probabilities, not proof. Never use them as the only basis for an academic decision.</p>
+</div></footer>
+<script type="module" src="/authentic/assets/check.js"></script>
+</body>
+</html>
