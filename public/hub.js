@@ -125,6 +125,21 @@ const screens = {
       for (let k = -1; k < 3; k++) ctx.fillText(spinning ? syms[(k + Math.floor(t * 8) + r) % syms.length] : (k === 1 ? '7' : syms[(k + r + 2) % syms.length]), x + cw / 2, (spinning ? off : 0) + k * h * .36 + h * .2);
       ctx.restore(); }
   },
+  kervan(ctx, w, h, t) {
+    const r = Math.max(7, Math.min(w, h) / 9), dx = r * Math.sqrt(3), dy = r * 1.5;
+    const cols = Math.ceil(w / dx) + 1, rows = Math.ceil(h / dy) + 1;
+    ctx.lineWidth = 1;
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      const cx = x * dx + (y & 1) * dx / 2, cy = y * dy, land = Math.sin(x * 1.3 + y * 0.7) + Math.cos(x * 0.6 - y * 1.1) > -0.2;
+      ctx.beginPath(); for (let k = 0; k < 6; k++) { const a = Math.PI / 180 * (60 * k - 30); ctx[k ? 'lineTo' : 'moveTo'](cx + r * .92 * Math.cos(a), cy + r * .92 * Math.sin(a)); } ctx.closePath();
+      ctx.fillStyle = land ? col(.12) : col(.02); ctx.fill(); ctx.strokeStyle = col(land ? .35 : .12); ctx.stroke();
+    }
+    const pts = [[.15, .7], [.35, .4], [.6, .55], [.85, .3]];
+    glow(ctx); ctx.strokeStyle = col(.6); ctx.setLineDash([3, 4]); ctx.beginPath(); pts.forEach(([px, py], i) => ctx[i ? 'lineTo' : 'moveTo'](px * w, py * h)); ctx.stroke(); ctx.setLineDash([]);
+    pts.forEach(([px, py]) => { ctx.fillStyle = col(.9); ctx.fillRect(px * w - 4, py * h - 4, 8, 8); });
+    const u = (t * .12) % 1 * (pts.length - 1), i = Math.floor(u), f = u - i, a0 = pts[i], a1 = pts[i + 1];
+    ctx.fillStyle = col(1); ctx.beginPath(); ctx.arc((a0[0] + (a1[0] - a0[0]) * f) * w, (a0[1] + (a1[1] - a0[1]) * f) * h, 3.5, 0, 7); ctx.fill();
+  },
   serpent(ctx, w, h, t) {
     glow(ctx); for (let s = 0; s < 3; s++) for (let k = 0; k < 26; k++) { const tt = t * .9 + s * 2.1 - k * .05; const x = w / 2 + Math.cos(tt) * w * (.3 - s * .06), y = h / 2 + Math.sin(tt * 1.6) * h * (.32 - s * .05); ctx.fillStyle = col(1 - k / 26); ctx.beginPath(); ctx.arc(x, y, 5 - k * .12, 0, 7); ctx.fill(); }
     const R = Math.max(12, h * .48 - (t % 6) * 6); ctx.strokeStyle = col(.5); ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.arc(w / 2, h / 2, R * 1.8, 0, 7); ctx.stroke(); ctx.setLineDash([]);
