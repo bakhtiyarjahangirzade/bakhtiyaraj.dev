@@ -5,8 +5,8 @@ CPU-only, about 5 minutes end to end. Produces `supabase/functions/authentic/mod
 | Step | Script | Output |
 | --- | --- | --- |
 | 1. Data | `prep.py` | `data.pkl`: human vs AI texts with train / cal / test / ood splits |
-| 2. Train | `train.py [C]` | `model.pkl`, `scored.pkl` (segment-level logistic regression on hashed features) |
-| 3. Calibrate | `ESSAY=1 calib.py` | `conformal.json`: split-conformal 98% half-widths per paragraph-count bucket |
+| 2. Train | `ens.py` | `ens.pkl`: model A (hashed word/stylometric features, logistic regression C=8) + model B (character 3-5-grams, SGD log-loss); `tune.py` is the sweep used to pick them |
+| 3. Calibrate | `calib_ens.py` | `conformal_ens.json`: split-conformal 98% half-widths per paragraph-count bucket, essays only |
 | 4. Modern check | `modern_eval.py` | detection rate on `modern_test.jsonl` (2025-era model, unseen prompts) |
 | 5. Export | `export.py <version>` | int8 weights + conformal table for the edge function |
 
@@ -25,6 +25,20 @@ exactly; `tests/authentic.test.mjs` checks parity against `tests/fixtures/authen
 **Licensing:** ELLIPSE is non-commercial and ArguGPT / M4 are research releases. Before charging for
 the service, retrain on commercially licensed data (for example your own anonymised pre-2020 student
 work, with permission) and drop the non-commercial sets.
+
+## v2 (2026.10-v2): ensemble
+
+Sweep over C, modern-essay weight, hash size and character n-grams (`tune.py`). The final model is
+0.7 x A + 0.3 x B. Character n-grams catch more 2025-era text; the 0.7/0.3 mix keeps false alarms on
+English-learner essays low. 2^20 features with char n-grams ran out of memory on the 7 GB build box.
+
+| Test | v1 | v2 |
+| --- | --- | --- |
+| Essays, document accuracy | 99.0% | 98.7% |
+| 2025-era model essays (40, unseen prompts) | 31/40 | 35/40 |
+| Unseen models (ArguGPT OOD) | 96.2% | 96.2% |
+| 98% interval coverage, essays | 98.9% | 98.7% |
+| Human essays with lower bound > 50% AI | 0.00% | 0.00% |
 
 ## Results (model 2026.10-v1)
 

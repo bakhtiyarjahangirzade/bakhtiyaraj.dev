@@ -9,7 +9,7 @@ UPDATED = 'October 20, 2026'
 # Training facts (model 2026.10-v1), from ml/authentic. Keep in sync when retraining.
 T = {
     'docs': '28,531', 'human': '10,236', 'ai': '18,295', 'paras': '123,505', 'words': '17.7M',
-    'models': '13', 'test_docs': '12,554', 'version': '2026.10-v1',
+    'models': '13', 'test_docs': '12,554', 'version': '2026.10-v2',
 }
 SOURCES = [  # (name, note, human, ai)
     ('Student essays', 'English learners vs GPT models', 2764, 2813),
@@ -36,7 +36,7 @@ I = {
 
 
 def page(path, title, desc, current, body, scripts=(), dark_nav=False):
-    links = (('overview', '/authentic/', 'Overview'), ('how', '/authentic/#how', 'How it works'), ('features', '/authentic/features/', 'Features'), ('pricing', '/authentic/pricing/', 'Pricing'))
+    links = (('overview', '/authentic/', 'Overview'), ('how', '/authentic/#how', 'How it works'), ('features', '/authentic/features/', 'Features'), ('pricing', '/authentic/pricing/', 'Pricing'), ('download', '/authentic/download/', 'Download'))
     nav = ''.join(f'<a href="{h}"{" aria-current=\"page\"" if k == current else ""}>{t}</a>' for k, h, t in links)
     js = ''.join(f'<script type="module" src="{s}"></script>' for s in scripts)
     html = f'''<!doctype html>
@@ -58,7 +58,7 @@ def page(path, title, desc, current, body, scripts=(), dark_nav=False):
 <a class="skip" href="#main">Skip to content</a>
 <div class="gnav"><div class="wrap">
 <a class="mark" href="/" aria-label="BAKHY home">{LOGO.replace('fill="currentColor"', 'fill="#f5f5f7"')}</a>
-<nav aria-label="Global"><a href="/authentic/">Authentic</a><a class="gopt" href="/authentic/features/">Features</a><a href="/authentic/pricing/">Pricing</a><a class="gopt" href="/authentic/privacy/">Privacy</a><a href="/authentic/check/">Check</a></nav>
+<nav aria-label="Global"><a href="/authentic/">Authentic</a><a class="gopt" href="/authentic/features/">Features</a><a href="/authentic/pricing/">Pricing</a><a class="gopt" href="/authentic/download/">Mac &amp; Windows</a><a href="/authentic/check/">Check</a></nav>
 </div></div>
 <div class="lnav"><div class="wrap">
 <a class="title" href="/authentic/">Authentic<small>Beta</small></a>
@@ -73,7 +73,7 @@ def page(path, title, desc, current, body, scripts=(), dark_nav=False):
 <p>Accuracy figures are measured on {T['test_docs']} held-out documents for model {T['version']}. See <a href="/authentic/#accuracy">Accuracy</a> for the method and known limits.</p>
 </div>
 <div class="cols">
-<div><h4>Product</h4><ul><li><a href="/authentic/">Overview</a></li><li><a href="/authentic/features/">Features</a></li><li><a href="/authentic/pricing/">Pricing</a></li><li><a href="/authentic/check/">Check a file</a></li></ul></div>
+<div><h4>Product</h4><ul><li><a href="/authentic/">Overview</a></li><li><a href="/authentic/features/">Features</a></li><li><a href="/authentic/pricing/">Pricing</a></li><li><a href="/authentic/check/">Check a file</a></li><li><a href="/authentic/download/">Download for Mac and Windows</a></li></ul></div>
 <div><h4>How it works</h4><ul><li><a href="/authentic/#how">The pipeline</a></li><li><a href="/authentic/#training">Training data</a></li><li><a href="/authentic/#accuracy">Accuracy</a></li><li><a href="/authentic/#faq">FAQ</a></li></ul></div>
 <div><h4>For</h4><ul><li><a href="/authentic/pricing/">Teachers</a></li><li><a href="/authentic/pricing/">Students</a></li><li><a href="/authentic/pricing/">Universities</a></li></ul></div>
 <div><h4>About</h4><ul><li><a href="/">BAKHY</a></li><li><a href="{CONTACT}">Contact</a></li><li><a href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev" rel="noopener">Source code</a></li></ul></div>
@@ -193,13 +193,13 @@ page('', 'Authentic — Know what’s real.', 'Authentic checks essays, reports 
 <p class="lead">Every number comes from documents the model never saw while training.</p></div>
 <div class="acc-grid">
 <div class="reveal"><b>99%</b><span>of essays classified correctly</span></div>
-<div class="reveal d1"><b>98.9%</b><span>of 98% ranges contained the true AI share</span></div>
+<div class="reveal d1"><b>98.7%</b><span>of 98% ranges contained the true AI share</span></div>
 <div class="reveal d2"><b>0.01%</b><span>of human essays reported as mostly AI</span></div>
 <div class="reveal d3"><b>96%</b><span>of essays from unseen AI models caught</span></div>
 </div>
 <dl class="limits reveal">
 <div><dt>Unedited AI essay, 300+ words</dt><dd>Reliably detected.</dd></div>
-<div><dt>Newest models told to “write like a student”</dt><dd>Harder. About 3 in 4 caught in our latest test. We retrain as new models ship.</dd></div>
+<div><dt>Newest models told to “write like a student”</dt><dd>Harder. 35 of 40 caught in our latest test. We retrain as new models ship.</dd></div>
 <div><dt>Slides and short answers</dt><dd>Less text means wider ranges.</dd></div>
 <div><dt>Heavily rewritten or mixed sentence by sentence</dt><dd>Often “inconclusive”, on purpose.</dd></div>
 <div><dt>Scientific abstracts and very formal prose</dt><dd>Higher false-alarm risk. Use extra care.</dd></div>
@@ -257,7 +257,7 @@ page('features', 'Features — Authentic', 'Paragraph-level AI analysis, calibra
 <div class="sec-head reveal"><p class="eyebrow">Coming next</p><h2 class="headline">The road ahead.</h2></div>
 <div class="bento">
 <article class="tile reveal"><p class="kicker">Writing-process proof</p><h3>Show how the text grew.</h3><p>Upload Google Docs or Word version history: the strongest evidence of authorship.</p></article>
-<article class="tile reveal d1"><p class="kicker">Mac and Windows</p><h3>Authentic on your desktop.</h3><p>Check whole folders of assignments offline.</p></article>
+<article class="tile reveal d1"><p class="kicker">Mac and Windows</p><h3>Authentic on your desktop.</h3><p>Check many assignments at once, fully offline. <a href="/authentic/download/">Download</a></p></article>
 <article class="tile reveal d2"><p class="kicker">For institutions</p><h3>Moodle, Canvas, Blackboard.</h3><p>Single sign-on and class-wide checks.</p></article>
 </div></div></section>
 ''', ['/authentic/assets/home.js'])
@@ -270,7 +270,7 @@ def plan(name, who, m, y, items, cta, href, featured=False):
             f'<a class="pill{"" if featured else " secondary"}" href="{href}">{cta}</a></article>')
 
 ROWS = [('Checks per month', '20', '60', '500', 'Unlimited'), ('Paragraph analysis and 98% range', 'y', 'y', 'y', 'y'), ('Trace and hidden-text scan', 'y', 'y', 'y', 'y'),
-        ('Printable PDF report', 'y', 'y', 'y', 'y'), ('Batch upload', 'n', 'n', 'Soon', 'y'), ('Mac and Windows app', 'n', 'Soon', 'Soon', 'Soon'),
+        ('Printable PDF report', 'y', 'y', 'y', 'y'), ('Batch upload', 'n', 'n', 'Soon', 'y'), ('Mac and Windows app (offline)', 'y', 'y', 'y', 'y'),
         ('LMS integration and SSO', 'n', 'n', 'n', 'y'), ('Calibration on your own essays', 'n', 'n', 'n', 'y')]
 cell = lambda v: '<td class="y"><span class="sr">Included</span></td>' if v == 'y' else '<td class="n"><span class="sr">Not included</span></td>' if v == 'n' else f'<td>{v}</td>'
 page('pricing', 'Pricing — Authentic', 'Free during beta. Plans for students, teachers and institutions.', 'pricing', f'''
@@ -319,6 +319,34 @@ page('check', 'Check a file — Authentic', 'Upload a .docx, .pptx, .pdf or .txt
 </div></section>
 <div class="wrap-lg"><div id="result" class="result hidden"></div></div>
 ''', ['/authentic/assets/check.js'])
+
+# ---------------- Download ----------------
+APPLE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 18.5h20l-1 1.5H3z"/></svg>'
+WIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M9 20h6M12 16v4"/></svg>'
+page('download', 'Download — Authentic for Mac and Windows', 'Authentic for Mac and Windows: check many assignments at once, fully offline.', 'download', f'''
+<section class="hero"><div class="wrap">
+<p class="eyebrow reveal">Authentic for Mac and Windows</p>
+<h1 class="display reveal d1">Offline.<br><span class="gradient">On your desk.</span></h1>
+<p class="lead reveal d2">The same detector as the website, running on your computer. Drop a whole stack of assignments. Nothing is uploaded.</p>
+<div class="dl-cards reveal d3">
+<a class="dl" href="/downloads/Authentic-macOS.zip" download>{APPLE}<b>Download for Mac</b><span>macOS 11+ · Apple silicon and Intel · 3.9 MB</span></a>
+<a class="dl" href="/downloads/Authentic-Setup.exe" download>{WIN}<b>Download for Windows</b><span>Windows 10 and 11 · 64-bit · 1.9 MB</span></a>
+</div>
+<p class="tiny reveal">Version 1.0.0 · Model {T['version']} · Free during beta</p>
+</div><div class="stage"></div></section>
+
+<section class="sec alt"><div class="wrap-lg">
+<div class="sec-head reveal"><h2 class="headline">Install in a minute.</h2></div>
+<div class="bento">
+<article class="tile w3 reveal"><p class="kicker">Mac</p><h3>Open the zip. Drag to Applications.</h3>
+<p>The first time, right-click Authentic and choose <b>Open</b>, then <b>Open</b> again. macOS asks once because the app isn’t notarized yet.</p></article>
+<article class="tile w3 reveal d1"><p class="kicker">Windows</p><h3>Run the installer. No admin needed.</h3>
+<p>If SmartScreen appears, choose <b>More info</b> then <b>Run anyway</b>. Authentic installs for your user and adds Start menu and desktop shortcuts.</p></article>
+<article class="tile reveal"><p class="kicker">Batch</p><h3>Many files at once.</h3><p>Drop a stack of essays. Each gets its own report in the library.</p></article>
+<article class="tile dark reveal d1"><p class="kicker">Private</p><h3>Nothing leaves your computer.</h3><p>No account, no upload, no internet needed after download.</p></article>
+<article class="tile reveal d2"><p class="kicker">Same engine</p><h3>{T['docs']} documents of training.</h3><p>Identical model and calibrated ranges as the website.</p></article>
+</div></div></section>
+''', ['/authentic/assets/home.js'])
 
 # ---------------- Legal ----------------
 def legal(path, title, desc, body):

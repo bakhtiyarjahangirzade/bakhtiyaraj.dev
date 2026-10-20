@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authentic</title>
+<link rel="stylesheet" href="authentic.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="app">
+<header class="toolbar">
+  <div class="brand"><img src="icon.png" alt=""><span>Authentic</span></div>
+  <div class="tb-actions">
+    <button type="button" class="pill-sm ghost" id="paste">Paste text</button>
+    <label class="pill-sm" for="files">Add files</label>
+    <input type="file" id="files" class="hidden" multiple accept=".docx,.pptx,.pdf,.txt,.md">
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar" aria-label="Checked files">
+    <p class="side-title">Library</p>
+    <ul id="list" class="list"></ul>
+    <p class="side-empty" id="side-empty">Files you check appear here. Nothing leaves this computer.</p>
+    <div class="side-foot" id="model-info"></div>
+  </aside>
+  <main class="pane" id="pane">
+    <section class="welcome" id="welcome">
+      <h1 class="headline">Drop assignments here.</h1>
+      <p class="lead">Word, PowerPoint, PDF or text. Checked on this computer, offline.</p>
+      <label class="drop" id="drop" for="files">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+        <strong>Drop files, or click to choose.</strong><span>Several at once is fine.</span>
+      </label>
+      <div class="how">
+        <div><b>1</b><span>Reads visible and hidden text</span></div>
+        <div><b>2</b><span>Scores every paragraph</span></div>
+        <div><b>3</b><span>Gives a 98% confidence range</span></div>
+        <div><b>4</b><span>Finds traces and injections</span></div>
+      </div>
+    </section>
+    <section class="hidden" id="paste-view">
+      <h2 class="title-3">Paste text</h2>
+      <textarea id="text" placeholder="Paste the assignment here…"></textarea>
+      <div class="row"><button class="pill" type="button" id="go">Check text</button><button class="pill secondary" type="button" id="cancel">Cancel</button><span class="tiny" id="count">0 words</span></div>
+    </section>
+    <section id="report" class="hidden"></section>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

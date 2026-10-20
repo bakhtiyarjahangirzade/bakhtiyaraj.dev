@@ -50,7 +50,7 @@ async function pdf(bytes: Uint8Array) {
   const { text } = await extractText(doc, { mergePages: false });
   let info: Record<string, string> = {};
   try { info = ((await getMeta(doc)).info || {}) as Record<string, string>; } catch { /* no metadata */ }
-  const pages = (text as string[]).map((p) => p.replace(/[ \t]+\n/g, '\n').trim());
+  const pages = (text as string[]).map((p) => p.replace(/[ \t]+\n/g, '\n').replace(/([^\n])\n(?!\n)/g, '$1 ').trim());
   const meta: Record<string, unknown> = { pages: pages.length };
   if (info.Producer) meta.producer = String(info.Producer);
   if (info.Creator) meta.creatorTool = String(info.Creator);

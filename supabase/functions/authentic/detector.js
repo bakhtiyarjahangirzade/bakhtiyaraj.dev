@@ -75,6 +75,17 @@ export function segments(text, lo = 50, hi = 220) {
   return out;
 }
 
+// Character 3-5-grams of each word with boundary spaces (second ensemble member).
+export function charFeatures(text) {
+  const out = [];
+  for (const w0 of toks(norm(text).toLowerCase())) {
+    if (!isAlpha(w0[0])) continue;
+    const w = [...(' ' + w0 + ' ')];
+    for (const n of [3, 4, 5]) for (let i = 0; i + n <= w.length; i++) out.push('c:' + w.slice(i, i + n).join(''));
+  }
+  return out;
+}
+
 // sklearn murmurhash3_32(seed=0), index = abs(signed) % nf
 const enc = new TextEncoder();
 export function murmur3(str) {
@@ -92,24 +103,33 @@ export function murmur3(str) {
   return h | 0;
 }
 
-export function loadModel(json) {
-  const raw = typeof atob === 'function' ? Uint8Array.from(atob(json.w), (c) => c.charCodeAt(0)) : Uint8Array.from(Buffer.from(json.w, 'base64'));
+function unpack(m) {
+  const raw = typeof atob === 'function' ? Uint8Array.from(atob(m.w), (c) => c.charCodeAt(0)) : Uint8Array.from(Buffer.from(m.w, 'base64'));
   const q = new Int8Array(raw.buffer, raw.byteOffset, raw.length);
   const w = new Float32Array(q.length);
-  for (let i = 0; i < q.length; i++) { const v = q[i] * json.s; w[i] = Math.sign(q[i]) * v * v; }
-  return { w, b: json.b, nf: json.nf, q: json.q, v: json.v };
+  for (let i = 0; i < q.length; i++) { const v = q[i] * m.s; w[i] = Math.sign(q[i]) * v * v; }
+  return { w, b: m.b, nf: m.nf, weight: m.weight, feats: m.kind === 'char' ? charFeatures : features };
 }
 
-export function prob(model, text) {
+// model.json: { v, q (conformal half-widths per paragraph bucket), models: [{ kind, weight, nf, s, b, w }] }
+export function loadModel(json) {
+  return { v: json.v, q: json.q, parts: json.models.map(unpack) };
+}
+
+function partProb(m, text) {
   const counts = new Map();
-  for (const f of features(text)) {
-    const idx = Math.abs(murmur3(f)) % model.nf;
+  for (const f of m.feats(text)) {
+    const idx = Math.abs(murmur3(f)) % m.nf;
     counts.set(idx, (counts.get(idx) || 0) + 1);
   }
   let z = 0, n2 = 0;
-  for (const [idx, c] of counts) { const v = Math.log1p(c); n2 += v * v; z += v * model.w[idx]; }
+  for (const [idx, c] of counts) { const v = Math.log1p(c); n2 += v * v; z += v * m.w[idx]; }
   const n = Math.sqrt(n2) || 1;
-  return 1 / (1 + Math.exp(-(z / n + model.b)));
+  return 1 / (1 + Math.exp(-(z / n + m.b)));
+}
+
+export function prob(model, text) {
+  return model.parts.reduce((a, m) => a + m.weight * partProb(m, text), 0);
 }
 
 const segBucket = (n) => (n === 1 ? 0 : n <= 3 ? 1 : n <= 6 ? 2 : 3);

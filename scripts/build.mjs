@@ -16,4 +16,13 @@ if (!process.env.BAKHY_SKIP_DESKTOP) {
     console.error('Desktop installers failed to build:', e.message);
     if (process.env.VERCEL) process.exit(1);
   }
+  // Authentic desktop app: Windows installer + macOS app (same detector as the website, offline)
+  try {
+    execFileSync(process.execPath, [fileURLToPath(new URL('../apps/authentic-desktop/build.mjs', import.meta.url))], {
+      stdio: 'inherit', env: { ...process.env, BAKHY_DOWNLOADS: fileURLToPath(new URL('downloads/', output)) }
+    });
+  } catch (e) {
+    console.error('Authentic desktop build failed:', e.message);
+    if (process.env.VERCEL) process.exit(1);
+  }
 }

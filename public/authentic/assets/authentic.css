@@ -378,3 +378,13 @@ textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px
   .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
   .result { grid-template-columns: 1fr; padding: 0; }
 }
+
+/* Download */
+.dl-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: 20px; justify-content: center; margin: 48px auto 18px; }
+.dl { display: grid; justify-items: center; gap: 8px; padding: 34px 24px; border-radius: var(--r-tile); background: #1d1d1f; color: var(--on-dark); transition: background .2s var(--ease), transform .2s var(--ease); }
+.dl:hover { background: #2a2a2d; text-decoration: none; transform: translateY(-2px); }
+.dl svg { width: 40px; height: 40px; margin-bottom: 6px; }
+.dl b { font-size: 21px; font-weight: 600; }
+.dl span { font-size: 13px; color: var(--on-dark-2); }
+.hero .tiny { color: var(--on-dark-2); }
+@media (max-width: 734px) { .dl-cards { grid-template-columns: 1fr; } }
