@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "updated": "2026-10-22",
+  "evaluationDate": "2026-10-21",
+  "language": "English",
+  "liveModel": "2026.10-v3",
+  "releaseStatus": "research_preview",
+  "collection": {
+    "records": 3112,
+    "human": 1600,
+    "ai": 1512,
+    "longDevelopment": 112,
+    "longHuman": 100,
+    "longAi": 12,
+    "prioritizedPendingJobs": 105
+  },
+  "candidate": {
+    "version": "2026.10-document-origin-candidate-1",
+    "trainingDocuments": 2399,
+    "isotonicDocuments": 150,
+    "referenceDocuments": 150,
+    "knownExclusions": 1,
+    "releaseStatus": "not_qualified",
+    "scoreThreshold": 0.5
+  },
+  "longDevelopmentResults": {
+    "live": {
+      "aiDetected": 10,
+      "aiTotal": 12,
+      "humanFalsePositives": 21,
+      "humanTotal": 100
+    },
+    "candidate": {
+      "aiDetected": 3,
+      "aiTotal": 12,
+      "humanFalsePositives": 0,
+      "humanTotal": 100
+    }
+  },
+  "referenceSetExperiment": {
+    "aiOnlyHumanErrors": 2,
+    "humanTotal": 100,
+    "aiOnlyCorrect": 4,
+    "aiTotal": 12,
+    "uncertain": 106,
+    "records": 112
+  },
+  "legacyDiagnostic": {
+    "records": 300,
+    "correct": 192,
+    "humanFalsePositives": 99,
+    "humanTotal": 150
+  },
+  "researchCodeVerification": {
+    "nodeTests": 51,
+    "pythonTests": 6
+  },
+  "limitations": [
+    "Previously inspected development and test data; not a fresh final holdout.",
+    "Long human research articles and AI academic chapters differ in genre; only 12 AI documents, with shared generation contexts.",
+    "Source labels, rights and overlap require further audit. Historical publication date does not prove unaided authorship.",
+    "Binary-origin scores are not measured percentages of AI-written words.",
+    "Pending generation jobs are not completed documents or training examples."
+  ]
+}

@@ -407,3 +407,29 @@ textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px
 @keyframes pulse2 { to { opacity: .25; transform: scale(.7); } }
 .scan-ctl .linkbtn { font-size: 14px; color: var(--link); padding: 4px 8px; }
 @media (max-width: 734px) { .scan-ctl { font-size: 12.5px; gap: 8px; padding: 8px 10px 8px 14px; max-width: calc(100% - 24px); white-space: normal; } }
+
+/* Training progress uses the existing Authentic tokens and content hierarchy. */
+.training-status { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin: 48px 0 28px; }
+.training-status article { padding: 28px 0; border-top: 1px solid var(--line-soft); }
+.training-status h3 { font-size: 26px; margin: 10px 0 14px; }
+.training-status p, .training-note, .training-archive p { color: var(--text-2); line-height: 1.65; }
+.training-note { max-width: 860px; margin: 20px auto; font-size: 15px; }
+.training-archive { margin: 40px 0; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); padding: 22px 0; }
+.training-archive summary { cursor: pointer; font-size: 19px; font-weight: 600; }
+.training-archive p { margin-top: 20px; }
+.training-comparison { margin: 44px 0 22px; }
+.training-comparison table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed; }
+.training-comparison caption { text-align: left; color: var(--on-dark-2); font-size: 15px; padding-bottom: 18px; }
+.training-comparison th, .training-comparison td { padding: 20px 12px; border-bottom: 1px solid var(--on-dark-2); vertical-align: top; overflow-wrap: anywhere; }
+.training-comparison thead th { font-size: 14px; font-weight: 500; color: var(--on-dark-2); }
+.training-comparison tbody th { width: 42%; font-size: 17px; font-weight: 500; }
+.training-comparison td { font-size: 24px; font-variant-numeric: tabular-nums; }
+.training-comparison small { color: var(--on-dark-2); font-size: 13px; }
+.on-dark .on-dark-note { color: var(--on-dark-2); }
+@media (max-width: 734px) {
+  .training-status { grid-template-columns: 1fr; gap: 0; margin-top: 28px; }
+  .training-comparison th, .training-comparison td { padding: 16px 6px; }
+  .training-comparison tbody th { font-size: 14px; }
+  .training-comparison thead th { font-size: 12px; }
+  .training-comparison td { font-size: 20px; }
+}
