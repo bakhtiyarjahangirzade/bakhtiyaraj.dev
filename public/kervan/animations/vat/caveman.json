@@ -1,0 +1,46 @@
+{
+  "id": "caveman",
+  "version": 1,
+  "width": 2048,
+  "height": 80,
+  "rowsPerFrame": 2,
+  "vertices": 3135,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Idle_A"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Walking_A"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.800000011920929,
+      "source": "Running_A"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Melee_1H_Attack_Chop"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 1.5,
+      "source": "Working_A"
+    }
+  },
+  "bytes": 641592,
+  "decodedBytes": 1310720,
+  "sha256": "5371d6be50e92dad4cd36aa5b639f4df12b66842bf228a2f6e11fbbda6c39020",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

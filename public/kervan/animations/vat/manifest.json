@@ -1,0 +1,608 @@
+{
+  "actors": [
+    {
+      "id": "caveman",
+      "version": 1,
+      "width": 2048,
+      "height": 80,
+      "rowsPerFrame": 2,
+      "vertices": 3135,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        }
+      },
+      "bytes": 641592,
+      "decodedBytes": 1310720,
+      "sha256": "5371d6be50e92dad4cd36aa5b639f4df12b66842bf228a2f6e11fbbda6c39020",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "rogue",
+      "version": 1,
+      "width": 2048,
+      "height": 80,
+      "rowsPerFrame": 2,
+      "vertices": 3297,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        }
+      },
+      "bytes": 644131,
+      "decodedBytes": 1310720,
+      "sha256": "26864a6182189ea3bcb856e56514a4747bd911d86d0707e5606aff9404073df2",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "rogue-hooded",
+      "version": 1,
+      "width": 2048,
+      "height": 80,
+      "rowsPerFrame": 2,
+      "vertices": 3053,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        }
+      },
+      "bytes": 593132,
+      "decodedBytes": 1310720,
+      "sha256": "6f35336c4cde1b99e369924856eebe544c9286ddc34ea52a358f30f365a589e6",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "knight",
+      "version": 1,
+      "width": 2048,
+      "height": 96,
+      "rowsPerFrame": 2,
+      "vertices": 3604,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        },
+        "ride": {
+          "start": 40,
+          "frames": 8,
+          "duration": 3.5999999046325684,
+          "source": "Sit_Chair_Idle"
+        }
+      },
+      "bytes": 779103,
+      "decodedBytes": 1572864,
+      "sha256": "edaa60e82f65a61756cbfa9fdb67305b9ad883c210b6e7ca4dbbadac80eacc7f",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "modern-soldier",
+      "version": 1,
+      "width": 2048,
+      "height": 80,
+      "rowsPerFrame": 2,
+      "vertices": 2916,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.6666666269302368,
+          "source": "Idle"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1,
+          "source": "Walk"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.7333333492279053,
+          "source": "Run"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 0.36666667461395264,
+          "source": "Idle_Shoot"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.6666666269302368,
+          "source": "Wave"
+        }
+      },
+      "bytes": 651842,
+      "decodedBytes": 1310720,
+      "sha256": "a50b6d49caa831c1fe99ebb9bd9abf7e645242a269b61585fe1f5371b71a4994",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "robot-one",
+      "version": 1,
+      "width": 2048,
+      "height": 80,
+      "rowsPerFrame": 2,
+      "vertices": 3039,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        }
+      },
+      "bytes": 594619,
+      "decodedBytes": 1310720,
+      "sha256": "31038f38c1927bcd08e26f996b2f233179af51c4224d3c71af4660a0d3bb5eef",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "robot-two",
+      "version": 1,
+      "width": 2048,
+      "height": 80,
+      "rowsPerFrame": 2,
+      "vertices": 3085,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        }
+      },
+      "bytes": 599828,
+      "decodedBytes": 1310720,
+      "sha256": "b4a28ccb79e12b0bd9e726cc4ea47374fa5fd3387816b366c06b3ee1c6c2026b",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "space-ranger",
+      "version": 1,
+      "width": 2048,
+      "height": 80,
+      "rowsPerFrame": 2,
+      "vertices": 3494,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        }
+      },
+      "bytes": 655494,
+      "decodedBytes": 1310720,
+      "sha256": "3dd45ea0f287824f96369d940f3a9702afa0069c8c478d008839b88ea0fe0775",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "combat-mech",
+      "version": 1,
+      "width": 2048,
+      "height": 120,
+      "rowsPerFrame": 3,
+      "vertices": 4240,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        }
+      },
+      "bytes": 697593,
+      "decodedBytes": 1966080,
+      "sha256": "e2eb63c73107ca7ddbc0d38099d301c6ae737fe2119b0d2b890984c281f70efc",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "hiker",
+      "version": 1,
+      "width": 2048,
+      "height": 80,
+      "rowsPerFrame": 2,
+      "vertices": 3252,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Idle_A"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Walking_A"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.800000011920929,
+          "source": "Running_A"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0666667222976685,
+          "source": "Melee_1H_Attack_Chop"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 1.5,
+          "source": "Working_A"
+        }
+      },
+      "bytes": 627879,
+      "decodedBytes": 1310720,
+      "sha256": "9832652082621ddf2b407527cf09c764d004ae3887c086a41b08d025ea58c851",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "horse",
+      "version": 1,
+      "width": 2048,
+      "height": 40,
+      "rowsPerFrame": 1,
+      "vertices": 1269,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 3.3333332538604736,
+          "source": "Idle"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.1666666269302368,
+          "source": "Walk"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.6000000238418579,
+          "source": "Gallop"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0333333015441895,
+          "source": "Attack_Headbutt"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 6,
+          "source": "Eating"
+        }
+      },
+      "bytes": 247071,
+      "decodedBytes": 655360,
+      "sha256": "f03b55bd68dd524fcb23922e4303e987206816a9402cdbf752875b4fb21f42d3",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "donkey",
+      "version": 1,
+      "width": 2048,
+      "height": 40,
+      "rowsPerFrame": 1,
+      "vertices": 1228,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 3.3333332538604736,
+          "source": "Idle"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.1666666269302368,
+          "source": "Walk"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.5333333611488342,
+          "source": "Gallop"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.600000023841858,
+          "source": "Attack_Headbutt"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 6,
+          "source": "Eating"
+        }
+      },
+      "bytes": 235886,
+      "decodedBytes": 655360,
+      "sha256": "b18119d5098f0726b5c09c9d521cd26f4afd94aa2219cb1bc6bc7d933bcacb83",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    },
+    {
+      "id": "cow",
+      "version": 1,
+      "width": 2048,
+      "height": 40,
+      "rowsPerFrame": 1,
+      "vertices": 1479,
+      "format": "RGBA16F",
+      "clips": {
+        "idle": {
+          "start": 0,
+          "frames": 8,
+          "duration": 3.3333332538604736,
+          "source": "Idle"
+        },
+        "walk": {
+          "start": 8,
+          "frames": 8,
+          "duration": 1.1666666269302368,
+          "source": "Walk"
+        },
+        "run": {
+          "start": 16,
+          "frames": 8,
+          "duration": 0.6000000238418579,
+          "source": "Gallop"
+        },
+        "attack": {
+          "start": 24,
+          "frames": 8,
+          "duration": 1.0333333015441895,
+          "source": "Attack_Headbutt"
+        },
+        "work": {
+          "start": 32,
+          "frames": 8,
+          "duration": 6,
+          "source": "Eating"
+        }
+      },
+      "bytes": 285648,
+      "decodedBytes": 655360,
+      "sha256": "7c3532b857f943ee00bef9f1d1d45180f65a4a8a6b23c56e795055f48839a173",
+      "license": "CC0-1.0",
+      "source": "../manifest.json"
+    }
+  ]
+}

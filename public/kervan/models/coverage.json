@@ -1,0 +1,709 @@
+{
+  "objects": [
+    {
+      "category": "Üretim yapıları",
+      "key": "hunt",
+      "name": "Av kampı",
+      "model": "custom-imp-hunt",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "lumber",
+      "name": "Oduncu",
+      "model": "custom-imp-lumber",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "farm",
+      "name": "Tarla",
+      "model": "custom-imp-farm",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "quarry",
+      "name": "Taş ocağı",
+      "model": "custom-imp-quarry",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "fishery",
+      "name": "Balıkçı köyü",
+      "model": "custom-imp-fishery",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "pasture",
+      "name": "Ağıl",
+      "model": "custom-imp-pasture",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "claypit",
+      "name": "Kil ocağı",
+      "model": "custom-imp-claypit",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "kiln",
+      "name": "Çömlekçi",
+      "model": "custom-imp-kiln",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "coppermine",
+      "name": "Bakır madeni",
+      "model": "custom-imp-coppermine",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "bronzeworks",
+      "name": "Tunç dökümhanesi",
+      "model": "custom-imp-bronzeworks",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "weaver",
+      "name": "Dokumacı",
+      "model": "custom-imp-weaver",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "ironmine",
+      "name": "Demir madeni",
+      "model": "custom-imp-ironmine",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "smithy",
+      "name": "Demirci",
+      "model": "custom-imp-smithy",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "armory",
+      "name": "Silahhane",
+      "model": "custom-imp-armory",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "sawmill",
+      "name": "Hızar",
+      "model": "custom-imp-sawmill",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "toolmaker",
+      "name": "Alet ustası",
+      "model": "custom-imp-toolmaker",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "papermill",
+      "name": "Kâğıthane",
+      "model": "custom-imp-papermill",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "sugarfarm",
+      "name": "Şeker plantasyonu",
+      "model": "custom-imp-sugarfarm",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "cottonfarm",
+      "name": "Pamuk tarlası",
+      "model": "custom-imp-cottonfarm",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "powdermill",
+      "name": "Baruthane",
+      "model": "custom-imp-powdermill",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "coalmine",
+      "name": "Kömür ocağı",
+      "model": "custom-imp-coalmine",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "textile",
+      "name": "Tekstil fabrikası",
+      "model": "custom-imp-textile",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "steelmill",
+      "name": "Çelikhane",
+      "model": "custom-imp-steelmill",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "machineworks",
+      "name": "Makine fabrikası",
+      "model": "custom-imp-machineworks",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "railworks",
+      "name": "Ray fabrikası",
+      "model": "custom-imp-railworks",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "oilwell",
+      "name": "Petrol kuyusu",
+      "model": "custom-imp-oilwell",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "refinery",
+      "name": "Rafineri",
+      "model": "custom-imp-refinery",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "chemplant",
+      "name": "Plastik fabrikası",
+      "model": "custom-imp-chemplant",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "carfactory",
+      "name": "Otomobil fabrikası",
+      "model": "custom-imp-carfactory",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "electronics",
+      "name": "Elektronik fabrikası",
+      "model": "custom-imp-electronics",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Üretim yapıları",
+      "key": "robotics",
+      "name": "Robot fabrikası",
+      "model": "custom-imp-robotics",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "granary",
+      "name": "Ambar",
+      "model": "custom-cb-granary",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "harbor",
+      "name": "Liman",
+      "model": "custom-cb-harbor",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "market",
+      "name": "Pazar yeri",
+      "model": "custom-cb-market",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "library",
+      "name": "Kütüphane",
+      "model": "custom-cb-library",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "walls",
+      "name": "Surlar",
+      "model": "custom-cb-walls",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "barracks",
+      "name": "Kışla",
+      "model": "custom-cb-barracks",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "caravanserai",
+      "name": "Kervansaray",
+      "model": "custom-cb-caravanserai",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "university",
+      "name": "Üniversite",
+      "model": "custom-cb-university",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "bank",
+      "name": "Banka",
+      "model": "custom-cb-bank",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "station",
+      "name": "Tren istasyonu",
+      "model": "custom-cb-station",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "powerplant",
+      "name": "Santral",
+      "model": "custom-cb-powerplant",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "lab",
+      "name": "Araştırma laboratuvarı",
+      "model": "custom-cb-lab",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Şehir yapıları",
+      "key": "spaceport",
+      "name": "Uzay limanı",
+      "model": "custom-cb-spaceport",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Birlikler",
+      "key": "settler",
+      "name": "Göçmenler",
+      "model": "custom-unit-settler",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Birlikler",
+      "key": "scout",
+      "name": "Öncü",
+      "model": "rogue-hooded",
+      "source": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "license": "CC0-1.0"
+    },
+    {
+      "category": "Birlikler",
+      "key": "warrior",
+      "name": "Savaşçı",
+      "model": "caveman",
+      "source": "https://kaylousberg.itch.io/kaykit-series-5",
+      "license": "CC0-1.0"
+    },
+    {
+      "category": "Birlikler",
+      "key": "archer",
+      "name": "Okçu",
+      "model": "rogue",
+      "source": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "license": "CC0-1.0"
+    },
+    {
+      "category": "Birlikler",
+      "key": "spearman",
+      "name": "Tunç mızrakçı",
+      "model": "custom-person-spearman",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Birlikler",
+      "key": "swordsman",
+      "name": "Kılıçlı piyade",
+      "model": "custom-person-swordsman",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Birlikler",
+      "key": "knight",
+      "name": "Şövalye",
+      "model": "knight",
+      "source": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "license": "CC0-1.0"
+    },
+    {
+      "category": "Birlikler",
+      "key": "musketeer",
+      "name": "Tüfekli",
+      "model": "custom-person-musketeer",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Birlikler",
+      "key": "infantry",
+      "name": "Piyade",
+      "model": "custom-person-infantry",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Birlikler",
+      "key": "artillery",
+      "name": "Topçu",
+      "model": "custom-unit-artillery",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Birlikler",
+      "key": "tank",
+      "name": "Tank",
+      "model": "battle-tank",
+      "source": "https://quaternius.com/packs/toonshootergamekit.html",
+      "license": "CC0-1.0"
+    },
+    {
+      "category": "Birlikler",
+      "key": "mech",
+      "name": "Mekanize piyade",
+      "model": "custom-unit-mech",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Birlikler",
+      "key": "robotarmy",
+      "name": "Robot birliği",
+      "model": "robot-one",
+      "source": "https://kaylousberg.itch.io/kaykit-series-4",
+      "license": "CC0-1.0"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "hamal",
+      "name": "Hamallar",
+      "model": "custom-person-porter",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "esek",
+      "name": "Eşek kervanı",
+      "model": "donkey",
+      "source": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "license": "CC0-1.0"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "araba",
+      "name": "Öküz arabası",
+      "model": "custom-vehicle-araba",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "kervan",
+      "name": "Atlı kervan",
+      "model": "custom-vehicle-kervan",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "tren",
+      "name": "Buharlı tren",
+      "model": "custom-vehicle-tren",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "kamyon",
+      "name": "Kamyon",
+      "model": "custom-vehicle-kamyon",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "maglev",
+      "name": "Maglev",
+      "model": "custom-vehicle-maglev",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "sal",
+      "name": "Sal",
+      "model": "custom-vehicle-sal",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "kadirga",
+      "name": "Kadırga",
+      "model": "custom-vehicle-kadirga",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "yelkenli",
+      "name": "Yelkenli",
+      "model": "custom-vehicle-yelkenli",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "kalyon",
+      "name": "Kalyon",
+      "model": "custom-vehicle-kalyon",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "buharli",
+      "name": "Buharlı gemi",
+      "model": "custom-vehicle-buharli",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "konteyner",
+      "name": "Konteyner gemisi",
+      "model": "custom-vehicle-konteyner",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Ticaret taşıtları",
+      "key": "otonom",
+      "name": "Otonom gemi",
+      "model": "custom-vehicle-otonom",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "piramit",
+      "name": "Piramitler",
+      "model": "custom-wonder-piramit",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "bahce",
+      "name": "Asma Bahçeler",
+      "model": "custom-wonder-bahce",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "kutuphane",
+      "name": "Büyük Kütüphane",
+      "model": "custom-wonder-kutuphane",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "sur",
+      "name": "Çin Seddi",
+      "model": "custom-wonder-sur",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "kolezyum",
+      "name": "Kolezyum",
+      "model": "custom-wonder-kolezyum",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "ayasofya",
+      "name": "Ayasofya",
+      "model": "custom-wonder-ayasofya",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "carsi",
+      "name": "Kapalıçarşı",
+      "model": "custom-wonder-carsi",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "leonardo",
+      "name": "Leonardo'nun Atölyesi",
+      "model": "custom-wonder-leonardo",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "tacmahal",
+      "name": "Tac Mahal",
+      "model": "custom-wonder-tacmahal",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "suveys",
+      "name": "Süveyş Kanalı",
+      "model": "custom-wonder-suveys",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "eyfel",
+      "name": "Eyfel Kulesi",
+      "model": "custom-wonder-eyfel",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "sinema",
+      "name": "Sinema Stüdyoları",
+      "model": "custom-wonder-sinema",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "iss",
+      "name": "Uluslararası Uzay İstasyonu",
+      "model": "custom-wonder-iss",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    },
+    {
+      "category": "Harikalar",
+      "key": "fuzyon",
+      "name": "Füzyon Reaktörü",
+      "model": "custom-wonder-fuzyon",
+      "source": "scripts/build-custom-models.mjs",
+      "license": "project source"
+    }
+  ],
+  "culturalHomes": {
+    "europe": "custom-home-europe",
+    "islamic": "custom-home-islamic",
+    "eastasia": "custom-home-eastasia",
+    "southasia": "custom-home-southasia",
+    "africa": "custom-home-africa",
+    "americas": "custom-home-americas"
+  },
+  "nature": {
+    "palm": "custom-nature-palm",
+    "crag": "custom-nature-crag",
+    "bush": "custom-nature-bush",
+    "grass": "custom-nature-grass",
+    "wheat": "custom-nature-wheat",
+    "bird": "custom-nature-bird",
+    "campfire": "custom-nature-campfire",
+    "flagpole": "custom-nature-flagpole"
+  },
+  "proceduralSurfaces": [
+    "Terrain.tsx: heightfield/water/fog/hex",
+    "Rivers.tsx: river ribbons",
+    "Globe.tsx: globe surface",
+    "Units.tsx: curved roads, route and selection overlays",
+    "SceneLife.tsx, Cities.tsx: cloth, smoke and fire effects"
+  ]
+}

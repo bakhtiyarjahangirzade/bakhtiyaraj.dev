@@ -1,0 +1,52 @@
+{
+  "id": "knight",
+  "version": 1,
+  "width": 2048,
+  "height": 96,
+  "rowsPerFrame": 2,
+  "vertices": 3604,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Idle_A"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Walking_A"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.800000011920929,
+      "source": "Running_A"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Melee_1H_Attack_Chop"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 1.5,
+      "source": "Working_A"
+    },
+    "ride": {
+      "start": 40,
+      "frames": 8,
+      "duration": 3.5999999046325684,
+      "source": "Sit_Chair_Idle"
+    }
+  },
+  "bytes": 779103,
+  "decodedBytes": 1572864,
+  "sha256": "edaa60e82f65a61756cbfa9fdb67305b9ad883c210b6e7ca4dbbadac80eacc7f",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

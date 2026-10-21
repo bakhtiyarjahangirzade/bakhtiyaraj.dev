@@ -1,0 +1,46 @@
+{
+  "id": "donkey",
+  "version": 1,
+  "width": 2048,
+  "height": 40,
+  "rowsPerFrame": 1,
+  "vertices": 1228,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 3.3333332538604736,
+      "source": "Idle"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.1666666269302368,
+      "source": "Walk"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.5333333611488342,
+      "source": "Gallop"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.600000023841858,
+      "source": "Attack_Headbutt"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 6,
+      "source": "Eating"
+    }
+  },
+  "bytes": 235886,
+  "decodedBytes": 655360,
+  "sha256": "b18119d5098f0726b5c09c9d521cd26f4afd94aa2219cb1bc6bc7d933bcacb83",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

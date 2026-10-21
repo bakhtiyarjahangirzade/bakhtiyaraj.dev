@@ -1,0 +1,46 @@
+{
+  "id": "space-ranger",
+  "version": 1,
+  "width": 2048,
+  "height": 80,
+  "rowsPerFrame": 2,
+  "vertices": 3494,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Idle_A"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Walking_A"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.800000011920929,
+      "source": "Running_A"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Melee_1H_Attack_Chop"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 1.5,
+      "source": "Working_A"
+    }
+  },
+  "bytes": 655494,
+  "decodedBytes": 1310720,
+  "sha256": "3dd45ea0f287824f96369d940f3a9702afa0069c8c478d008839b88ea0fe0775",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

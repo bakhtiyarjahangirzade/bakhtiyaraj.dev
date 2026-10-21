@@ -1,0 +1,46 @@
+{
+  "id": "robot-one",
+  "version": 1,
+  "width": 2048,
+  "height": 80,
+  "rowsPerFrame": 2,
+  "vertices": 3039,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Idle_A"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Walking_A"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.800000011920929,
+      "source": "Running_A"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Melee_1H_Attack_Chop"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 1.5,
+      "source": "Working_A"
+    }
+  },
+  "bytes": 594619,
+  "decodedBytes": 1310720,
+  "sha256": "31038f38c1927bcd08e26f996b2f233179af51c4224d3c71af4660a0d3bb5eef",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

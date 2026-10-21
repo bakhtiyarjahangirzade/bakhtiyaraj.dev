@@ -1,0 +1,46 @@
+{
+  "id": "rogue",
+  "version": 1,
+  "width": 2048,
+  "height": 80,
+  "rowsPerFrame": 2,
+  "vertices": 3297,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Idle_A"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Walking_A"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.800000011920929,
+      "source": "Running_A"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Melee_1H_Attack_Chop"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 1.5,
+      "source": "Working_A"
+    }
+  },
+  "bytes": 644131,
+  "decodedBytes": 1310720,
+  "sha256": "26864a6182189ea3bcb856e56514a4747bd911d86d0707e5606aff9404073df2",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

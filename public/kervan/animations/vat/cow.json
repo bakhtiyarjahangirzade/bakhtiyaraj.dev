@@ -1,0 +1,46 @@
+{
+  "id": "cow",
+  "version": 1,
+  "width": 2048,
+  "height": 40,
+  "rowsPerFrame": 1,
+  "vertices": 1479,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 3.3333332538604736,
+      "source": "Idle"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.1666666269302368,
+      "source": "Walk"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.6000000238418579,
+      "source": "Gallop"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.0333333015441895,
+      "source": "Attack_Headbutt"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 6,
+      "source": "Eating"
+    }
+  },
+  "bytes": 285648,
+  "decodedBytes": 655360,
+  "sha256": "7c3532b857f943ee00bef9f1d1d45180f65a4a8a6b23c56e795055f48839a173",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

@@ -1,0 +1,46 @@
+{
+  "id": "horse",
+  "version": 1,
+  "width": 2048,
+  "height": 40,
+  "rowsPerFrame": 1,
+  "vertices": 1269,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 3.3333332538604736,
+      "source": "Idle"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.1666666269302368,
+      "source": "Walk"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.6000000238418579,
+      "source": "Gallop"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.0333333015441895,
+      "source": "Attack_Headbutt"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 6,
+      "source": "Eating"
+    }
+  },
+  "bytes": 247071,
+  "decodedBytes": 655360,
+  "sha256": "f03b55bd68dd524fcb23922e4303e987206816a9402cdbf752875b4fb21f42d3",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

@@ -1,0 +1,46 @@
+{
+  "id": "combat-mech",
+  "version": 1,
+  "width": 2048,
+  "height": 120,
+  "rowsPerFrame": 3,
+  "vertices": 4240,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Idle_A"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Walking_A"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.800000011920929,
+      "source": "Running_A"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 1.0666667222976685,
+      "source": "Melee_1H_Attack_Chop"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 1.5,
+      "source": "Working_A"
+    }
+  },
+  "bytes": 697593,
+  "decodedBytes": 1966080,
+  "sha256": "e2eb63c73107ca7ddbc0d38099d301c6ae737fe2119b0d2b890984c281f70efc",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

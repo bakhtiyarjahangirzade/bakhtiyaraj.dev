@@ -1,0 +1,46 @@
+{
+  "id": "modern-soldier",
+  "version": 1,
+  "width": 2048,
+  "height": 80,
+  "rowsPerFrame": 2,
+  "vertices": 2916,
+  "format": "RGBA16F",
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 8,
+      "duration": 1.6666666269302368,
+      "source": "Idle"
+    },
+    "walk": {
+      "start": 8,
+      "frames": 8,
+      "duration": 1,
+      "source": "Walk"
+    },
+    "run": {
+      "start": 16,
+      "frames": 8,
+      "duration": 0.7333333492279053,
+      "source": "Run"
+    },
+    "attack": {
+      "start": 24,
+      "frames": 8,
+      "duration": 0.36666667461395264,
+      "source": "Idle_Shoot"
+    },
+    "work": {
+      "start": 32,
+      "frames": 8,
+      "duration": 1.6666666269302368,
+      "source": "Wave"
+    }
+  },
+  "bytes": 651842,
+  "decodedBytes": 1310720,
+  "sha256": "a50b6d49caa831c1fe99ebb9bd9abf7e645242a269b61585fe1f5371b71a4994",
+  "license": "CC0-1.0",
+  "source": "../manifest.json"
+}

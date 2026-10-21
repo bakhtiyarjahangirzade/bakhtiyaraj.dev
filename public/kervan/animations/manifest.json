@@ -1,0 +1,1435 @@
+{
+  "version": 1,
+  "source": "https://kaylousberg.itch.io/kaykit-character-animations",
+  "license": "CC0-1.0",
+  "kaykitClipCount": 131,
+  "sets": [
+    {
+      "id": "CombatMelee",
+      "label": "Yakın dövüş",
+      "file": "kaykit-CombatMelee.glb",
+      "clips": [
+        {
+          "name": "Melee_1H_Attack_Chop",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Melee_1H_Attack_Jump_Chop",
+          "duration": 1.3333333730697632
+        },
+        {
+          "name": "Melee_1H_Attack_Slice_Diagonal",
+          "duration": 1
+        },
+        {
+          "name": "Melee_1H_Attack_Slice_Horizontal",
+          "duration": 1.3666666746139526
+        },
+        {
+          "name": "Melee_1H_Attack_Stab",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "Melee_2H_Attack_Chop",
+          "duration": 1.6333333253860474
+        },
+        {
+          "name": "Melee_2H_Attack_Slice",
+          "duration": 1.100000023841858
+        },
+        {
+          "name": "Melee_2H_Attack_Spin",
+          "duration": 2.4000000953674316
+        },
+        {
+          "name": "Melee_2H_Attack_Spinning",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Melee_2H_Attack_Stab",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "Melee_2H_Idle",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Melee_Block",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Melee_Block_Attack",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Melee_Block_Hit",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Melee_Blocking",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Melee_Dualwield_Attack_Chop",
+          "duration": 1.2666666507720947
+        },
+        {
+          "name": "Melee_Dualwield_Attack_Slice",
+          "duration": 1.1666666269302368
+        },
+        {
+          "name": "Melee_Dualwield_Attack_Stab",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "Melee_Unarmed_Attack_Kick",
+          "duration": 0.9333333373069763
+        },
+        {
+          "name": "Melee_Unarmed_Attack_Punch_A",
+          "duration": 1.1666666269302368
+        },
+        {
+          "name": "Melee_Unarmed_Idle",
+          "duration": 1.0666667222976685
+        }
+      ],
+      "source": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-character-animations/3D/characters/Animations/gltf/Rig_Medium/Rig_Medium_CombatMelee.glb",
+      "sourceSha256": "c55e6ec1c79e83ae21d46fe1cd921c1b64be8b9a524a24517e51c6ba99231459",
+      "license": "CC0-1.0",
+      "sha256": "93340b71db619ae3d2d97e379d3c9cbde9f7c34581be51af828005dc77fb0a45",
+      "bytes": 477252
+    },
+    {
+      "id": "CombatRanged",
+      "label": "Uzak dövüş",
+      "file": "kaykit-CombatRanged.glb",
+      "clips": [
+        {
+          "name": "Ranged_1H_Aiming",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Ranged_1H_Reload",
+          "duration": 1.1666666269302368
+        },
+        {
+          "name": "Ranged_1H_Shoot",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Ranged_1H_Shooting",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "Ranged_2H_Aiming",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "Ranged_2H_Reload",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "Ranged_2H_Shoot",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Ranged_2H_Shooting",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Ranged_Bow_Aiming_Idle",
+          "duration": 1.8333333730697632
+        },
+        {
+          "name": "Ranged_Bow_Draw",
+          "duration": 1.3333333730697632
+        },
+        {
+          "name": "Ranged_Bow_Draw_Up",
+          "duration": 1.3333333730697632
+        },
+        {
+          "name": "Ranged_Bow_Idle",
+          "duration": 1.5666667222976685
+        },
+        {
+          "name": "Ranged_Bow_Release",
+          "duration": 1.3333333730697632
+        },
+        {
+          "name": "Ranged_Bow_Release_Up",
+          "duration": 1.3666666746139526
+        },
+        {
+          "name": "Ranged_Magic_Raise",
+          "duration": 2.0999999046325684
+        },
+        {
+          "name": "Ranged_Magic_Shoot",
+          "duration": 0.9333333373069763
+        },
+        {
+          "name": "Ranged_Magic_Spellcasting",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Ranged_Magic_Spellcasting_Long",
+          "duration": 2.5333333015441895
+        },
+        {
+          "name": "Ranged_Magic_Summon",
+          "duration": 4.300000190734863
+        }
+      ],
+      "source": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-character-animations/3D/characters/Animations/gltf/Rig_Medium/Rig_Medium_CombatRanged.glb",
+      "sourceSha256": "7fef1fc0e7b0feafd34b8e12d23f514c8c1f9d068047a691b854b56f1774dff5",
+      "license": "CC0-1.0",
+      "sha256": "5fc984386d887a07c81ba224aff918b0ab2b0f54702da22e8c395fd997b0a0da",
+      "bytes": 529040
+    },
+    {
+      "id": "General",
+      "label": "Bekleme ve etkileşim",
+      "file": "kaykit-General.glb",
+      "clips": [
+        {
+          "name": "Death_A",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Death_A_Pose",
+          "duration": 0
+        },
+        {
+          "name": "Death_B",
+          "duration": 2.633333444595337
+        },
+        {
+          "name": "Death_B_Pose",
+          "duration": 0
+        },
+        {
+          "name": "Hit_A",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Hit_B",
+          "duration": 0.8666666746139526
+        },
+        {
+          "name": "Idle_A",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Idle_B",
+          "duration": 2.133333444595337
+        },
+        {
+          "name": "Interact",
+          "duration": 1.2999999523162842
+        },
+        {
+          "name": "PickUp",
+          "duration": 1.2999999523162842
+        },
+        {
+          "name": "Spawn_Air",
+          "duration": 1.2999999523162842
+        },
+        {
+          "name": "Spawn_Ground",
+          "duration": 1.2999999523162842
+        },
+        {
+          "name": "Throw",
+          "duration": 1.3666666746139526
+        },
+        {
+          "name": "Use_Item",
+          "duration": 1.600000023841858
+        }
+      ],
+      "source": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-character-animations/3D/characters/Animations/gltf/Rig_Medium/Rig_Medium_General.glb",
+      "sourceSha256": "5f725c0f745f36078c7238968cd5c04843cbc6260689eb6e7f5e2bbd7ffdd7ad",
+      "license": "CC0-1.0",
+      "sha256": "c2b8ce2fff1fef49134e32707f98c5da13e69860718d131bbfcac8165547c006",
+      "bytes": 351392
+    },
+    {
+      "id": "MovementAdvanced",
+      "label": "Gelişmiş hareket",
+      "file": "kaykit-MovementAdvanced.glb",
+      "clips": [
+        {
+          "name": "Crawling",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Crouching",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Dodge_Backward",
+          "duration": 0.4000000059604645
+        },
+        {
+          "name": "Dodge_Forward",
+          "duration": 0.4000000059604645
+        },
+        {
+          "name": "Dodge_Left",
+          "duration": 0.4000000059604645
+        },
+        {
+          "name": "Dodge_Right",
+          "duration": 0.4000000059604645
+        },
+        {
+          "name": "Running_HoldingBow",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Running_HoldingRifle",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Running_Strafe_Left",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Running_Strafe_Right",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Sneaking",
+          "duration": 2.133333444595337
+        },
+        {
+          "name": "Walking_Backwards",
+          "duration": 1.0666667222976685
+        }
+      ],
+      "source": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-character-animations/3D/characters/Animations/gltf/Rig_Medium/Rig_Medium_MovementAdvanced.glb",
+      "sourceSha256": "8b2317cf81e3f24149e4b791c27e1932bebd46cd378ed962e7d27d642fad8c56",
+      "license": "CC0-1.0",
+      "sha256": "611c8cee528453cc0e26405ece46ad02225b8fd9325462d15a36dc945313867d",
+      "bytes": 262388
+    },
+    {
+      "id": "MovementBasic",
+      "label": "Yürüme ve koşma",
+      "file": "kaykit-MovementBasic.glb",
+      "clips": [
+        {
+          "name": "Jump_Full_Long",
+          "duration": 2.3333332538604736
+        },
+        {
+          "name": "Jump_Full_Short",
+          "duration": 1.1666666269302368
+        },
+        {
+          "name": "Jump_Idle",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Jump_Land",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Jump_Start",
+          "duration": 0.6000000238418579
+        },
+        {
+          "name": "Running_A",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Running_B",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Walking_A",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Walking_B",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Walking_C",
+          "duration": 1.600000023841858
+        }
+      ],
+      "source": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-character-animations/3D/characters/Animations/gltf/Rig_Medium/Rig_Medium_MovementBasic.glb",
+      "sourceSha256": "11422afd50abf7e8c92ea107e2e0bc94abd38023d6d15f55ad580347efbfa29e",
+      "license": "CC0-1.0",
+      "sha256": "8ddcc1f96c4fde33d2d9e298f61a1da0adeb14b1db0de146af11927ca41a3e7f",
+      "bytes": 234136
+    },
+    {
+      "id": "Simulation",
+      "label": "Sosyal hareketler",
+      "file": "kaykit-Simulation.glb",
+      "clips": [
+        {
+          "name": "Cheering",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "Lie_Down",
+          "duration": 3
+        },
+        {
+          "name": "Lie_Idle",
+          "duration": 2.6666667461395264
+        },
+        {
+          "name": "Lie_StandUp",
+          "duration": 2.3333332538604736
+        },
+        {
+          "name": "Push_Ups",
+          "duration": 1.0333333015441895
+        },
+        {
+          "name": "Sit_Chair_Down",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Sit_Chair_Idle",
+          "duration": 3.5999999046325684
+        },
+        {
+          "name": "Sit_Chair_StandUp",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Sit_Floor_Down",
+          "duration": 1
+        },
+        {
+          "name": "Sit_Floor_Idle",
+          "duration": 4
+        },
+        {
+          "name": "Sit_Floor_StandUp",
+          "duration": 1.1333333253860474
+        },
+        {
+          "name": "Sit_Ups",
+          "duration": 1.7333333492279053
+        },
+        {
+          "name": "Waving",
+          "duration": 2.133333444595337
+        }
+      ],
+      "source": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-character-animations/3D/characters/Animations/gltf/Rig_Medium/Rig_Medium_Simulation.glb",
+      "sourceSha256": "ab6ffeed40c8281dd0ce0506534eadf7385151f1c266643a10fa2a0f0a7ba3b1",
+      "license": "CC0-1.0",
+      "sha256": "83ee86d3de287fedbac6ae4b7b469e4a0d102760b591cba0c8cd81385a26820f",
+      "bytes": 406392
+    },
+    {
+      "id": "Special",
+      "label": "Özel hareketler",
+      "file": "kaykit-Special.glb",
+      "clips": [
+        {
+          "name": "EXPERIMENTAL_Medium_Transform",
+          "duration": 1
+        },
+        {
+          "name": "Skeletons_Awaken_Floor",
+          "duration": 2.299999952316284
+        },
+        {
+          "name": "Skeletons_Awaken_Floor_Long",
+          "duration": 3.8333332538604736
+        },
+        {
+          "name": "Skeletons_Awaken_Standing",
+          "duration": 1
+        },
+        {
+          "name": "Skeletons_Death",
+          "duration": 2
+        },
+        {
+          "name": "Skeletons_Death_Pose",
+          "duration": 0
+        },
+        {
+          "name": "Skeletons_Death_Resurrect",
+          "duration": 2.700000047683716
+        },
+        {
+          "name": "Skeletons_Idle",
+          "duration": 4.266666889190674
+        },
+        {
+          "name": "Skeletons_Inactive_Floor_Pose",
+          "duration": 0
+        },
+        {
+          "name": "Skeletons_Inactive_Standing_Pose",
+          "duration": 0
+        },
+        {
+          "name": "Skeletons_Spawn_Ground",
+          "duration": 3.566666603088379
+        },
+        {
+          "name": "Skeletons_Taunt",
+          "duration": 1.0333333015441895
+        },
+        {
+          "name": "Skeletons_Taunt_Longer",
+          "duration": 3
+        },
+        {
+          "name": "Skeletons_Walking",
+          "duration": 1.600000023841858
+        }
+      ],
+      "source": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-character-animations/3D/characters/Animations/gltf/Rig_Medium/Rig_Medium_Special.glb",
+      "sourceSha256": "74047dd2178fbed388656051664158e921b7bfc613abb119860aeb7b646bd640",
+      "license": "CC0-1.0",
+      "sha256": "b7c14a19075c1c07279b3ac13419e5bb3fc2b09bfdd18c61a0968f4224366748",
+      "bytes": 474784
+    },
+    {
+      "id": "Tools",
+      "label": "İş ve üretim",
+      "file": "kaykit-Tools.glb",
+      "clips": [
+        {
+          "name": "Chop",
+          "duration": 4.333333492279053
+        },
+        {
+          "name": "Chopping",
+          "duration": 1.3333333730697632
+        },
+        {
+          "name": "Dig",
+          "duration": 4.666666507720947
+        },
+        {
+          "name": "Digging",
+          "duration": 1.399999976158142
+        },
+        {
+          "name": "Fishing_Bite",
+          "duration": 2.2333333492279053
+        },
+        {
+          "name": "Fishing_Cast",
+          "duration": 1.9333332777023315
+        },
+        {
+          "name": "Fishing_Catch",
+          "duration": 3.2333333492279053
+        },
+        {
+          "name": "Fishing_Idle",
+          "duration": 2.3333332538604736
+        },
+        {
+          "name": "Fishing_Reeling",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "Fishing_Struggling",
+          "duration": 3.433333396911621
+        },
+        {
+          "name": "Fishing_Tug",
+          "duration": 1.899999976158142
+        },
+        {
+          "name": "Hammer",
+          "duration": 4.333333492279053
+        },
+        {
+          "name": "Hammering",
+          "duration": 2.6666667461395264
+        },
+        {
+          "name": "Holding_A",
+          "duration": 1
+        },
+        {
+          "name": "Holding_B",
+          "duration": 1
+        },
+        {
+          "name": "Holding_C",
+          "duration": 1
+        },
+        {
+          "name": "Lockpick",
+          "duration": 3
+        },
+        {
+          "name": "Lockpicking",
+          "duration": 2.3333332538604736
+        },
+        {
+          "name": "Pickaxe",
+          "duration": 6.0333333015441895
+        },
+        {
+          "name": "Pickaxing",
+          "duration": 3.7333333492279053
+        },
+        {
+          "name": "Saw",
+          "duration": 2.4000000953674316
+        },
+        {
+          "name": "Sawing",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Work_A",
+          "duration": 2.5333333015441895
+        },
+        {
+          "name": "Work_B",
+          "duration": 3.0999999046325684
+        },
+        {
+          "name": "Work_C",
+          "duration": 3.6666667461395264
+        },
+        {
+          "name": "Working_A",
+          "duration": 1.5
+        },
+        {
+          "name": "Working_B",
+          "duration": 2.5333333015441895
+        },
+        {
+          "name": "Working_C",
+          "duration": 2
+        }
+      ],
+      "source": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-character-animations/3D/characters/Animations/gltf/Rig_Medium/Rig_Medium_Tools.glb",
+      "sourceSha256": "e3b62dc122c5073373376a846e354137add2088ddcce8731c389fc5c20734aad",
+      "license": "CC0-1.0",
+      "sha256": "8dabad9b6f0c103d9551e355acf239b1cf45492b8a31f7ae28b08b0f9f0eab13",
+      "bytes": 902132
+    }
+  ],
+  "actors": [
+    {
+      "id": "paladin",
+      "family": "kaykit",
+      "file": "paladin.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-4",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-4/3D/misc/10%20-%20April%202024%20-%20Paladin/characters/gltf/Paladin_with_Helmet.glb",
+      "sourceSha256": "9059e382b8da8bb86edbcb8d39e526d2b6993f8d93d93348b3db69e44c7a4636",
+      "license": "CC0-1.0",
+      "bytes": 345120,
+      "sha256": "52765532ca95cf1b54c376d41fd12875ef22d73e53e34dbd55e5272c1d6f932b"
+    },
+    {
+      "id": "robot-one",
+      "family": "kaykit",
+      "file": "robot-one.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-4",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-4/3D/misc/12%20-%20June%202024%20-%20Robot/characters/Robot_One.glb",
+      "sourceSha256": "90ea36ee5fc2a1dcdfc904cdfffd4225a8f031b3df22bdfdf4c7e72e168674fa",
+      "license": "CC0-1.0",
+      "bytes": 342556,
+      "sha256": "0a5ceae87f11609223fd7ff0a3b042d47e464e64cfa925d49357d02f96136f82"
+    },
+    {
+      "id": "robot-two",
+      "family": "kaykit",
+      "file": "robot-two.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-4",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-4/3D/misc/12%20-%20June%202024%20-%20Robot/characters/Robot_Two.glb",
+      "sourceSha256": "5a1c0b24e1c41805507206221770b3651bf98c939fd0e76d9d75bfbce85b7b06",
+      "license": "CC0-1.0",
+      "bytes": 342668,
+      "sha256": "dd45d1bae40682bb0f2363a8d47e6bbc244240c2a8265cb8ccbb8bb88443523d"
+    },
+    {
+      "id": "driver",
+      "family": "kaykit",
+      "file": "driver.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-4",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-4/3D/misc/2%20-%20August%202023%20-%20Driver/character/gltf/Driver.glb",
+      "sourceSha256": "582b11064e158f718384f7f9b451079fa7e1b8ccd81f28fdf874d3e98d69155c",
+      "license": "CC0-1.0",
+      "bytes": 175956,
+      "sha256": "f69e876ea4734c4ebbd783536d256cac34dbee1db864656d0e2e830a2de7bcba"
+    },
+    {
+      "id": "space-ranger",
+      "family": "kaykit",
+      "file": "space-ranger.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-4",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-4/3D/misc/7%20-%20January%202024%20-%20Space%20Ranger/character/SpaceRanger.glb",
+      "sourceSha256": "302f8aef4af43d0fb00abe8f7a237fbdf5baed356c8c11efe5e038f3177ca854",
+      "license": "CC0-1.0",
+      "bytes": 245828,
+      "sha256": "96f9926f813664d8b8a50c8ff82b0802dbfff163d2a72df1ec7917073f20eaa5"
+    },
+    {
+      "id": "survivalist",
+      "family": "kaykit",
+      "file": "survivalist.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-4",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-4/3D/misc/9%20-%20March%202024%20-%20Survivalist/character/Survivalist.glb",
+      "sourceSha256": "d1a28187cdaea1c497ba80d92bd3f4142a69439bb4fc0abb270fed757ae27b43",
+      "license": "CC0-1.0",
+      "bytes": 303364,
+      "sha256": "6b3d1d98545cd22b34871f6bfc840d054e76594ff447f4eabf8e5c94905d3b03"
+    },
+    {
+      "id": "combat-mech",
+      "family": "kaykit",
+      "file": "combat-mech.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-5",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-5/3D/misc/1%20-%20July%202024%20-%20Combat%20Mech/characters/CombatMech.glb",
+      "sourceSha256": "2a62c2c2b4939c7e3b4f8fd755d333aa44121d7514bdf36f6a4dc2ef738c6adf",
+      "license": "CC0-1.0",
+      "bytes": 581368,
+      "sha256": "266673f85fc73d800f64fd016a7af0302ef7ba548cc9baedd75b57f23cfd8b41"
+    },
+    {
+      "id": "civilian-a",
+      "family": "kaykit",
+      "file": "civilian-a.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-5",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-5/3D/misc/10%20-%20April%202025%20-%20Protagonists/characters/Protagonist_A.glb",
+      "sourceSha256": "e7b18de009072c45d0c05c829c11eb80bb848a1be6d2ad507659ee05fcd8eb97",
+      "license": "CC0-1.0",
+      "bytes": 487188,
+      "sha256": "d26763ad231032271e7c51dc150e1646f3ca99a497ff75d260a2e6ff4bc0fc15"
+    },
+    {
+      "id": "civilian-b",
+      "family": "kaykit",
+      "file": "civilian-b.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-5",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-5/3D/misc/10%20-%20April%202025%20-%20Protagonists/characters/Protagonist_B.glb",
+      "sourceSha256": "61b81c9d942d2ef11905654c28cb7f1011dba0a7e074006f1121dcddcb2fae6c",
+      "license": "CC0-1.0",
+      "bytes": 433072,
+      "sha256": "a44e6f3c19a8d799c4176ca3ab52227e75c6ccbf6734794f091ef14c41297c28"
+    },
+    {
+      "id": "hiker",
+      "family": "kaykit",
+      "file": "hiker.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-5",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-5/3D/misc/11%20-%20May%202025%20-%20Hiker/characters/Hiker.glb",
+      "sourceSha256": "d8911b38a9d802db5b80da44a0c70d651c323001a2382d7b2d71dc04f726a7cd",
+      "license": "CC0-1.0",
+      "bytes": 562216,
+      "sha256": "a6cb318c5861e95e187e6fc0b14e268e512231813c4c92614e63ad07cf6f2004"
+    },
+    {
+      "id": "black-knight",
+      "family": "kaykit",
+      "file": "black-knight.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-5",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-5/3D/misc/3%20-%20September%202024%20-%20Black%20Knight/characters/BlackKnight.glb",
+      "sourceSha256": "91cfdbfc7d9b8f541c5d50716eca8d4edae3dcda9b78c07422a9c0ac4919019d",
+      "license": "CC0-1.0",
+      "bytes": 485396,
+      "sha256": "808526fcee8ec40bf567b4a36472d5a7dd510001de70366bf32aa94cccb07840"
+    },
+    {
+      "id": "caveman",
+      "family": "kaykit",
+      "file": "caveman.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-series-5",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/kaykit-mystery-monthly-5/3D/misc/8%20-%20February%202025%20-%20Caveman/characters/Caveman.glb",
+      "sourceSha256": "cfcb1f1ee37805b1d74002e7bc977b4f92c7347a3ab34c742b93149af394da32",
+      "license": "CC0-1.0",
+      "bytes": 237604,
+      "sha256": "4e072ead33f72cf931b25b4da1add1950c358e5b6f850aa08bf6f84f7d56b884"
+    },
+    {
+      "id": "barbarian",
+      "family": "kaykit",
+      "file": "barbarian.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "sourceFile": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Barbarian.glb",
+      "sourceSha256": "cefc311a0e10c7858b6141f5ada7e33268727564fb8ac1347aab97d000669cc6",
+      "license": "CC0-1.0",
+      "bytes": 266868,
+      "sha256": "f1b6a2060bbb8772472a37e2181cf85d5f8b4cffba9661eaa48cc3566866ccbf"
+    },
+    {
+      "id": "knight",
+      "family": "kaykit",
+      "file": "knight.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "sourceFile": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Knight.glb",
+      "sourceSha256": "60428e3abc09ba83e595d256e3af8c5c976b46cdae599f0802fc82b4a3445168",
+      "license": "CC0-1.0",
+      "bytes": 271688,
+      "sha256": "732fd5ab3314f1f51443c88b93d0493ccede2e425a4e382e8884ce58b0da0f15"
+    },
+    {
+      "id": "rogue",
+      "family": "kaykit",
+      "file": "rogue.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "sourceFile": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Rogue.glb",
+      "sourceSha256": "e825437cd4d2ee9c1960b517a74a69101e33eb409ae7fa8cedc7134a998fbb7d",
+      "license": "CC0-1.0",
+      "bytes": 241088,
+      "sha256": "209ce34f701ba25e443b28de2f6d320f6d39b2127d349d76e705c32de0310451"
+    },
+    {
+      "id": "rogue-hooded",
+      "family": "kaykit",
+      "file": "rogue-hooded.rig.glb",
+      "clips": [],
+      "source": "https://kaylousberg.itch.io/kaykit-adventurers",
+      "sourceFile": "https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0/672074b73ba276876a19e8816ecdc5241817ab47/addons/kaykit_character_pack_adventures/Characters/gltf/Rogue_Hooded.glb",
+      "sourceSha256": "93e6e25213009952276d9cf34f5d96a243767334c66f280db0433ddfabb91545",
+      "license": "CC0-1.0",
+      "bytes": 221348,
+      "sha256": "d882b970f43a87bb90770e909945bb50c8c45d6953cf9acf244e58097cc47896"
+    },
+    {
+      "id": "modern-soldier",
+      "family": "modern",
+      "file": "modern-soldier.rig.glb",
+      "clips": [
+        {
+          "name": "Death",
+          "duration": 0.7666666507720947
+        },
+        {
+          "name": "Duck",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "HitReact",
+          "duration": 0.4333333373069763
+        },
+        {
+          "name": "Idle",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "Idle_Shoot",
+          "duration": 0.36666667461395264
+        },
+        {
+          "name": "Jump",
+          "duration": 0.30000001192092896
+        },
+        {
+          "name": "Jump_Idle",
+          "duration": 1
+        },
+        {
+          "name": "Jump_Land",
+          "duration": 0.4333333373069763
+        },
+        {
+          "name": "No",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "Punch",
+          "duration": 0.8666666746139526
+        },
+        {
+          "name": "Run",
+          "duration": 0.7333333492279053
+        },
+        {
+          "name": "Run_Gun",
+          "duration": 0.7333333492279053
+        },
+        {
+          "name": "Run_Shoot",
+          "duration": 0.7333333492279053
+        },
+        {
+          "name": "Walk",
+          "duration": 1
+        },
+        {
+          "name": "Walk_Shoot",
+          "duration": 1
+        },
+        {
+          "name": "Wave",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "Yes",
+          "duration": 1.6666666269302368
+        }
+      ],
+      "source": "https://quaternius.com/packs/toonshootergamekit.html",
+      "sourceFile": "https://raw.githubusercontent.com/EnzeD/threejs-shooter-template/c76d2ed62955c6c6944ff305f641cf956b740c50/public/assets/toonshooter/Characters/glTF/Character_Soldier.gltf",
+      "sourceSha256": "d1395255f7cfa8f766369e37e724fa44e2895a46a719d17f720c9c78b014a901",
+      "license": "CC0-1.0",
+      "bytes": 1343600,
+      "sha256": "6daca3a5c34ea8c3bf74799637a38ca06033b5c7efa4cb941e167666f79fd62e"
+    },
+    {
+      "id": "modern-hazmat",
+      "family": "modern",
+      "file": "modern-hazmat.rig.glb",
+      "clips": [
+        {
+          "name": "Death",
+          "duration": 0.7666666507720947
+        },
+        {
+          "name": "Duck",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "HitReact",
+          "duration": 0.4333333373069763
+        },
+        {
+          "name": "Idle",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "Idle_Shoot",
+          "duration": 0.36666667461395264
+        },
+        {
+          "name": "Jump",
+          "duration": 0.30000001192092896
+        },
+        {
+          "name": "Jump_Idle",
+          "duration": 1
+        },
+        {
+          "name": "Jump_Land",
+          "duration": 0.4333333373069763
+        },
+        {
+          "name": "No",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "Punch",
+          "duration": 0.8666666746139526
+        },
+        {
+          "name": "Run",
+          "duration": 0.7333333492279053
+        },
+        {
+          "name": "Run_Gun",
+          "duration": 0.7333333492279053
+        },
+        {
+          "name": "Run_Shoot",
+          "duration": 0.7333333492279053
+        },
+        {
+          "name": "Walk",
+          "duration": 1
+        },
+        {
+          "name": "Walk_Shoot",
+          "duration": 1
+        },
+        {
+          "name": "Wave",
+          "duration": 1.6666666269302368
+        },
+        {
+          "name": "Yes",
+          "duration": 1.6666666269302368
+        }
+      ],
+      "source": "https://quaternius.com/packs/toonshootergamekit.html",
+      "sourceFile": "https://raw.githubusercontent.com/EnzeD/threejs-shooter-template/c76d2ed62955c6c6944ff305f641cf956b740c50/public/assets/toonshooter/Characters/glTF/Character_Hazmat.gltf",
+      "sourceSha256": "43d8c6d6e7e95647f24da08d10570a2a29cd7f1e924546bb085b09c62deddc6e",
+      "license": "CC0-1.0",
+      "bytes": 1328344,
+      "sha256": "0ef8f53c05f5d11f18538f6191e3529e8e597a84560b45b7814fe338160f407e"
+    },
+    {
+      "id": "horse",
+      "family": "animal",
+      "file": "horse.rig.glb",
+      "clips": [
+        {
+          "name": "Attack_Headbutt",
+          "duration": 1.0333333015441895
+        },
+        {
+          "name": "Attack_Kick",
+          "duration": 1
+        },
+        {
+          "name": "Death",
+          "duration": 1
+        },
+        {
+          "name": "Eating",
+          "duration": 6
+        },
+        {
+          "name": "Gallop",
+          "duration": 0.6000000238418579
+        },
+        {
+          "name": "Gallop_Jump",
+          "duration": 1.4666666984558105
+        },
+        {
+          "name": "Idle",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_2",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_Headlow",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_HitReact1",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Idle_HitReact2",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Jump_toIdle",
+          "duration": 1.7333333492279053
+        },
+        {
+          "name": "Walk",
+          "duration": 1.1666666269302368
+        }
+      ],
+      "source": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/quaternius-animated-animals/3D/characters/Horse.gltf",
+      "sourceSha256": "3deb61550dff1d2786d04b6e8559d63ad3907d6ab606ba28ce0af074ed96341b",
+      "license": "CC0-1.0",
+      "bytes": 2062340,
+      "sha256": "abc61d651c1911e944333512823fa7dd39005faef8a9f57a6b4df4013d76fe1d"
+    },
+    {
+      "id": "horse-white",
+      "family": "animal",
+      "file": "horse-white.rig.glb",
+      "clips": [
+        {
+          "name": "Attack_Headbutt",
+          "duration": 1.0333333015441895
+        },
+        {
+          "name": "Attack_Kick",
+          "duration": 1
+        },
+        {
+          "name": "Death",
+          "duration": 1
+        },
+        {
+          "name": "Eating",
+          "duration": 6
+        },
+        {
+          "name": "Gallop",
+          "duration": 0.6000000238418579
+        },
+        {
+          "name": "Gallop_Jump",
+          "duration": 1.4666666984558105
+        },
+        {
+          "name": "Idle",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_2",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_Headlow",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_HitReact1",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Idle_HitReact2",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Jump_toIdle",
+          "duration": 1.7333333492279053
+        },
+        {
+          "name": "Walk",
+          "duration": 1.1666666269302368
+        }
+      ],
+      "source": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/quaternius-animated-animals/3D/characters/Horse_White.gltf",
+      "sourceSha256": "f137ee67bd565244f7441f35b5594a597588cda8b60ab109e2041cf13c58e1dd",
+      "license": "CC0-1.0",
+      "bytes": 2061508,
+      "sha256": "2f81369b5324e9365fddd6d1df559802a74e9b4d6daef7f0aca9494b6d9a2d50"
+    },
+    {
+      "id": "donkey",
+      "family": "animal",
+      "file": "donkey.rig.glb",
+      "clips": [
+        {
+          "name": "Attack_Headbutt",
+          "duration": 1.600000023841858
+        },
+        {
+          "name": "Attack_Kick",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Death",
+          "duration": 1
+        },
+        {
+          "name": "Eating",
+          "duration": 6
+        },
+        {
+          "name": "Gallop",
+          "duration": 0.5333333611488342
+        },
+        {
+          "name": "Gallop_Jump",
+          "duration": 1.399999976158142
+        },
+        {
+          "name": "Idle",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_2",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_Headlow",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_HitReact1",
+          "duration": 0.46666666865348816
+        },
+        {
+          "name": "Idle_HitReact2",
+          "duration": 0.5333333611488342
+        },
+        {
+          "name": "Jump_toIdle",
+          "duration": 1.5333333015441895
+        },
+        {
+          "name": "Walk",
+          "duration": 1.1666666269302368
+        }
+      ],
+      "source": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/quaternius-animated-animals/3D/characters/Donkey.gltf",
+      "sourceSha256": "4cbb2eb7d057789c945b6445d99d0c73b76c0caf7ac9b37ce88a04ca718be2ff",
+      "license": "CC0-1.0",
+      "bytes": 2030652,
+      "sha256": "bf43aadee17e0731fd43aa61ca093d6ffa20ab2adc8a450bdfef10da8e22791c"
+    },
+    {
+      "id": "cow",
+      "family": "animal",
+      "file": "cow.rig.glb",
+      "clips": [
+        {
+          "name": "Attack_Headbutt",
+          "duration": 1.0333333015441895
+        },
+        {
+          "name": "Attack_Kick",
+          "duration": 1
+        },
+        {
+          "name": "Death",
+          "duration": 1
+        },
+        {
+          "name": "Eating",
+          "duration": 6
+        },
+        {
+          "name": "Gallop",
+          "duration": 0.6000000238418579
+        },
+        {
+          "name": "Gallop_Jump",
+          "duration": 1.4666666984558105
+        },
+        {
+          "name": "Idle",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_2",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_Headlow",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_HitReact1",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Idle_HitReact2",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Jump_toIdle",
+          "duration": 1.7333333492279053
+        },
+        {
+          "name": "Walk",
+          "duration": 1.1666666269302368
+        }
+      ],
+      "source": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/quaternius-animated-animals/3D/characters/Cow.gltf",
+      "sourceSha256": "b04af067688d9fadf1395b4456dbf3117c2f760fb49e704ee5c8b6391fc8adb5",
+      "license": "CC0-1.0",
+      "bytes": 1815844,
+      "sha256": "dfea43a665cdf5f1e6874186cd772c945b255e40921428276f5ec160d5a05d0a"
+    },
+    {
+      "id": "bull",
+      "family": "animal",
+      "file": "bull.rig.glb",
+      "clips": [
+        {
+          "name": "Attack_Headbutt",
+          "duration": 1.0333333015441895
+        },
+        {
+          "name": "Attack_Kick",
+          "duration": 1
+        },
+        {
+          "name": "Death",
+          "duration": 1
+        },
+        {
+          "name": "Eating",
+          "duration": 6
+        },
+        {
+          "name": "Gallop",
+          "duration": 0.6000000238418579
+        },
+        {
+          "name": "Gallop_Jump",
+          "duration": 1.4666666984558105
+        },
+        {
+          "name": "Idle",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_2",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_Headlow",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_HitReact1",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Idle_HitReact2",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Jump_toIdle",
+          "duration": 1.7333333492279053
+        },
+        {
+          "name": "Walk",
+          "duration": 1.1666666269302368
+        }
+      ],
+      "source": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/quaternius-animated-animals/3D/characters/Bull.gltf",
+      "sourceSha256": "535da2992eb125d517725159a2eddeb520b72595bcb3021985fc43d2c84bff76",
+      "license": "CC0-1.0",
+      "bytes": 1812052,
+      "sha256": "2f3064b5e7f87784308acb8f9592b047ae983cc9ddcf4001d56acee178b60649"
+    },
+    {
+      "id": "deer",
+      "family": "animal",
+      "file": "deer.rig.glb",
+      "clips": [
+        {
+          "name": "Attack_Headbutt",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Attack_Kick",
+          "duration": 0.800000011920929
+        },
+        {
+          "name": "Death",
+          "duration": 0.8333333134651184
+        },
+        {
+          "name": "Eating",
+          "duration": 6
+        },
+        {
+          "name": "Gallop",
+          "duration": 0.5333333611488342
+        },
+        {
+          "name": "Gallop_Jump",
+          "duration": 1.399999976158142
+        },
+        {
+          "name": "Idle",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_2",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_Headlow",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_HitReact1",
+          "duration": 0.46666666865348816
+        },
+        {
+          "name": "Idle_HitReact2",
+          "duration": 0.5333333611488342
+        },
+        {
+          "name": "Jump_toIdle",
+          "duration": 1.5333333015441895
+        },
+        {
+          "name": "Walk",
+          "duration": 1.1666666269302368
+        }
+      ],
+      "source": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/quaternius-animated-animals/3D/characters/Deer.gltf",
+      "sourceSha256": "b8afd0647e7a74332ce802c8326dfefe1a2b76da67ab925a631aaddb5ae9bdd4",
+      "license": "CC0-1.0",
+      "bytes": 1834180,
+      "sha256": "8d9d9e7681e6c0626173f05175e7be3f61bd49a37eb72a9cb0ec20a7ea22642c"
+    },
+    {
+      "id": "wolf",
+      "family": "animal",
+      "file": "wolf.rig.glb",
+      "clips": [
+        {
+          "name": "Attack",
+          "duration": 1.3333333730697632
+        },
+        {
+          "name": "Death",
+          "duration": 1.0666667222976685
+        },
+        {
+          "name": "Eating",
+          "duration": 2.5333333015441895
+        },
+        {
+          "name": "Gallop",
+          "duration": 0.5666666626930237
+        },
+        {
+          "name": "Gallop_Jump",
+          "duration": 0.9333333373069763
+        },
+        {
+          "name": "Idle",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_2",
+          "duration": 3.3333332538604736
+        },
+        {
+          "name": "Idle_2_HeadLow",
+          "duration": 4
+        },
+        {
+          "name": "Idle_HitReact1",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Idle_HitReact2",
+          "duration": 0.6666666865348816
+        },
+        {
+          "name": "Jump_ToIdle",
+          "duration": 1.3333333730697632
+        },
+        {
+          "name": "Walk",
+          "duration": 1.0666667222976685
+        }
+      ],
+      "source": "https://quaternius.com/packs/ultimateanimatedanimals.html",
+      "sourceFile": "https://media.githubusercontent.com/media/series-ai/jam-ready-assets/2d7c41049c1db4d670b1ded88a7aeec0d7c2f38c/quaternius-animated-animals/3D/characters/Wolf.gltf",
+      "sourceSha256": "cc02e9d128b5715f352ee8bea086f97a35f1d875d240de99b0f9f2775c37d415",
+      "license": "CC0-1.0",
+      "bytes": 1812048,
+      "sha256": "9e46e74687b7adaeb7609e2f1bdc78a5ae6bb46375cad3d83a116103799d3b34"
+    }
+  ]
+}
