@@ -1,6 +1,7 @@
 import './style.css';
 import './theme.css';
 import './landing.css';
+import './studio-polish.css';
 import {projects} from './projects.js';
 import {showcaseCard,observeShowcases} from './showcase.js';
 const $=s=>document.querySelector(s),grid=$('#project-grid');
