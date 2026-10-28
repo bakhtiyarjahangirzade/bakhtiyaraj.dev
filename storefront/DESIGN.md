@@ -1,0 +1,20 @@
+# BAKHY — independent design and development
+
+## Current direction — Dovv reference, 28 October 2026
+The user explicitly replaced the prior Butter direction with https://dovvstudio.com/#pricing and rejected the 3D implementation. Remove the museum, video, controls and 3D script from the active page. The site is now a conventional studio landing page focused on real portfolio work, website and business-system services, and WhatsApp inquiries.
+
+## Visual system
+Active tokens and components are in src/theme.css, layered over retained structural primitives in src/style.css. Canvas/paper #f4f4f4, ink #090909, secondary #727272, line #dbdbdb, lime #dcff75. A black full-width pricing band uses #090909 and #131313 cards, with the middle card white. No arbitrary gradients except the deliberately glossy sticker surfaces taken from the selected reference's visual language. Fonts are locally bundled Anton (StudioHeadline) for large condensed uppercase headlines, DM Sans (StudioSans) for body/controls and utility monospace. Font declarations and OFL license files are local. No external font requests.
+
+## Signature and composition
+Large two-line condensed headline with small orange, yellow, lime and pink stickers: Design + Code, smile, code symbol and Made by Bakhtiyar. These describe the developer; do not invent review scores, awards, client counts or availability. Top wordmark and contact button stay quiet. A fixed black navigation pill links projects, workflow, services and contact with an active-location state. Large two-column project images lead into the developer introduction, three real process steps, three service scopes, FAQs and contact. On mobile, catalog and pricing become one column; stickers shrink without covering copy and all four navigation anchors remain reachable.
+
+## Business behavior
+Keep portfolio and proposed concepts clearly distinguishable. User-approved starting prices in AZN: Veb sayt 199; Xüsusi sistem 799; Veb sayt + sistem 1599; Çap dizaynı 19; Video montaj 9 for one simple edit. These are starting prices, not flat fees. Additional pages, functions, modules, integrations, print-design scope and video complexity increase the quote. No specific add-on rates are approved. Print service is design for print products; printing costs are separate. The exact schedule and final scope are agreed per project. Three primary web product cards are shown on the homepage. Print design and video editing remain in a collapsed secondary-service disclosure. Service and concept selection prefill the appropriate inquiry category. The WhatsApp contact remains +48 571 572 697; no email has been supplied. Native dialog focus/Escape, FAQ disclosures, reduced motion, visible focus and scrollbars remain.
+
+## Retired direction
+The museum and its recording remain recoverable from Git history and workspace archives. They are absent from the page, its dependency graph and deployed public assets. Do not reintroduce them without a new user request. The previous Apple and Butter designs are superseded.
+
+Sticker finish: animated multi-colour foil gradients and a sweeping reflection on all four hero stickers. Mouse movement shifts the light angle and highlight position; touch devices keep automatic colour movement. Pause offscreen and in hidden tabs. Reduced motion keeps a static foil finish and disables both automatic and pointer-driven motion.
+
+Product flow: primary service cards link to a retail-style product.html configurator. Secondary print/video services are collapsed. product.css owns a white two-column product layout over the existing shared tokens; preview gallery left, native controls right, sticky header total and a review dialog before WhatsApp. All prices and calculations are canonical in product-data.js. Additional page +29 AZN, language +49, custom design +149, content panel +149; other option rates are defined per service there. The user explicitly delegated choosing add-on rates based on the starting prices. Product state and canonical behavior are documented in UX-CONTRACT.md.

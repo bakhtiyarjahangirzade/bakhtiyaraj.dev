@@ -1,0 +1,42 @@
+@font-face {
+  font-family: 'StudioSans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/assets/fonts/studiosans-0.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'StudioSans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(/assets/fonts/studiosans-1.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'StudioSans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(/assets/fonts/studiosans-2.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'StudioSans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/assets/fonts/studiosans-3.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'StudioSignature';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/assets/fonts/studiosignature-0.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'StudioHeadline';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/assets/fonts/headline-0.ttf) format('truetype');
+}

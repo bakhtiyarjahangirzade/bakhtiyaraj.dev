@@ -133,3 +133,7 @@ AI-writing analysis for student assignments at `/authentic/` (landing, features,
   98% range for the AI share, and scans for hidden text, ChatGPT leftovers, prompt injections and metadata. Nothing is stored.
 - The deployed function imports these files from GitHub pinned to a commit, like `play`.
 - Training pipeline and measured accuracy: `ml/authentic/README.md`. Tests: `tests/authentic.test.mjs`.
+
+## Storefront redesign
+
+The production landing page and service configurator are built from `storefront/` with Vite, after the existing apps build. The old workbench is retained at `/lab/`; games, tools, downloads and account routes remain available. `npm run build:web` skips desktop installers for web-only verification. Push `main` to publish to the existing `bakhtiyaraj-dev` Vercel project at https://www.bakhtiyaraj.dev.

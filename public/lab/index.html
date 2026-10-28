@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BAKHY Workbench</title>
+<meta name="description" content="Free, open-source games, apps and browser extensions by Bakhtiyar Jahangirzade. Play online with friends, use them in the browser or download for Windows.">
+<meta name="theme-color" content="#191816">
+<meta property="og:title" content="BAKHY Workbench">
+<meta property="og:description" content="Free games, apps and extensions. No accounts. Built on one workbench.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/wordmark.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/controls.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/rack.css">
+<link rel="stylesheet" href="/hub.css">
+<script src="/hub.js" type="module"></script>
+</head>
+<body>
+<a class="skip" href="#rack">Skip to the rack</a>
+
+<header class="head chassis" id="top">
+  <span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>
+  <div class="head-bar">
+    <a class="mark" href="/" aria-label="BAKHY home"><span class="led green" aria-hidden="true"></span>BAKHY<small>WORKBENCH</small></a>
+    <nav class="head-nav" aria-label="Main" id="headnav">
+      <a class="key key--sm" href="#rack">The rack</a>
+      <a class="key key--sm" href="/leaderboard/">Leaderboard</a>
+      <a class="key key--sm" href="#operator">Operator</a>
+      <a class="key key--sm" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev" rel="noopener">Source</a>
+    </nav>
+  </div>
+
+  <div class="hero">
+    <div class="hero-screen bezel">
+      <div class="vfd marquee" id="marquee">
+        <p class="marquee-line" id="marquee-text">LESS FRICTION. MORE USEFUL SH*T.</p>
+        <div class="marquee-meta"><span id="clock-face">--:--</span><span>CH 01</span><span id="marquee-ch">SIGNAL OK</span></div>
+      </div>
+    </div>
+    <div class="hero-copy">
+      <h1 class="engraved">Free tools &amp; games, built on one workbench.</h1>
+      <p>Card games, a casino with play chips, a snake battle royale and focus tools. Play online with friends using a room code, or against bots. Sign in to keep your chips across games and devices. No real money, no ads, open source.</p>
+      <div class="hero-keys">
+        <a class="key key--amber" href="#rack"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2v12M3.5 9 9 14.5 14.5 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Browse the rack</a>
+        <a class="key" href="/games/chess/"><span class="led green" aria-hidden="true"></span>Quick game</a>
+      </div>
+    </div>
+    <dl class="meters" aria-label="Rack status">
+      <div><dt>Modules</dt><dd id="m-total">9</dd></div>
+      <div><dt>Live</dt><dd id="m-live">5</dd></div>
+      <div><dt>On the bench</dt><dd id="m-bench">4</dd></div>
+    </dl>
+  </div>
+</header>
+
+<main id="rack" class="rack-wrap">
+  <div class="rack-top">
+    <div>
+      <p class="label">Rack / select a channel</p>
+      <h2 class="engraved">Find your next click.</h2>
+    </div>
+    <div class="bank" role="radiogroup" aria-label="Filter modules" id="filters">
+      <button class="key" role="radio" aria-checked="true" data-filter="all"><span class="led"></span>All</button>
+      <button class="key" role="radio" aria-checked="false" data-filter="games"><span class="led"></span>Games</button>
+      <button class="key" role="radio" aria-checked="false" data-filter="casino"><span class="led"></span>Casino</button>
+      <button class="key" role="radio" aria-checked="false" data-filter="apps"><span class="led"></span>Apps</button>
+      <button class="key" role="radio" aria-checked="false" data-filter="extensions"><span class="led"></span>Extensions</button>
+    </div>
+  </div>
+  <p class="sr-only" role="status" id="filter-status"></p>
+
+  <ol class="rack" id="modules">
+    <!-- GAMES -->
+    <li class="module unit" data-kind="games" data-screen="chess">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G01 · Board</p>
+          <h3>Chess</h3>
+          <p class="desc">Classic chess against a friend in an online room, on one screen, or against a three-level bot.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bot</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/chess/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Chess-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="games" data-screen="lastone">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G02 · Cards</p>
+          <h3>Last One</h3>
+          <p class="desc">A fast shedding card game in the Uno style: match the color or number, play wilds, and call it on your last card. 2–4 players.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bots</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/last-one/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Last-One-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="games" data-screen="durak">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G03 · Cards</p>
+          <h3>Durak</h3>
+          <p class="desc">The classic 36-card throw-in game. Attack, defend, beat with trumps, and don't be the last one holding cards. 2–4 players.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bots</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/durak/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Durak-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="games" data-screen="domino">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G04 · Tiles</p>
+          <h3>Domino</h3>
+          <p class="desc">Double-six draw dominoes. Match the ends, draw from the boneyard, first to 100 points wins. 2–4 players.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bots</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/domino/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Domino-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="games" data-screen="serpent">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G05 · Arcade</p>
+          <h3>Serpent Zone</h3>
+          <p class="desc">A snake battle royale. Eat glowing orbs, grow, cut others off, and survive while the arena keeps shrinking.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online rooms</li><li>Bots</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/serpent/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Serpent-Zone-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="games" data-screen="kervan">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-G06 · Strategy</p>
+          <h3>Kervan</h3>
+          <p class="desc">An online civilization tycoon from 4000 BC to 2100. Start as a nomadic tribe, research your way from flint to robots, and run trade routes that grow from porters and carts to trains and container ships. A new world opens every day.</p>
+          <ul class="chips"><li>Web</li><li>3D</li><li>Online</li><li>Turkish</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/kervan/" target="_blank" rel="noopener">Play</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="casino" data-screen="blackjack">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-C01 · Casino</p>
+          <h3>Blackjack</h3>
+          <p class="desc">Up to five players against the dealer. Hit, stand, double and split with play chips.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online tables</li><li>Play chips</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/blackjack/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Blackjack-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="casino" data-screen="roulette">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-C02 · Casino</p>
+          <h3>Roulette</h3>
+          <p class="desc">European single-zero wheel. Everyone bets on the same spin, straight up to red or black.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online tables</li><li>Play chips</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/roulette/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Roulette-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="casino" data-screen="poker">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-C03 · Casino</p>
+          <h3>Poker</h3>
+          <p class="desc">No-limit Texas Hold'em for 2–6 players with side pots, blinds that rise, and bots that bluff a little.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Online tables</li><li>Play chips</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/poker/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Poker-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="casino" data-screen="slots">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-C04 · Casino</p>
+          <h3>Slots</h3>
+          <p class="desc">Three machines: Lucky Sevens, Gem Rush with wilds, and Neon Orchard with free-spin coins.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Play chips</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/games/slots/">Play</a>
+          <a class="key key--sm" href="/downloads/BAKHY-Slots-Setup.exe" download>Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+    <!-- APPS -->
+    <li class="module unit" data-kind="apps" data-screen="focus">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-A01 · Productivity</p>
+          <h3>Focus Room</h3>
+          <p class="desc">A tactile Pomodoro timer with custom lengths, gentle alarms and rain ambience. Runs in the browser or as an offline Windows app.</p>
+          <ul class="chips"><li>Web</li><li>Windows</li><li>Offline</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/apps/focus-room/">Open</a>
+          <a class="key key--sm" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/releases/tag/focus-room-v1.3.0" rel="noopener">Windows</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit" data-kind="apps" data-screen="authentic">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-A02 · Education</p>
+          <h3>Authentic</h3>
+          <p class="desc">Checks student assignments (.docx, .pptx, .pdf) for AI writing, paragraph by paragraph, with a 98% confidence range, hidden-text and copy-paste trace detection.</p>
+          <ul class="chips"><li>Web</li><li>Beta</li><li>Teachers</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led green"></span>Live</p>
+          <a class="key key--amber" href="/authentic/">Open</a>
+          <a class="key key--sm" href="/authentic/check/">Check</a>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit is-bench" data-kind="apps" data-screen="preview">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-A02 · Windows</p>
+          <h3>PreviewMaster</h3>
+          <p class="desc">Mac-style Quick Look for Windows. Install once, select a file in Explorer, and see its preview in the preview pane, including formats Windows can't show.</p>
+          <ul class="chips"><li>Windows</li><li>Explorer preview pane</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led amber blink"></span>On the bench</p>
+          <span class="key key--sm" aria-disabled="true">Coming soon</span>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <!-- EXTENSIONS -->
+    <li class="module unit is-bench" data-kind="extensions" data-screen="picker">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-X01 · Chrome</p>
+          <h3>ColorPicker</h3>
+          <p class="desc">Pick any color on any web page with an eyedropper, copy it as HEX, RGB or HSL, and keep a history of recent picks.</p>
+          <ul class="chips"><li>Chrome extension</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led amber blink"></span>On the bench</p>
+          <span class="key key--sm" aria-disabled="true">Coming soon</span>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit is-bench" data-kind="extensions" data-screen="colorplus">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-X02 · Chrome</p>
+          <h3>Color+</h3>
+          <p class="desc">Take a photo or drop an image and get its color palette back, ready to copy into your design tool.</p>
+          <ul class="chips"><li>Chrome extension</li><li>Web</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led amber blink"></span>On the bench</p>
+          <span class="key key--sm" aria-disabled="true">Coming soon</span>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+
+    <li class="module unit is-bench" data-kind="extensions" data-screen="filter">
+      <span class="ear" aria-hidden="true"></span>
+      <article class="face">
+        <div class="id">
+          <p class="serial">BKY-X03 · Chrome</p>
+          <h3>SiteFilter</h3>
+          <p class="desc">Save words per site, then hide every product or post that contains them, or flip it and show only the ones that match.</p>
+          <ul class="chips"><li>Chrome extension</li></ul>
+        </div>
+        <div class="bezel mini"><div class="vfd"><canvas aria-hidden="true"></canvas></div></div>
+        <div class="ctl">
+          <p class="status"><span class="led amber blink"></span>On the bench</p>
+          <span class="key key--sm" aria-disabled="true">Coming soon</span>
+        </div>
+      </article>
+      <span class="ear" aria-hidden="true"></span>
+    </li>
+  </ol>
+</main>
+
+<section class="operator chassis" id="operator" aria-labelledby="op-title">
+  <span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>
+  <div class="op-grid">
+    <div>
+      <p class="label">Operator datasheet</p>
+      <h2 id="op-title" class="engraved">The person behind the bench.</h2>
+      <p>I'm Bakhtiyar, an independent developer. I build the small tools and games I wish existed, keep them free, and publish the source so anyone can learn from it or improve it.</p>
+    </div>
+    <table class="spec">
+      <caption class="sr-only">Workbench specifications</caption>
+      <tbody>
+        <tr><th scope="row">Operator</th><td>Bakhtiyar Jahangirzade</td></tr>
+        <tr><th scope="row">Price</th><td>Free, every module</td></tr>
+        <tr><th scope="row">License</th><td>MIT, open source</td></tr>
+        <tr><th scope="row">Accounts</th><td>None required</td></tr>
+        <tr><th scope="row">Tracking</th><td>None</td></tr>
+        <tr><th scope="row">Platforms</th><td>Web · Windows · Chrome</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="patch chassis" aria-labelledby="patch-title">
+  <div class="patch-copy">
+    <p class="label">Patch bay</p>
+    <h2 id="patch-title" class="engraved">Got an idea for the next module?</h2>
+  </div>
+  <div class="jacks">
+    <a class="jack" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/issues/new?template=feature_request.md" rel="noopener"><span class="hole" aria-hidden="true"></span>Suggest a module</a>
+    <a class="jack" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/issues/new?template=bug_report.md" rel="noopener"><span class="hole" aria-hidden="true"></span>Report a bug</a>
+    <a class="jack" href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev" rel="noopener"><span class="hole" aria-hidden="true"></span>Read the source</a>
+  </div>
+</section>
+
+<footer class="rear">
+  <div class="serial-plate"><span>Model</span><b>BAKHY WB-26</b><span>Serial</span><b>BKY-2026-0001</b></div>
+  <p>Build. Ship. Repeat. · © 2026 Bakhtiyar Jahangirzade · MIT</p>
+</footer>
+</body>
+</html>
