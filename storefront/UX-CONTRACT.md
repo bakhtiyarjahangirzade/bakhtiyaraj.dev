@@ -13,3 +13,6 @@ Canonical owners:
 - Scrollbars, typography, focus: shared style.css/theme.css; product.css adds layout. Product form scrolls with the document; gallery alone is sticky on desktop. No fixed-height wrapper clips options. Mobile is a single natural-height column with a persistent header price.
 
 No automatic messages, checkout, uploads, account or customer-data storage is added. Print/video are secondary, collapsed homepage services. Their product pages remain directly usable.
+
+### Studio catalogue route
+Home exposes four selected project previews; `/catalogue.html` owns the complete 12-project filter/search experience. Shared showcase cards open the existing detail dialog. Escape/close restores trigger focus; customization carries the known project reference into product.html. This presentation change does not change pricing or dispatch WhatsApp messages automatically.
