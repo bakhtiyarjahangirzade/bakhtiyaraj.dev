@@ -44,3 +44,20 @@ test('project, product and offer data strings are translated', () => {
   const block=/const descriptions=\{([^}]*)\}/.exec(offers)[1];
   for(const m of block.matchAll(/:'((?:[^'\\]|\\.)*)'/g))need(m[1]);
 });
+
+test('service page copy is translated and quoted extras match the calculator', async () => {
+  const {serviceContent,serviceIds,EXTRA}=await import('../storefront/src/services-content.js');
+  const {calculate,readConfig}=await import('../storefront/src/product-data.js');
+  const need=s=>assert.ok(keys.has(s),`missing translation for "${s}"`);
+  for(const id of serviceIds){
+    const c=serviceContent[id];
+    c.audience.forEach(need);c.extras.forEach(([k])=>need(k));
+    for(const [q,a] of c.faq){need(q);need(a)}
+  }
+  const price=(query,label)=>calculate(readConfig(new URLSearchParams(query))).items.find(i=>i.label.startsWith(label))?.price;
+  assert.equal(price('service=website&pages=2','Əlavə səhifələr'),EXTRA.page);
+  assert.equal(price('service=website&languages=az,en','Əlavə dillər'),EXTRA.language);
+  assert.equal(price('service=system&modules=1','Əlavə modullar'),EXTRA.module);
+  assert.equal(price('service=print&sheets=2','Əlavə səhifələr'),EXTRA.sheet);
+  assert.equal(price('service=video&raw=10','İlkin material'),EXTRA.raw);
+});
