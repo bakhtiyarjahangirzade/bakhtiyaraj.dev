@@ -29,3 +29,12 @@ footer .footer-wordmark{display:flex;width:max-content;max-width:100%;height:fit
 @media (max-width:700px){.floating-nav a{min-height:44px}.footer-bottom{flex-wrap:wrap;gap:4px 16px}}
 .studio-band .scope-note,.studio-process .steps article>span,.studio-band .secondary-services summary span,.studio-band .secondary-service a,.studio-band .secondary-service p{font-size:12px}
 @media (max-width:700px){.footer-links a,.contact-kicker>span,.contact-kicker a,.contact-bottom a,.lab a,.lab p,.studio-band .pricing-intro .eyebrow,.studio-band .offer-quote>small,.offer-quote>small,.offer-card-tag,.studio-band .offer-heading .offer-card-tag{font-size:12px}.floating-nav a{font-size:11px;gap:6px;padding-inline:10px}.floating-nav a>svg{width:16px;height:16px}}
+/* Catalogue and about refinements. */
+.result-line,.result-line span,.catalogue-footer,.catalogue-footer a,.catalogue-footer span{font-size:12px}
+.filters button sup{font-size:11px}
+.back-home,.catalogue-end a,.catalogue-footer a{min-height:44px;display:inline-flex;align-items:center}.back-home{display:flex}
+.search{min-height:44px}.search input{min-height:32px}
+.wordmark{padding:8px 6px;margin:-8px -6px}
+.studio-band .about-section{padding-bottom:10px}.studio-band .process{padding-top:30px}
+@media (max-width:700px){.result-line,.result-line span{font-size:11px;letter-spacing:.3px}.catalogue-footer,.catalogue-footer a{font-size:12px}}
+footer.catalogue-footer>a,footer.catalogue-footer>span,footer.catalogue-footer a:last-child{font-size:12px!important}

@@ -27,3 +27,11 @@ body.product-page{background:#fff;color:#171717;font:14px/1.6 var(--sans);margin
 }
 @media(max-width:700px){.header-price small,.preview-caption>span:last-child{font-size:11px}.product-base>small,.product-base small,.price-summary small,.estimate-note,#reset-config,.price-summary button:not(.product-primary){font-size:12px}#reset-config,.price-summary button:not(.product-primary){min-height:44px;padding-inline:10px}.product-included summary,.product-included>summary{min-height:44px;display:flex;align-items:center;justify-content:space-between}}
 @media(max-width:700px){.product-base>span:not(:first-child),.product-base>small,.product-base>div>small{font-size:12px}}
+.product-logo{padding:8px 6px;margin:-8px -6px}
+/* Desktop readability pass: no product UI text below 12px. */
+.header-price small,.product-breadcrumb,.product-breadcrumb *,.preview-caption,.preview-explanation,.gallery-modes button,.product-label,.product-help,.product-help a,.product-included,.product-included ul,.config-heading p,.config-field small,.fieldset-help,.feature-copy small,.feature-price,.language-choice>small,.estimate-note,.price-line,.product-footer,.product-footer *,.review-intro,#review-summary,.review-fields label,.review-fields label span,.review-edit,.price-summary small,.price-summary p,.product-base>span:not(:first-child),.product-base small,.product-base>div>small,.header-price button,.design-options span,#reset-config{font-size:12px}
+.product-help a,#reset-config,.review-edit,.product-footer a{display:inline-flex;align-items:center;min-height:44px}
+.product-included summary{min-height:44px;display:flex;align-items:center;justify-content:space-between}
+.back-link,.product-contact{display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:700px){.back-link{display:none}.preview-caption>span:last-child{font-size:11px}.header-price small{font-size:11px}}
+.preview-caption>span:last-child{font-size:11px}
