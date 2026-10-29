@@ -16,3 +16,16 @@ footer .footer-wordmark{display:flex;width:max-content;max-width:100%;height:fit
 .studio-process .steps article:nth-child(n){transform:rotate(var(--card-angle)) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg))}.studio-process .steps article:nth-child(4) .holo-blue{background-image:linear-gradient(115deg,#65e5ff,#3295ff 19%,#88caff 35%,#e9afff 49%,#a0ffe4 62%,#4b94ff 81%,#63ddff);background-size:300% 200%;transform:rotate(-9deg)}
 
 .studio-process .steps article>.process-spark{clip-path:polygon(50% 0,63% 35%,100% 50%,65% 63%,50% 100%,36% 65%,0 50%,35% 36%);border-radius:0;border:0;background:#fff;color:transparent;filter:drop-shadow(0 3px 7px #0003);overflow:hidden}.process-spark:before{content:'';position:absolute;inset:4px;clip-path:inherit;background:linear-gradient(115deg,#bbff5b,#9af5e9 30%,#d1b2ff 50%,#ebffac 70%,#a4f3ff);background-size:300% 200%;animation:process-foil 6s ease-in-out infinite alternate;animation-play-state:paused}.process-active .process-spark:before{animation-play-state:running}.previews-paused .process-spark:before{animation-play-state:paused}@media(prefers-reduced-motion:reduce){.process-spark:before{animation:none}}
+
+/* Readability, contrast and touch-target pass. */
+.eyebrow,.names-label,.contact-kicker>span,.steps article>span,.scope-note,.showcase-caption small,.showcase-tags span,.secondary-service p,.secondary-services summary span,.footer-bottom,.footer-bottom span,.footer-bottom a,.contact-channel,.offer-quote>small{font-size:12px}
+.offer-card-tag,.studio-band .offer-heading .offer-card-tag{font-size:11px}
+.names-label,.work-heading>span,.hero-description{color:#5f5f5f!important}
+.eyebrow{color:#5f5f5f}.studio-band .eyebrow,.studio-band .pricing-intro .eyebrow{color:#cfcfcf}.studio-band .about-name,.studio-band .about-section .eyebrow{color:#a8a8a8}
+.footer-links a,.footer-bottom a,.contact-kicker a,.contact-bottom a,.lab a,.faq-section>div>a,.secondary-service a{display:inline-flex;align-items:center;min-height:44px}
+.faq-list summary,.secondary-services>summary{min-height:44px;align-items:center}
+.faq-list details{padding:8px 0}.faq-list details:first-child{padding-top:0}
+.footer-links{gap:6px 24px}.footer-bottom{color:#9a9a9a}
+@media (max-width:700px){.floating-nav a{min-height:44px}.footer-bottom{flex-wrap:wrap;gap:4px 16px}}
+.studio-band .scope-note,.studio-process .steps article>span,.studio-band .secondary-services summary span,.studio-band .secondary-service a,.studio-band .secondary-service p{font-size:12px}
+@media (max-width:700px){.footer-links a,.contact-kicker>span,.contact-kicker a,.contact-bottom a,.lab a,.lab p,.studio-band .pricing-intro .eyebrow,.studio-band .offer-quote>small,.offer-quote>small,.offer-card-tag,.studio-band .offer-heading .offer-card-tag{font-size:12px}.floating-nav a{font-size:11px;gap:6px;padding-inline:10px}.floating-nav a>svg{width:16px;height:16px}}
