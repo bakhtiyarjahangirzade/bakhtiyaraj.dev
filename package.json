@@ -5,7 +5,7 @@
   "description": "BAKHY: a free and open-source personal developer hub",
   "license": "MIT",
   "scripts": {
-    "build": "node scripts/vendor.mjs && node scripts/build.mjs && vite build --config storefront/vite.config.mjs",
+    "build": "node scripts/vendor.mjs && node scripts/build.mjs && vite build --config storefront/vite.config.mjs && node scripts/i18n-pages.mjs",
     "dev": "node scripts/serve.mjs",
     "test": "node --test tests/*.test.cjs tests/*.test.mjs",
     "build:web": "node scripts/build-web.mjs",

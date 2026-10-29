@@ -32,3 +32,15 @@
 @media(max-width:500px){.secondary-services>summary{font-size:11px}.secondary-services>summary>span:nth-child(2){font-size:8px}.secondary-service{flex-wrap:wrap;gap:12px 15px}.secondary-service>div{min-width:50%}.secondary-service h3{font-size:16px}.secondary-service>span{font-size:10px}.secondary-service>a{width:100%;font-size:10px}.secondary-service p{font-size:9px}}
 
 .dialog-concept{height:280px}
+.header-actions{display:flex;align-items:center;gap:12px}
+.lang-switch{display:inline-flex;align-items:center;gap:2px;border:1px solid #d6d6d6;border-radius:30px;padding:3px;background:#fff}
+.lang-switch a{display:inline-flex;align-items:center;justify-content:center;min-width:38px;min-height:36px;border-radius:30px;font:500 12px var(--sans);letter-spacing:.04em;color:#555}
+.lang-switch a:hover{color:#090909;background:#ececec}
+.lang-switch a[aria-current=true],.lang-switch a[aria-current=true]:hover{background:#090909;color:#fff}
+footer .lang-switch{background:transparent;border-color:#333}footer .lang-switch a{color:#aaa}footer .lang-switch a:hover{background:#1c1c1c;color:#fff}footer .lang-switch a[aria-current=true],footer .lang-switch a[aria-current=true]:hover{background:#fff;color:#080808}
+.footer-links .lang-switch{margin-left:6px}.catalogue-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.catalogue-footer .lang-switch{background:#fff;border-color:#d6d6d6}.catalogue-footer .lang-switch a{color:#555}.catalogue-footer .lang-switch a[aria-current=true]{background:#090909;color:#fff}
+@media(max-width:480px){.header-actions{gap:8px}.lang-switch a{min-width:34px}.nav-contact{padding-inline:15px}}
+.site-header .header-actions .lang-switch{display:inline-flex}.site-header .header-actions .lang-switch a{display:inline-flex}
+@media(max-width:480px){.site-header .wordmark{font-size:34px;letter-spacing:-1px}.site-header .wordmark>span{font-size:20px}.site-header .header-actions{gap:6px}.site-header .header-actions .nav-contact{padding:12px 14px;font-size:12px;gap:8px}.site-header .header-actions .lang-switch a{min-width:31px}}
+@media(max-width:480px){.site-header .header-actions .nav-contact{display:none}.site-header .wordmark{font-size:38px}.site-header .header-actions .lang-switch a{min-width:36px}}
