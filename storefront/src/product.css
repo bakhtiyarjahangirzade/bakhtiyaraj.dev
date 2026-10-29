@@ -35,3 +35,4 @@ body.product-page{background:#fff;color:#171717;font:14px/1.6 var(--sans);margin
 .back-link,.product-contact{display:inline-flex;align-items:center;min-height:44px}
 @media(max-width:700px){.back-link{display:none}.preview-caption>span:last-child{font-size:11px}.header-price small{font-size:11px}}
 .preview-caption>span:last-child{font-size:11px}
+.header-price strong,.product-base>span:first-child,.price-line strong,#review-summary strong{font-family:var(--numeric);font-weight:600}
