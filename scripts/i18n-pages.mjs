@@ -148,7 +148,7 @@ for(const id of conceptIds){
  const file=`concepts/${id}.html`;conceptFiles.push(file);
  for(const lang of LANGS){
   const T=makeT(lang),meta=conceptMeta(id,T),body=renderConcept(id,T);
-  const out=build(conceptTemplate,lang,`concept:${id}`,file).replaceAll('@@TITLE@@',encodeAttr(meta.title)).replaceAll('@@DESC@@',encodeAttr(meta.desc)).replaceAll('@@ID@@',id).replaceAll('@@SERVICE@@',meta.service).replaceAll('@@DESIGN@@',meta.design?`&amp;design=${meta.design}`:'').replace('@@CONTENT@@',()=>body);
+  const out=build(conceptTemplate,lang,`concept:${id}`,file).replaceAll('@@TITLE@@',encodeAttr(meta.title)).replaceAll('@@DESC@@',encodeAttr(meta.desc)).replaceAll('@@EXTRA@@',concepts[id].custom?'concept-showroom':'').replaceAll('@@ID@@',id).replaceAll('@@SERVICE@@',meta.service).replaceAll('@@DESIGN@@',meta.design?`&amp;design=${meta.design}`:'').replace('@@CONTENT@@',()=>body);
   await mkdir(new URL(`${lang}/concepts/`,dist),{recursive:true});
   await writeFile(new URL(`${lang}/${file}`,dist),out);
  }

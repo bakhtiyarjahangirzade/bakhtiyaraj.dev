@@ -1,6 +1,7 @@
 // Source strings are Azerbaijani. Each row: [az, ru, en]. Placeholders like {n} are filled by t().
 // Leading "← " and trailing " ↗ ↘ ↑ ↓" decorations are stripped before lookup (see scripts/i18n-pages.mjs).
-export const rows=[
+import {showroomRows} from '../showroom-copy.js';
+const baseRows=[
 // --- document / meta ---
 ["BAKHY — Dizayn. Kod. Xarakter.","BAKHY — Дизайн. Код. Характер.","BAKHY — Design. Code. Character."],
 ["Bakhtiyar Jahangirzade — brendlər üçün xarakterli veb saytlar və bizneslər üçün işləyən rəqəmsal sistemlər. Portfolionu kəşf edin və layihənizi danışaq.","Бахтияр Джахангирзаде — сайты с характером для брендов и цифровые системы для бизнеса. Посмотрите портфолио и обсудим ваш проект.","Bakhtiyar Jahangirzade — characterful websites for brands and digital systems that run a business. Explore the portfolio and let's talk about your project."],
@@ -103,7 +104,7 @@ export const rows=[
 ["İSOCLUB","İSOCLUB","İSOCLUB"],
 ["© 2026 Bakhtiyar Jahangirzade","© 2026 Бахтияр Джахангирзаде","© 2026 Bakhtiyar Jahangirzade"],
 // --- catalogue page ---
-["12 əsər","Работ: 12","12 works"],
+["22 əsər","Работ: 22","22 works"],
 ["← Ana səhifə","← Главная","← Home"],
 ["Ana səhifə","Главная","Home"],
 ["RƏQƏMSAL KOLLEKSİYA","ЦИФРОВАЯ КОЛЛЕКЦИЯ","DIGITAL COLLECTION"],
@@ -566,3 +567,4 @@ export const rows=[
 ["Kifayətdir","Достаточно","Enough"],
 ["Azdır","Мало","Low"],
 ];
+export const rows=[...baseRows,...showroomRows];

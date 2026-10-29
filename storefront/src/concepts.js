@@ -1,7 +1,9 @@
 // Concept mini-sites: data + a pure HTML renderer used by scripts/i18n-pages.mjs (no DOM needed).
 // Every visible string is an Azerbaijani key translated through i18n/strings.js. Names and data are samples, not real clients.
 import {projects} from './projects.js';
-export const conceptIds=['casa','olio','aurea','forma','atelier','flow','reserve','stock'];
+import {renderShowroom,showroomIds} from './showroom.js';
+import {showroomMeta} from './showroom-copy.js';
+export const conceptIds=['casa','olio','aurea','forma','atelier','flow','reserve','stock',...showroomIds];
 const nav=(...a)=>a;
 export const concepts={
  casa:{kind:'site',brand:'Casa Forma',nav:nav('Layihələr','Studiya','Əlaqə'),headline:'Ruhu olan məkanlar.',cta:'Layihələrə bax',
@@ -29,15 +31,17 @@ export const concepts={
   cards:[['Məhsullar','Qalıq və qiymət məlumatları bir cədvəldə.'],['Sifarişlər','Yeni sifarişlərin və statusların izlənməsi.'],['Anbar hərəkətləri','Daxil olma və çıxışların qeydi.']],
   section:'Anbar cədvəli',board:{head:['Məhsul','Qalıq','Status'],rows:[['Məhsul A',48,'Kifayətdir'],['Məhsul B',12,'Azdır'],['Məhsul C',230,'Kifayətdir']]}}
 };
+for(const id of showroomIds)concepts[id]={kind:showroomMeta[id].kind==='app'?'app':'site',brand:showroomMeta[id].brand,custom:true};
 // Shared strings used by the shell/ribbon and by service pages.
 export const conceptUi=['Nümunə','Bu, BAKHY tərəfindən hazırlanmış konsept nümunəsidir. Real müştəri və ya xidməti təsvir etmir.','Bu konsepti fərdiləşdir','Bütün konseptlər','Bu səhifədəki ad, mətn və məlumatlar nümunədir.','Konsept nümunələri','Konsept saytını aç','Boş','Rezerv'];
 
 const e=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 export function conceptMeta(id,T){
  const p=projects.find(x=>x.id===id),c=concepts[id];
- return {title:T('{name} — konsept nümunəsi | BAKHY',{name:c.brand}),desc:T(p.desc),service:c.kind==='app'?'system':'website',design:c.kind==='app'?'':id};
+ return {title:T('{name} — konsept nümunəsi | BAKHY',{name:c.brand}),desc:T(p.desc),service:c.kind==='app'?'system':'website',design:c.kind==='app'||c.custom?'':id};
 }
 export function renderConcept(id,T){
+ if(concepts[id].custom)return renderShowroom(id,T);
  const c=concepts[id],cards=c.cards.map(([h,d],i)=>`<article><span>0${i+1}</span><h3>${e(T(h))}</h3><p>${e(T(d))}</p></article>`).join('');
  const nav=c.nav.map(n=>`<span>${e(T(n))}</span>`).join('');
  const sub=T(projects.find(p=>p.id===id).desc);

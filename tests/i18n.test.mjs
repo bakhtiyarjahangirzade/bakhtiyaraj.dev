@@ -66,7 +66,7 @@ test('concept mini-site copy is translated', async () => {
   const {concepts,conceptUi}=await import('../storefront/src/concepts.js');
   const need=s=>assert.ok(keys.has(s),`missing translation for "${s}"`);
   conceptUi.forEach(need);need('{name} — konsept nümunəsi | BAKHY');
-  for(const c of Object.values(concepts)){
+  for(const c of Object.values(concepts).filter(x=>!x.custom)){
     need(c.headline);if(c.cta)need(c.cta);need(c.section);c.nav.forEach(need);
     for(const [h,d] of c.cards){need(h);need(d)}
     (c.items||[]).forEach(need);

@@ -1,3 +1,4 @@
+import {projectMeta} from './showroom-copy.js';
 export const projects=[
 {id:'savor',name:'Savor',type:'portfolio',category:'Brend saytı',sub:'Brend saytı · savor.com.az',url:'https://savor.com.az',image:'/assets/savor.png',bg:'#dedecb',desc:'Savor kərə yağı brendi üçün məhsulları, istehsalı və brend hekayəsini bir araya gətirən rəqəmsal təqdimat.',tags:['Brend təqdimatı','Məhsul kataloqu','Çoxdilli sayt'],color:'#e8e4d3'},
 {id:'isoclub',name:'İsoClub',type:'portfolio',category:'Fitness platforması',sub:'Fitness platforması · isoclub.az',url:'https://isoclub.az',image:'/assets/isoclub.png',bg:'#d5d9d3',desc:'Məşqçi ilə üzvü birləşdirən fitness platforması. Fərdi məşq, qidalanma və irəliləyiş eyni rəqəmsal təcrübədə.',tags:['Üzvlük','Fitness platforması','İdarəetmə'],color:'#dae2d2'},
@@ -12,4 +13,6 @@ export const projects=[
 {id:'reserve',name:'Reserve',type:'system',category:'Rezervasiya sistemi',headline:'Make room for more.',color:'#d8dcdf',shape:'#7b8e9d',desc:'Salonlar, studiyalar və xidmət biznesləri üçün rezervasiya, təqvim və müştəri idarəetməsi konsepti.',tags:['Sistem konsepti','Təqvim','Rezervasiya axını']},
 {id:'stock',name:'Stockroom',type:'system',category:'Sifariş & anbar',headline:'A place for everything.',color:'#e3ddcf',shape:'#ab9e7a',desc:'Məhsullar, sifarişlər və anbar hərəkətləri üçün biznesə uyğunlaşdırılan idarəetmə paneli konsepti.',tags:['Sistem konsepti','Anbar','Sifarişlər']}
 ];
+const showroomNames={clinic:'Sunny Kids',wealth:'Growly',gym:'Wolfpack',motors:'AutoLane',give:'Bir Süfrə',stream:'Arena',bazar:'Bazarlıq',avto:'Yolda',lal:'Cibdə',estate:'Ünvan'};
+for(const [id,m] of Object.entries(projectMeta))projects.push({id,name:showroomNames[id],type:m.type,category:m.category[0],desc:m.desc[0],tags:m.tags.map(x=>x[0]),image:'/assets/showroom-'+id+'.jpg',color:'#e8e8e8',shape:'#999'});
 for(const p of projects){if(['casa','olio','aurea','forma','atelier','flow','reserve','stock'].includes(p.id))p.image='/assets/concept-'+p.id+'.svg'};
