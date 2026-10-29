@@ -4,6 +4,8 @@ import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
 import {rows} from '../storefront/src/i18n/strings.js';
 import {products} from '../storefront/src/product-data.js';
 import {serviceContent,serviceIds} from '../storefront/src/services-content.js';
+import {concepts,conceptIds,conceptMeta,renderConcept} from '../storefront/src/concepts.js';
+import {projects} from '../storefront/src/projects.js';
 
 const dist=new URL('../dist/',import.meta.url);
 const ORIGIN='https://www.bakhtiyaraj.dev';
@@ -107,6 +109,8 @@ const STEPS=[['01','TANIŞLIQ','Nə yaratmaq istəyirsiniz? Məqsədi, funksiyal
 function serviceBody(id,lang){
  const T=makeT(lang),p=products[id],c=serviceContent[id],L=x=>`/${lang}${x}`,e=encodeText,ea=encodeAttr;
  const title=T(p.title),price=T('{n} AZN-dən',{n:p.price}),config=L('/product.html?service='+id);
+ const related=conceptIds.filter(x=>id==='website'?concepts[x].kind==='site':id==='system'?concepts[x].kind==='app':false);
+ const relatedHtml=related.length?`<section class="service-section"><h2>${e(T('Konsept nümunələri'))}</h2><div class="service-more-list">${related.map(x=>`<a href="${L('/concepts/'+x+'.html')}"><strong>${e(concepts[x].brand)}</strong><span>${e(T(projects.find(q=>q.id===x).category))}</span></a>`).join('')}</div></section>`:'';
  const options=p.options.map(o=>`<div class="option-row"><strong>${e(T(o.label))}</strong><span>${e(T(o.help))}</span><b>+${o.price} AZN</b></div>`).join('')+c.extras.map(([k,v])=>`<div class="option-row"><strong>${e(T(k))}</strong><span></span><b>+${v} AZN</b></div>`).join('');
  const steps=STEPS.map(([n,h,d])=>`<article><span>${n}</span><h3>${e(T(h))}</h3><p>${e(T(d))}</p></article>`).join('');
  const faq=c.faq.map(([q,a,v],i)=>`<details${i===0?' open':''}><summary>${e(T(q))}</summary><p>${e(T(a,v))}</p></details>`).join('');
@@ -117,6 +121,7 @@ function serviceBody(id,lang){
   `<section class="service-hero"><div><p class="eyebrow">${e(T(p.group))}</p><h1>${e(title)}</h1></div><div><p class="service-lead">${e(T(p.desc))}</p><div class="service-price"><strong>${e(price)}</strong><span>${e(T('birdəfəlik, başlayan qiymət'))}</span></div>${actions}</div></section>`+
   `<section class="service-band"><div class="service-grid"><div><h2>${e(T('Başlanğıc paketinə daxildir'))}</h2><ul class="service-list">${p.included.map(i=>`<li>${e(T(i))}</li>`).join('')}</ul></div><div><h2>${e(T('Kimlər üçün uyğundur?'))}</h2><ul class="service-list">${c.audience.map(a=>`<li>${e(T(a))}</li>`).join('')}</ul></div></div></section>`+
   `<section class="service-section"><h2>${e(T('Əlavə imkanlar və qiymətlər'))}</h2><p class="option-note">${e(T('Qiymətlər başlanğıc qiymətə əlavə olunur. Yekun məbləğ konfiqurator ilə hesablanır.'))}</p><div class="option-table">${options}</div></section>`+
+  relatedHtml+
   `<section class="service-section"><h2>${e(T('İş necə gedir?'))}</h2><div class="service-steps">${steps}</div></section>`+
   `<section class="service-section service-faq"><h2>${e(T('Tez-tez verilən suallar'))}</h2><div class="faq-list">${faq}</div></section>`+
   `<section class="service-cta"><h2>${e(T('Başlamağa hazırsınız?'))}</h2><p>${e(T('Seçimlərinizi edin və qiyməti görün, ya da birbaşa mənə yazın.'))}</p>${actions}</section>`+
@@ -136,8 +141,22 @@ for(const id of serviceIds){
 }
 await rm(new URL('service.html',dist));
 
+// ---- concept mini-sites: themed shell from dist/concept.html, body rendered in the target language ----
+const conceptTemplate=await readFile(new URL('concept.html',dist),'utf8');
+const conceptFiles=[];
+for(const id of conceptIds){
+ const file=`concepts/${id}.html`;conceptFiles.push(file);
+ for(const lang of LANGS){
+  const T=makeT(lang),meta=conceptMeta(id,T),body=renderConcept(id,T);
+  const out=build(conceptTemplate,lang,`concept:${id}`,file).replaceAll('@@TITLE@@',encodeAttr(meta.title)).replaceAll('@@DESC@@',encodeAttr(meta.desc)).replaceAll('@@ID@@',id).replaceAll('@@SERVICE@@',meta.service).replaceAll('@@DESIGN@@',meta.design?`&amp;design=${meta.design}`:'').replace('@@CONTENT@@',()=>body);
+  await mkdir(new URL(`${lang}/concepts/`,dist),{recursive:true});
+  await writeFile(new URL(`${lang}/${file}`,dist),out);
+ }
+}
+await rm(new URL('concept.html',dist));
+
 // ---- sitemap with hreflang alternates ----
-const urls=[...PAGES.map(p=>p[2]),...serviceFiles];
+const urls=[...PAGES.map(p=>p[2]),...serviceFiles,...conceptFiles];
 const sitemap=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
  ...urls.flatMap(f=>LANGS.map(l=>`<url><loc>${pageUrl(l,f)}</loc>${LANGS.map(a=>`<xhtml:link rel="alternate" hreflang="${a}" href="${pageUrl(a,f)}"/>`).join('')}<xhtml:link rel="alternate" hreflang="x-default" href="${pageUrl('az',f)}"/></url>`)),'</urlset>',''].join('\n');
 await writeFile(new URL('sitemap.xml',dist),sitemap);
@@ -147,4 +166,4 @@ if(missing.size||missingContent.size){
  console.error('i18n: missing translations:\n  '+[...missing,...[...missingContent].map(k=>`service content: ${k}`)].join('\n  '));
  process.exit(1);
 }
-console.log(`i18n: generated ${LANGS.join(', ')} for ${PAGES.length} pages and ${serviceIds.length} service pages`);
+console.log(`i18n: generated ${LANGS.join(', ')} for ${PAGES.length} pages, ${serviceIds.length} service pages and ${conceptIds.length} concept sites`);
