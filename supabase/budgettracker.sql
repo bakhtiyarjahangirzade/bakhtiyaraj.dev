@@ -135,3 +135,5 @@ create table if not exists public.bt_days (
 
 -- Migration budgettracker_fixed_costs (applied): recurring fixed costs per courier (rent, insurance...), period 'week' or 'month'.
 -- bt_fixed(id, user_id, name, amount, period, deleted_at, updated_at) with owner read/insert/update, admin read; grants select/insert/update to authenticated.
+
+-- Migration budgettracker_overview_couriers_only (applied): bt_overview() no longer lists admin accounts.

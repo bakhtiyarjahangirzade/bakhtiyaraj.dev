@@ -84,10 +84,10 @@ async function sync(){
 /* ---------- auth ---------- */
 const NICK=/^[A-Za-z0-9_.-]{3,20}$/;
 async function enter(user){
- S.user=user;S.demo=false;restore();S.tab='home';
+ S.user=user;S.demo=false;restore();S.tab='home';S.admin=false;
  try{if(!(await ensureProfile())){render();return}}catch(e){console.warn(e)}
  try{const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data}catch{S.admin=false}
- render();say('loginOk');if(S.active)startWatch();sync();
+ S.tab=S.admin?'watch':'home';render();say('loginOk');if(S.active)startWatch();sync();
 }
 async function ensureProfile(){
  const {data}=await sb.from('bt_profiles').select('nickname,currency').eq('user_id',S.user.id).maybeSingle();
@@ -124,7 +124,7 @@ function hav(a,b){const dl=rad(b[0]-a[0]),dg=rad(b[1]-a[1]),h=Math.sin(dl/2)**2+
 function walk(n,lat,lng){const pts=[];const t0=Math.floor(Date.now()/1000)-n*30;for(let i=0;i<n;i++){lat+=Math.sin(i/9)*0.0006+0.0002*Math.cos(i/4);lng+=0.0005+0.0003*Math.sin(i/13);pts.push([+lat.toFixed(5),+lng.toFixed(5),t0+i*30])}return pts}
 function routeLen(p){let d=0;for(let i=1;i<p.length;i++)d+=hav(p[i-1],p[i]);return d}
 function startDemo(admin){
- S.demo=true;S.user=null;S.nick='demo';S.admin=!!admin;S.tab='home';S.goals={daily:120,days:6};S.pending=new Set();S.flags={};S.active=null;
+ S.demo=true;S.user=null;S.nick='demo';S.admin=!!admin;S.tab=admin?'watch':'home';S.goals={daily:120,days:6};S.pending=new Set();S.flags={};S.active=null;
  const d=new Date(),mk=(back,kind,amount,category,note)=>{const x=new Date(d);x.setDate(d.getDate()-back);return{id:uuid(),kind,amount,category,note,date:ymd(x),created_at:x.toISOString(),deleted_at:null}};
  S.entries=[mk(0,'sale',38,'delivery',''),mk(0,'sale',22.5,'delivery',''),mk(0,'sale',6,'tip',''),mk(0,'expense',18,'fuel',''),mk(0,'expense',7.5,'food',''),mk(1,'sale',96,'delivery',''),mk(1,'sale',14,'bonus',''),mk(1,'expense',21,'fuel',''),mk(2,'sale',118,'delivery',''),mk(2,'expense',45,'repair','Zəncir'),mk(3,'sale',84,'delivery',''),mk(3,'expense',6,'parking','')];
  S.sessions=[0,1,2].map(b=>{const p=walk(70+b*15,40.4093+b*0.004,49.8671-b*0.003),dur=p.length*30+3600,st=new Date(Date.now()-b*864e5-dur*1000);return{id:uuid(),started_at:st.toISOString(),ended_at:new Date(st.getTime()+dur*1000).toISOString(),distance_m:Math.round(routeLen(p)),duration_s:dur,points:p,dirty:false}});
@@ -425,7 +425,7 @@ function bundlesSvg(units,total,pct){
 }
 
 /* ---------- views ---------- */
-const ICON={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',list:'M4 6h16M4 12h16M4 18h10',add:'M12 5v14M5 12h14',work:'M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',settings:'M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6',watch:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zm10-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'};
+const ICON={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',list:'M4 6h16M4 12h16M4 18h10',add:'M12 5v14M5 12h14',work:'M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',settings:'M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6',insights:'M4 20V10M10 20V4M16 20v-8M22 20H2',watch:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zm10-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'};
 const icon=n=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[n]}"/></svg>`;
 
 const inApp=()=>!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
@@ -449,8 +449,9 @@ const supMore=()=>{const x=t();return `<details class="sup"><summary>${esc(x.sup
 function langBar(){return `<div class="seg" role="group" aria-label="Language">${['az','ru','en'].map(l=>`<button type="button" data-act="lang" data-v="${l}" aria-pressed="${S.lang===l}">${l.toUpperCase()}</button>`).join('')}</div>`}
 
 function appView(){
- const x=t(),tabs=['home','list','add','work','settings'];if(S.admin)tabs.push('watch');
- const body={home:homeView,list:listView,settings:settingsView,watch:watchView,work:workView,add:homeView}[S.tab]();
+ const x=t(),tabs=S.admin?['watch','insights','settings']:['home','list','add','work','settings'];
+ if(!tabs.includes(S.tab))S.tab=tabs[0];
+ const body={home:homeView,list:listView,settings:settingsView,watch:watchView,insights:insightsView,work:workView,add:homeView}[S.tab]();
  return `${S.demo?`<div class="demo-bar">${esc(S.sim?x.simBanner:x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">K</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header><main class="view">${body}</main>
  <nav class="tabs" aria-label="Navigation">${tabs.map(k=>`<button data-act="tab" data-v="${k}" class="${k==='add'?'plus':''}" aria-current="${S.tab===k&&k!=='add'}" aria-label="${esc(x[k])}">${icon(k)}<span>${esc(x[k])}</span></button>`).join('')}</nav></div>${S.sheet?sheetView():''}${S.viewer?`<div class="sheet-bg" data-act="viewer-close"><div class="viewer"><img src="${S.viewer}" alt=""><button class="btn ghost" data-act="viewer-close">${esc(x.close)}</button></div></div>`:''}`;
 }
@@ -492,9 +493,9 @@ function sessionView(){
 }
 function settingsView(){
  const x=t();
- return `<form class="card form" data-act="goals"><h3>${esc(x.goalsTitle)}</h3><p class="muted">${esc(x.goalHelp)}</p><label>${esc(x.dailyTarget)}<input id="g-daily" inputmode="decimal" value="${S.goals.daily||''}"></label><label>${esc(x.workDays)}</label><div class="seg wide">${[1,2,3,4,5,6,7].map(n=>`<button type="button" data-act="days" data-v="${n}" aria-pressed="${S.goals.days===n}">${n}</button>`).join('')}</div><button class="btn primary" type="submit">${esc(x.save)}</button>${S.msg?`<p class="msg ok">${esc(S.msg)}</p>`:''}</form>
- <form class="card form" data-act="fixed"><h3>${esc(x.fixedTitle)}</h3><p class="muted">${esc(x.fixedHelp)}</p>${fixedLive().length?`<ul class="rows">${fixedLive().map(f=>`<li class="entry"><div><strong>${esc(f.name)}</strong><small>${esc(f.period==='week'?x.perWeek:x.perMonth)}</small></div><b>${money(f.amount)}</b><button type="button" class="x" data-act="fixed-del" data-id="${f.id}" aria-label="${esc(x.del)}">×</button></li>`).join('')}</ul>`:`<p class="muted">${esc(x.fixedNone)}</p>`}<label>${esc(x.fixedName)}<input id="fx-name" maxlength="60" autocomplete="off"></label><label>${esc(x.amount)}<input id="fx-amt" inputmode="decimal" autocomplete="off"></label><div class="seg wide">${['week','month'].map(k=>`<button type="button" data-act="fixed-per" data-v="${k}" aria-pressed="${S.fixedPer===k}">${esc(k==='week'?x.perWeek:x.perMonth)}</button>`).join('')}</div><button class="btn primary" type="submit">${esc(x.fixedAdd)}</button></form>
- <section class="card form"><h3>${esc(x.account)}</h3><p>${esc(S.nick)}${S.user?.email?` · <span class="muted">${esc(S.user.email)}</span>`:''}</p><div class="notice slim">${supMore()}</div>
+ return `${S.admin?'':`<form class="card form" data-act="goals"><h3>${esc(x.goalsTitle)}</h3><p class="muted">${esc(x.goalHelp)}</p><label>${esc(x.dailyTarget)}<input id="g-daily" inputmode="decimal" value="${S.goals.daily||''}"></label><label>${esc(x.workDays)}</label><div class="seg wide">${[1,2,3,4,5,6,7].map(n=>`<button type="button" data-act="days" data-v="${n}" aria-pressed="${S.goals.days===n}">${n}</button>`).join('')}</div><button class="btn primary" type="submit">${esc(x.save)}</button>${S.msg?`<p class="msg ok">${esc(S.msg)}</p>`:''}</form>
+ <form class="card form" data-act="fixed"><h3>${esc(x.fixedTitle)}</h3><p class="muted">${esc(x.fixedHelp)}</p>${fixedLive().length?`<ul class="rows">${fixedLive().map(f=>`<li class="entry"><div><strong>${esc(f.name)}</strong><small>${esc(f.period==='week'?x.perWeek:x.perMonth)}</small></div><b>${money(f.amount)}</b><button type="button" class="x" data-act="fixed-del" data-id="${f.id}" aria-label="${esc(x.del)}">×</button></li>`).join('')}</ul>`:`<p class="muted">${esc(x.fixedNone)}</p>`}<label>${esc(x.fixedName)}<input id="fx-name" maxlength="60" autocomplete="off"></label><label>${esc(x.amount)}<input id="fx-amt" inputmode="decimal" autocomplete="off"></label><div class="seg wide">${['week','month'].map(k=>`<button type="button" data-act="fixed-per" data-v="${k}" aria-pressed="${S.fixedPer===k}">${esc(k==='week'?x.perWeek:x.perMonth)}</button>`).join('')}</div><button class="btn primary" type="submit">${esc(x.fixedAdd)}</button></form>`}
+ <section class="card form"><h3>${esc(x.account)}</h3>${S.admin?`<p class="muted">${esc(x.auditNote)}</p>`:''}<p>${esc(S.nick)}${S.user?.email?` · <span class="muted">${esc(S.user.email)}</span>`:''}</p><div class="notice slim">${supMore()}</div>
  <h3>${esc(x.language)}</h3>${langBar()}<h3>${esc(x.currency)}</h3><div class="seg wide">${CURRENCIES.map(c=>`<button data-act="cur" data-v="${c}" aria-pressed="${S.cur===c}">${c}</button>`).join('')}</div>
  <label class="check"><input id="s-sound" type="checkbox" data-act="sound" ${S.sound?'checked':''}> ${esc(x.sound)}</label>
  <button class="btn ghost" data-act="export">${esc(x.export)}</button>${S.demo?'':`<button class="btn ghost" data-act="sync">${esc(x.syncNow)}</button>`}<button class="btn danger" data-act="logout">${esc(x.logout)}</button></section>`;
@@ -504,6 +505,17 @@ function watchView(){
  if(S.detail)return detailView();
  if(!S.overview){loadOverview();return `<p class="muted center">…</p>`}
  return `<h3 class="h">${esc(x.overview)}</h3>${S.overview.length?S.overview.map(r=>{const cu=r.currency||'AZN',tg=Number(r.daily_target),te=Number(r.today_earn),p=tg>0?Math.min(100,Math.round(te/tg*100)):0,wt=tg*(Number(r.work_days)||6),mt=tg*(Number(r.work_days)||6)*new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()/7;return `<button class="card staff" data-act="staff" data-id="${esc(r.user_id||r.nickname)}"><div class="row between"><strong>@${esc(r.nickname)} <small class="muted">${esc(cu)}</small></strong>${r.live_at?`<span class="live">● ${esc(x.liveNow)}</span>`:`<span class="muted">${r.last_activity?esc(new Date(r.last_activity).toLocaleDateString()):esc(x.never)}</span>`}</div><div class="row between"><span>${esc(x.today)}</span><b>${money(te,cu)}</b></div><progress max="100" value="${p}" class="${tg>0&&te>=tg?'done':''}"></progress><div class="row between muted"><span>${esc(x.target)}: ${tg>0?money(tg,cu):esc(x.never)} · ${p}%</span><span>${esc(x.spent)}: ${money(Number(r.today_expense),cu)}</span></div><div class="row between muted"><span>${esc(x.weekLbl)}: ${money(Number(r.week_earn),cu)}${wt>0?` ${esc(x.of)} ${money(wt,cu)}`:''}</span><span>${Number(r.today_km).toFixed(1)} ${esc(x.km)} · ${Number(r.today_hours).toFixed(1)} ${esc(x.hours)}</span></div><div class="row between muted"><span>${esc(x.month)}: ${money(Number(r.month_earn),cu)}${mt>0?` ${esc(x.of)} ${money(mt,cu)}`:''}</span><span>${esc(x.total)}: ${money(Number(r.total_earn),cu)}</span></div></button>`}).join(''):`<p class="muted center">${esc(x.noStaff)}</p>`}`;
+}
+function insightsView(){
+ const x=t();if(!S.overview){loadOverview();return `<p class="muted center">…</p>`}
+ if(!S.overview.length)return `<p class="muted center">${esc(x.noStaff)}</p>`;
+ const by={};S.overview.forEach(r=>{const c=r.currency||'AZN';(by[c]=by[c]||[]).push(r)});
+ const cell=(l,v)=>`<div><small>${esc(l)}</small><b>${v}</b></div>`;
+ return `<h3 class="h">${esc(x.insights)}</h3>${Object.entries(by).map(([cu,a])=>{
+  const n=k=>a.reduce((p,r)=>p+Number(r[k]||0),0),earn=n('today_earn'),spent=n('today_expense'),km=n('today_km'),h=n('today_hours'),live=a.filter(r=>r.live_at).length,withGoal=a.filter(r=>Number(r.daily_target)>0),hit=withGoal.filter(r=>Number(r.today_earn)>=Number(r.daily_target)).length;
+  const top=[...a].sort((p,q)=>Number(q.month_earn)-Number(p.month_earn)),mx=Math.max(1,...top.map(r=>Number(r.month_earn)));
+  return `<section class="card"><h3>${esc(x.teamTitle)} · ${esc(cu)}</h3><div class="kpis">${cell(x.couriersN,a.length)}${cell(x.workingNow,live)}${cell(x.goalHit,`${hit} / ${withGoal.length}`)}${cell(x.net,money(earn-spent,cu))}${cell(x.earned,money(earn,cu))}${cell(x.spent,money(spent,cu))}${cell(x.perKm,km>0?money(earn/km,cu):'—')}${cell(x.perHour,h>0?money(earn/h,cu):'—')}</div><small class="muted">${esc(x.today)}</small></section>
+  <section class="card"><h3>${esc(x.rankTitle)} · ${esc(cu)}</h3>${top.map((r,i)=>`<div class="rank"><div class="row between"><span>${i+1}. @${esc(r.nickname)}</span><b>${money(Number(r.month_earn),cu)}</b></div><progress max="${mx}" value="${Number(r.month_earn)}"></progress></div>`).join('')}</section>`}).join('')}`;
 }
 function detailView(){
  const x=t(),d=S.detail,cu=d.currency||'AZN',items=d.entries||[],ses=d.sessions||[],sel=d.sel;
