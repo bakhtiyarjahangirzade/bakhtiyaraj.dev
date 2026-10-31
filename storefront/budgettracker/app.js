@@ -251,7 +251,7 @@ function startWork(){
 }
 function stopWork(){
  const a=S.active;stopWatchOnly();if(!a){render();return}
- const end=new Date(),dur=Math.max(1,Math.round((end-new Date(a.started_at))/1000)),n=a.points.length,step=Math.max(1,Math.ceil(n/1500));
+ const end=new Date(),dur=Math.max(1,Math.round((end-new Date(a.started_at))/1000)),n=a.points.length,step=Math.max(1,Math.ceil(n/4000));
  S.sessions.push({id:a.id,started_at:a.started_at,ended_at:end.toISOString(),distance_m:Math.round(a.distance_m),duration_s:dur,points:a.points.filter((_,i)=>i%step===0),dirty:!S.demo});
  if(!S.demo&&sb&&S.user)sb.from('bt_live').delete().eq('user_id',S.user.id).then(()=>{});
  S.active=null;persist();sync();render();
