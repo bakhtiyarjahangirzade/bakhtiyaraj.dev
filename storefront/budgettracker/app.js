@@ -428,17 +428,22 @@ function bundlesSvg(units,total,pct){
 const ICON={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',list:'M4 6h16M4 12h16M4 18h10',add:'M12 5v14M5 12h14',work:'M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',settings:'M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6',watch:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zm10-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'};
 const icon=n=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[n]}"/></svg>`;
 
+const inApp=()=>!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+const AI={mail:'M4 6h16v12H4zM4 7l8 6 8-6',lock:'M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3',user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-4 4-6 8-6s8 2 8 6',eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'};
+const aic=n=>`<svg class="ai" viewBox="0 0 24 24" aria-hidden="true"><path d="${AI[n]}"/></svg>`;
 function authView(){
- const x=t(),signup=S.authMode==='signup';
- return `<main class="auth"><section class="hero"><div class="brand"><span class="logo">K</span><span>${esc(x.app)}</span></div><h1>${esc(x.tagline)}</h1><h2>${esc(x.featTitle)}</h2><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="hero-actions"><button class="btn dark" data-act="apk">${esc(x.apkBtn)}</button><button class="btn ghost" data-act="demo">${esc(x.demo)}</button></div>${langBar()}</section>
- <form class="card form" data-act="auth" novalidate><h2>${esc(signup?x.signup:x.signin)}</h2>
- <label>${esc(x.email)}<input id="f-email" type="email" autocomplete="email" inputmode="email"></label>
- <label>${esc(x.password)}<input id="f-pw" type="password" autocomplete="${signup?'new-password':'current-password'}"></label>
- ${signup?`<label>${esc(x.nickname)}<input id="f-nick" autocomplete="username" maxlength="20"><small>${esc(x.nickRule)}</small></label><div class="notice slim"><label class="check"><input id="f-consent" type="checkbox"> ${esc(x.consent)}</label>${supMore()}</div>`:''}
+ const x=t(),signup=S.authMode==='signup',app=inApp();
+ return `<main class="auth v2"><div class="a-lang">${langBar()}</div>
+ <section class="a-hero"><div class="a-art">${bundlesSvg(13.4,27,40)}</div><div class="brand big"><span class="logo">K</span><span>${esc(x.app)}</span></div><h1>${esc(x.tagline)}</h1><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></section>
+ <form class="a-card form" data-act="auth" novalidate>
+ <div class="seg wide a-tabs" role="tablist">${['signin','signup'].map(m=>`<button type="button" role="tab" data-act="mode" data-v="${m}" aria-pressed="${S.authMode===m}">${esc(x[m])}</button>`).join('')}</div>
+ <label class="fld"><span>${esc(x.email)}</span><span class="in">${aic('mail')}<input id="f-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none"></span></label>
+ <label class="fld"><span>${esc(x.password)}</span><span class="in">${aic('lock')}<input id="f-pw" type="password" autocomplete="${signup?'new-password':'current-password'}"><button type="button" class="eye" data-act="pw-eye" aria-label="${esc(x.password)}">${aic('eye')}</button></span></label>
+ ${signup?`<label class="fld"><span>${esc(x.nickname)}</span><span class="in">${aic('user')}<input id="f-nick" autocomplete="username" maxlength="20" autocapitalize="none"></span><small>${esc(x.nickRule)}</small></label><div class="notice slim"><label class="check"><input id="f-consent" type="checkbox"> ${esc(x.consent)}</label>${supMore()}</div>`:''}
  ${S.msg?`<p class="msg${S.msgOk?' ok':''}" role="alert">${esc(S.msg)}</p>`:''}
- <button class="btn primary" type="submit">${esc(signup?x.signup:x.signin)}</button>
- <button class="link" type="button" data-act="mode">${esc(signup?x.haveAcc:x.noAcc)}</button></form>
- <dialog id="apk"><div class="dlg"><h2>${esc(x.apkTitle)}</h2><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="notice slim"><label class="check"><input id="apk-ok" type="checkbox"> ${esc(x.consent)}</label>${supMore()}</div><p class="msg" id="apk-soon" hidden>${esc(x.apkSoon)}</p><div class="row"><a id="apk-go" class="btn primary" href="${APK_URL}" download aria-disabled="true">${esc(x.apkGo)}</a><button class="btn ghost" data-act="apk-close" type="button">${esc(x.close)}</button></div></div></dialog></main>`;
+ <button class="btn primary a-go" type="submit">${esc(signup?x.signup:x.signin)}</button>
+ <div class="a-links"><button class="link" type="button" data-act="demo">${esc(x.demo)}</button>${app?'':`<button class="link" type="button" data-act="apk">${esc(x.apkBtn)}</button>`}</div></form>
+ ${app?'':`<dialog id="apk"><div class="dlg"><h2>${esc(x.apkTitle)}</h2><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="notice slim"><label class="check"><input id="apk-ok" type="checkbox"> ${esc(x.consent)}</label>${supMore()}</div><p class="msg" id="apk-soon" hidden>${esc(x.apkSoon)}</p><div class="row"><a id="apk-go" class="btn primary" href="${APK_URL}" download aria-disabled="true">${esc(x.apkGo)}</a><button class="btn ghost" data-act="apk-close" type="button">${esc(x.close)}</button></div></div></dialog>`}</main>`;
 }
 const supMore=()=>{const x=t();return `<details class="sup"><summary>${esc(x.supShort)} <u>${esc(x.supMore)}</u></summary><p>${esc(x.supNotice)}</p></details>`};
 function langBar(){return `<div class="seg" role="group" aria-label="Language">${['az','ru','en'].map(l=>`<button type="button" data-act="lang" data-v="${l}" aria-pressed="${S.lang===l}">${l.toUpperCase()}</button>`).join('')}</div>`}
@@ -591,7 +596,8 @@ document.addEventListener('change',async e=>{
 document.addEventListener('click',e=>{
  const b=e.target.closest('[data-act]');if(!b||b.tagName==='FORM')return;const a=b.dataset.act,v=b.dataset.v;
  if(a==='lang'){S.lang=v;saveSettings();render()}
- else if(a==='mode'){S.authMode=S.authMode==='signup'?'signin':'signup';S.msg='';render()}
+ else if(a==='mode'){const em=$('#f-email')?.value||'';S.authMode=v||(S.authMode==='signup'?'signin':'signup');S.msg='';render();if(em)$('#f-email').value=em}
+ else if(a==='pw-eye'){const i=$('#f-pw');i.type=i.type==='password'?'text':'password'}
  else if(a==='demo')startDemo(new URLSearchParams(location.search).get('demo')==='admin');
  else if(a==='apk')openApk();
  else if(a==='apk-close')$('#apk').close();
