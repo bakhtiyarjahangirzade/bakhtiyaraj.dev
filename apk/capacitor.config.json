@@ -1,0 +1,11 @@
+{
+  "appId": "dev.bakhtiyaraj.kuryebro",
+  "appName": "KuryeBro",
+  "webDir": "www",
+  "server": {
+    "url": "https://www.bakhtiyaraj.dev/budgettracker/",
+    "cleartext": false,
+    "allowNavigation": ["www.bakhtiyaraj.dev", "bakhtiyaraj.dev", "yxiedrrahclzqukfnqrn.supabase.co"]
+  },
+  "android": { "allowMixedContent": false }
+}

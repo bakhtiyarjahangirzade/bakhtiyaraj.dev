@@ -3,7 +3,7 @@ import './app.css';
 import {T,CATS,CURRENCIES,AUDIO_LANGS} from './strings.js';
 
 const SB_URL='https://yxiedrrahclzqukfnqrn.supabase.co',SB_KEY='sb_publishable_n0X-RVe8A6z9HviK4qsWAg_FgTTKJq2';
-const APK_URL='/budgettracker/bakhy-budget.apk';
+const APK_URL='/budgettracker/kuryebro.apk';
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const LS={get(k,d){try{const v=localStorage.getItem('bt.'+k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem('bt.'+k,JSON.stringify(v))}catch{}}};
