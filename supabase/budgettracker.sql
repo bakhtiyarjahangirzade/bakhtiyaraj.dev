@@ -132,3 +132,6 @@ create table if not exists public.bt_days (
 );
 -- RLS: owner read/insert/update, admins read; grants select/insert/update to authenticated.
 -- bt_overview() now also returns today_km/today_hours (day total, else GPS sessions); bt_benchmarks() is new.
+
+-- Migration budgettracker_fixed_costs (applied): recurring fixed costs per courier (rent, insurance...), period 'week' or 'month'.
+-- bt_fixed(id, user_id, name, amount, period, deleted_at, updated_at) with owner read/insert/update, admin read; grants select/insert/update to authenticated.
