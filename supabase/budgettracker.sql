@@ -96,3 +96,12 @@ begin
 end $$;
 revoke all on function public.bt_overview() from public, anon;
 grant execute on function public.bt_overview() to authenticated;
+
+-- Table privileges (this project does not grant data access to authenticated by default). RLS above still limits rows.
+revoke all on public.bt_profiles, public.bt_entries, public.bt_budgets, public.bt_goals, public.bt_admins from authenticated;
+grant select, insert, update on public.bt_profiles to authenticated;
+grant select, insert, update on public.bt_entries to authenticated;
+grant select, insert, update, delete on public.bt_budgets to authenticated;
+grant select, insert, update, delete on public.bt_goals to authenticated;
+grant select on public.bt_admins to authenticated;
+grant all on public.bt_profiles, public.bt_entries, public.bt_budgets, public.bt_goals, public.bt_admins to service_role;
