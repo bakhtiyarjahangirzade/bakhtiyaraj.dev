@@ -31,8 +31,8 @@ create table public.bt_budgets (
 
 create table public.bt_goals (
   user_id uuid primary key references auth.users(id) on delete cascade default auth.uid(),
-  sales_target numeric(12,2) not null default 0 check (sales_target >= 0),
-  saving_target numeric(12,2) not null default 0 check (saving_target >= 0),
+  daily_target numeric(12,2) not null default 0 check (daily_target >= 0),
+  
   updated_at timestamptz not null default now()
 );
 
@@ -76,7 +76,7 @@ revoke all on public.bt_profiles, public.bt_entries, public.bt_budgets, public.b
 -- Admin overview: one row per nickname for the current month plus all-time sales.
 create function public.bt_overview() returns table (
   user_id uuid, nickname text, month_sales numeric, total_sales numeric, month_income numeric, month_expense numeric,
-  sales_target numeric, last_activity timestamptz
+  daily_target numeric, last_activity timestamptz
 ) language plpgsql stable security definer set search_path = public as $$
 begin
   if not public.bt_is_admin() then raise exception 'not allowed' using errcode = '42501'; end if;
@@ -86,12 +86,12 @@ begin
     coalesce(sum(e.amount) filter (where e.kind = 'sale'), 0),
     coalesce(sum(e.amount) filter (where e.kind = 'income' and e.entry_date >= date_trunc('month', current_date)), 0),
     coalesce(sum(e.amount) filter (where e.kind = 'expense' and e.entry_date >= date_trunc('month', current_date)), 0),
-    coalesce(g.sales_target, 0),
+    coalesce(g.daily_target, 0),
     max(e.updated_at)
   from public.bt_profiles p
   left join public.bt_entries e on e.user_id = p.user_id and e.deleted_at is null
   left join public.bt_goals g on g.user_id = p.user_id
-  group by p.user_id, p.nickname, g.sales_target
+  group by p.user_id, p.nickname, g.daily_target
   order by 3 desc, p.nickname;
 end $$;
 revoke all on function public.bt_overview() from public, anon;
@@ -105,3 +105,8 @@ grant select, insert, update, delete on public.bt_budgets to authenticated;
 grant select, insert, update, delete on public.bt_goals to authenticated;
 grant select on public.bt_admins to authenticated;
 grant all on public.bt_profiles, public.bt_entries, public.bt_budgets, public.bt_goals, public.bt_admins to service_role;
+
+-- Courier edition: the goal is a daily earnings target and bt_overview() reports today (Baku time) per courier.
+-- Applied as migrations budgettracker_courier_daily and budgettracker_overview_baku_time:
+--   alter table bt_goals rename column sales_target to daily_target; drop column saving_target;
+--   bt_overview() returns user_id, nickname, today_earn, today_expense, month_earn, month_expense, total_earn, daily_target, last_activity.

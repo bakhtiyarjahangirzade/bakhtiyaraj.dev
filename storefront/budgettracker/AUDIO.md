@@ -9,11 +9,8 @@ Only languages listed in `AUDIO_LANGS` (`strings.js`) are played; today that is 
 | `loginOk.mp3` | Giriş uğurludur | After signing in |
 | `incomeAdded.mp3` | Gəlir əlavə edildi | Income saved |
 | `expenseAdded.mp3` | Xərc əlavə edildi | Expense saved |
-| `saleAdded.mp3` | Satış qeydə alındı | Sale saved |
+| `saleAdded.mp3` | Qazanc qeydə alındı | Earning saved |
 | `deleted.mp3` | Qeyd silindi | Entry deleted |
-| `budget80.mp3` | Büdcənin səksən faizi istifadə olundu | Category spend reaches 80% of its limit |
-| `budgetOver.mp3` | Büdcə aşıldı | Category spend passes its limit |
-| `goalHalf.mp3` | Hədəfin yarısı tamamlandı | Monthly sales reach 50% of the goal |
-| `goalDone.mp3` | Təbriklər, hədəfə çatdınız | Monthly sales reach the goal |
-| `synced.mp3` | Məlumatlar yeniləndi | Reserved for a manual sync |
+| `goalHalf.mp3` | Hədəfin yarısı tamamlandı | Today's earnings reach 50% of the daily goal |
+| `goalDone.mp3` | Təbriklər, hədəfə çatdınız | Today's earnings reach the daily goal |
 | `error.mp3` | Xəta baş verdi, yenidən cəhd edin | Invalid amount |
