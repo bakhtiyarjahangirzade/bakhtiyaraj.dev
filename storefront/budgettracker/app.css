@@ -87,3 +87,9 @@ progress.done::-webkit-progress-value{background:var(--pos)}progress.done::-moz-
 .sheet .row label{flex:1;min-width:0}.sheet#day-form input{width:100%}
 .notice.slim{background:transparent;color:var(--muted);padding:0;margin:6px 0 12px;font-size:13px}.notice.slim .check{color:var(--ink);margin:6px 0}
 .sup summary{cursor:pointer;list-style:none}.sup summary::-webkit-details-marker{display:none}.sup u{color:var(--blue)}.sup p{margin:6px 0 0}
+/* speed and route history */
+.stats.wrap{flex-wrap:wrap}.stats.wrap>div{flex:1 1 42%}.stats.wrap b{font-size:18px}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}.pgrid>div{display:grid;gap:2px}.pgrid b{font:700 17px var(--num)}.pgrid span{color:var(--muted);font-size:12px}.pgrid small{font-size:12px}
+.dayhead{display:grid;gap:2px;margin:12px 0 4px}.dayhead small{color:var(--muted)}
+.mini{display:block;width:72px;flex:none}.mini svg{width:100%;height:auto;display:block}
+.sess{display:flex;align-items:center;gap:12px}

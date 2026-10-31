@@ -223,7 +223,8 @@ function onPos(p){
  const a=S.active;if(!a)return;const c=p.coords;if(c.accuracy>60)return;
  const pt=[+c.latitude.toFixed(5),+c.longitude.toFixed(5),Math.round(p.timestamp/1000)],last=a.points[a.points.length-1];
  if(last){const d=hav(last,pt);if(d<8)return;if(d>3000&&pt[2]-last[2]<30)return;a.distance_m+=d}
- a.points.push(pt);persist();const k=$('#live-km');if(k)k.textContent=(a.distance_m/1000).toFixed(2);updateLiveMap(a);
+ a.points.push(pt);persist();const k=$('#live-km');if(k)k.textContent=(a.distance_m/1000).toFixed(2);
+ const sp=$('#live-spd'),av=$('#live-avg');if(sp)sp.textContent=c.speed!=null&&c.speed>=0?(c.speed*3.6).toFixed(0):'—';if(av)av.textContent=kmhTxt(moveStats(a.points).kmh);updateLiveMap(a);
  if(!S.demo&&sb&&S.user&&navigator.onLine&&Date.now()-lastLive>30000){lastLive=Date.now();sb.from('bt_live').upsert({user_id:S.user.id,session_id:a.id,lat:pt[0],lng:pt[1],accuracy:Math.round(c.accuracy)}).then(()=>{})}
 }
 function startWork(){
@@ -236,6 +237,34 @@ function stopWork(){
  S.sessions.push({id:a.id,started_at:a.started_at,ended_at:end.toISOString(),distance_m:Math.round(a.distance_m),duration_s:dur,points:a.points.filter((_,i)=>i%step===0),dirty:!S.demo});
  if(!S.demo&&sb&&S.user)sb.from('bt_live').delete().eq('user_id',S.user.id).then(()=>{});
  S.active=null;persist();sync();render();
+}
+/* moving speed: segments slower than 1 m/s count as standing still and stay out of the average */
+function moveStats(p){
+ let mv=0,st=0,dist=0,mx=0;
+ for(let i=1;i<p.length;i++){const dt=p[i][2]-p[i-1][2];if(dt<=0)continue;const d=hav(p[i-1],p[i]),v=d/dt;if(v>=1&&v<45){mv+=dt;dist+=d;if(dt<=60&&v>mx)mx=v}else st+=dt}
+ return{moveS:mv,stopS:st,kmh:mv>=30?dist/mv*3.6:null,maxKmh:mx*3.6};
+}
+const kmhTxt=v=>v==null?'—':v.toFixed(1);
+function sessStat(s){
+ const ms=s.points&&s.points.length>1?moveStats(s.points):null,km=kmOf(s),mv=ms&&ms.moveS>0?ms.moveS:(s.duration_s||0);
+ return{km,sec:s.duration_s||0,mv,kmh:ms&&ms.kmh!=null?ms.kmh:(mv>=30?km/(mv/3600):null)};
+}
+function sumSess(arr){
+ let km=0,mv=0,sec=0;arr.forEach(s=>{const q=sessStat(s);km+=q.km;mv+=q.mv;sec+=q.sec});
+ return{km,sec,mv,kmh:mv>=30?km/(mv/3600):null};
+}
+function periodCard(done){
+ const x=t(),ws=weekStart(),m=ym(today()),blocks=[[x.today,done.filter(s=>localDate(s.started_at)===today())],[x.thisWeek,done.filter(s=>localDate(s.started_at)>=ws)],[x.month,done.filter(s=>localDate(s.started_at).startsWith(m))]];
+ return `<section class="card"><h3>${esc(x.historyStats)}</h3><div class="pgrid">${blocks.map(([l,a])=>{const q=sumSess(a);return `<div><small>${esc(l)}</small><b>${q.km.toFixed(1)} ${esc(x.km)}</b><span>${fmtDur(q.sec)} ${esc(x.hours)}</span><span>${kmhTxt(q.kmh)} ${esc(x.kmh)}</span></div>`}).join('')}</div><small class="muted">${esc(x.speedNote)}</small></section>`;
+}
+function historyCard(done){
+ const x=t(),g={};done.forEach(s=>{const d=localDate(s.started_at);(g[d]=g[d]||[]).push(s)});
+ const days=Object.keys(g).sort().reverse().slice(0,30);
+ return `<section class="card"><h3>${esc(x.routesTitle)}</h3>${days.length?days.map(d=>{const q=sumSess(g[d]);return `<div class="dayhead"><strong>${esc(dateLabel(d))}</strong><small>${q.km.toFixed(1)} ${esc(x.km)} · ${fmtDur(q.sec)} ${esc(x.hours)} · ${kmhTxt(q.kmh)} ${esc(x.kmh)}</small></div><ul class="rows">${g[d].map(s=>{const z=sessStat(s);return `<li class="entry"><button class="sess" data-act="session" data-id="${s.id}"><span class="mini">${routeSvg(s.points,120,80)}</span><div><strong>${new Date(s.started_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</strong><small>${fmtDur(s.duration_s)} ${esc(x.hours)} · ${kmhTxt(z.kmh)} ${esc(x.kmh)}</small></div><b>${z.km.toFixed(1)} ${esc(x.km)}</b></button></li>`}).join('')}</ul>`}).join(''):`<p class="muted">${esc(x.noSessions)}</p>`}</section>`;
+}
+function moveGrid(points,s){
+ const x=t(),m=moveStats(points||[]);
+ return `<div class="stats wrap"><div><small>${esc(x.moveTime)}</small><b>${fmtDur(m.moveS)}</b></div><div><small>${esc(x.stoppedTime)}</small><b>${fmtDur(m.stopS)}</b></div><div><small>${esc(x.avgMove)}</small><b>${kmhTxt(m.kmh)} ${esc(x.kmh)}</b></div><div><small>${esc(x.maxSpeed)}</small><b>${m.maxKmh>0?m.maxKmh.toFixed(0):'—'} ${esc(x.kmh)}</b></div></div>`;
 }
 function sessionsAll(){const arr=[...S.sessions];if(S.active)arr.push({...S.active,duration_s:Math.round((Date.now()-new Date(S.active.started_at))/1000),ended_at:null});return arr.sort((a,b)=>b.started_at.localeCompare(a.started_at))}
 function routeSvg(points,w=320,h=220){
@@ -388,15 +417,15 @@ function workView(){
  const all=sessionsAll(),d=today(),ws=weekStart(),dayS=all.filter(s=>localDate(s.started_at)===d),weekS=all.filter(s=>localDate(s.started_at)>=ws);
  const tot=arr=>({sec:arr.reduce((p,s)=>p+(s.duration_s||0),0),km:arr.reduce((p,s)=>p+((a&&s.id===a.id)?a.distance_m:s.distance_m)/1000,0)});
  const td=tot(dayS),tw=tot(weekS);
- const main=a?`<section class="card work-live"><small>${esc(x.working)}</small><div class="clock" id="clock">${fmtDur(Math.round((Date.now()-new Date(a.started_at))/1000))}</div><div class="two"><span><b id="live-km">${(a.distance_m/1000).toFixed(2)}</b> ${esc(x.km)}</span></div>${mapBox(a.points,[],'live-map')}<small class="muted">${esc(x.keepOpen)}</small><button class="btn danger" data-act="work-stop">${esc(x.stopWork)}</button></section>`
+ const main=a?`<section class="card work-live"><small>${esc(x.working)}</small><div class="clock" id="clock">${fmtDur(Math.round((Date.now()-new Date(a.started_at))/1000))}</div><div class="two"><span><b id="live-km">${(a.distance_m/1000).toFixed(2)}</b> ${esc(x.km)}</span><span>${esc(x.nowSpeed)} <b id="live-spd">—</b> ${esc(x.kmh)}</span><span>${esc(x.avgShort)} <b id="live-avg">${kmhTxt(moveStats(a.points).kmh)}</b> ${esc(x.kmh)}</span></div>${mapBox(a.points,[],'live-map')}<small class="muted">${esc(x.keepOpen)}</small><button class="btn danger" data-act="work-stop">${esc(x.stopWork)}</button></section>`
   :`<section class="card work-start"><button class="btn primary big-btn" data-act="work-start">${esc(x.startWork)}</button>${S.msg?`<p class="msg">${esc(S.msg)}</p>`:''}</section>`;
  const done=all.filter(s=>s.ended_at);
- return `${main}<section class="card"><div class="stats"><div><small>${esc(x.today)}</small><b>${fmtDur(td.sec)}</b><span>${td.km.toFixed(1)} ${esc(x.km)}</span></div><div><small>${esc(x.thisWeek)}</small><b>${fmtDur(tw.sec)}</b><span>${tw.km.toFixed(1)} ${esc(x.km)}</span></div></div></section>
- <section class="card"><h3>${esc(x.sessions)}</h3>${done.length?`<ul class="rows">${done.slice(0,30).map(s=>`<li class="entry"><button class="sess" data-act="session" data-id="${s.id}"><div><strong>${esc(dateLabel(localDate(s.started_at)))}</strong><small>${fmtDur(s.duration_s)} ${esc(x.hours)}</small></div><b>${kmOf(s).toFixed(1)} ${esc(x.km)}</b></button></li>`).join('')}</ul>`:`<p class="muted">${esc(x.noSessions)}</p>`}</section>`;
+ return `${main}${periodCard(done)}
+ ${historyCard(done)}`;
 }
 function sessionView(){
  const x=t(),s=S.workDetail,km=kmOf(s),h=s.duration_s/3600;
- return `<button class="link" data-act="work-back">← ${esc(x.back)}</button><h3 class="h">${esc(dateLabel(localDate(s.started_at)))}</h3><section class="card">${mapBox(s.points,findStops(s.points||[]))}<div class="stats"><div><small>${esc(x.distance)}</small><b>${km.toFixed(2)} ${esc(x.km)}</b></div><div><small>${esc(x.duration)}</small><b>${fmtDur(s.duration_s)}</b></div><div><small>${esc(x.avgSpeed)}</small><b>${s.duration_s>=120?`${(km/h).toFixed(1)} ${esc(x.kmh)}`:'—'}</b></div></div></section><section class="card">${stopsHtml(findStops(s.points||[]))}</section>`;
+ return `<button class="link" data-act="work-back">← ${esc(x.back)}</button><h3 class="h">${esc(dateLabel(localDate(s.started_at)))}</h3><section class="card">${mapBox(s.points,findStops(s.points||[]))}<div class="stats"><div><small>${esc(x.distance)}</small><b>${km.toFixed(2)} ${esc(x.km)}</b></div><div><small>${esc(x.duration)}</small><b>${fmtDur(s.duration_s)}</b></div></div>${moveGrid(s.points)}<small class="muted">${esc(x.speedNote)}</small></section><section class="card">${stopsHtml(findStops(s.points||[]))}</section>`;
 }
 function settingsView(){
  const x=t();
@@ -418,7 +447,7 @@ function detailView(){
  ${d.live?`<section class="card"><h3><span class="live">● ${esc(x.liveNow)}</span></h3>${mapBox([],[],null,d.live)}<small class="muted">${esc(x.liveAt)}: ${new Date(d.live.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></section>`:''}
  ${(d.days||[]).length?`<section class="card"><h3>${esc(x.daysTitle)}</h3><ul class="rows">${d.days.map(r=>{const km=Number(r.km),h=Number(r.hours),earn=sum(items.filter(e=>e.date===r.day),'sale');return `<li class="entry"><div><strong>${esc(dateLabel(r.day))}</strong><small>${km.toFixed(1)} ${esc(x.km)} · ${h.toFixed(1)} ${esc(x.hours)}</small></div><b>${km>0&&earn>0?`${money(earn/km,cu)} / ${esc(x.km)}`:money(earn,cu)}</b></li>`}).join('')}</ul></section>`:''}
  ${ses.length?`<section class="card"><h3>${esc(x.sessions)}</h3><ul class="rows">${ses.map(s=>`<li class="entry"><button class="sess" data-act="asession" data-id="${s.id}"><div><strong>${esc(dateLabel(localDate(s.started_at)))}</strong><small>${fmtDur(s.duration_s)} ${esc(x.hours)}</small></div><b>${kmOf(s).toFixed(1)} ${esc(x.km)}</b></button></li>`).join('')}</ul></section>`:''}
- ${sel?`<section class="card"><h3>${esc(x.myMap)} · ${esc(dateLabel(localDate(sel.s.started_at)))}</h3>${sel.points.length?mapBox(sel.points,findStops(sel.points)):`<p class="muted">${esc(x.noRoute)}</p>`}${sel.points.length?stopsHtml(findStops(sel.points)):''}</section>`:''}
+ ${sel?`<section class="card"><h3>${esc(x.myMap)} · ${esc(dateLabel(localDate(sel.s.started_at)))}</h3>${sel.points.length?mapBox(sel.points,findStops(sel.points))+moveGrid(sel.points):`<p class="muted">${esc(x.noRoute)}</p>`}${sel.points.length?stopsHtml(findStops(sel.points)):''}</section>`:''}
  <section class="card"><h3>${esc(x.entries)}</h3>${items.length?`<ul class="rows">${items.map(e=>rowHtml(e,false,cu)).join('')}</ul>`:`<p class="muted">${esc(x.empty)}</p>`}</section>`;
 }
 function sheetView(){

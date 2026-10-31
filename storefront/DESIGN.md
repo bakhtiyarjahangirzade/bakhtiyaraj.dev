@@ -56,3 +56,4 @@ KuryeBro (renamed from BAKHY Budget, 31 October 2026): the app is branded KuryeB
 - "+" opens a **day total** sheet (earned, km, hours, optional expenses); one total per date replaces the previous one (category `daily`). Single entries stay behind a link.
 - Home shows earned/km, earned/hour, cost/km, cost per 100 km and net ("left in pocket") for today and the last 30 days, plus an anonymous same-currency courier average (needs 3+ couriers).
 - Oversight disclosure stays at sign-up (checkbox + collapsible text) and in Settings, but is no longer repeated in the GPS and camera prompts.
+- Speed: segments under 1 m/s count as standing still and are excluded from average speed; Work tab shows live/avg speed, week/month totals and routes grouped by day with thumbnails; admin route view shows the same moving/stopped split.
