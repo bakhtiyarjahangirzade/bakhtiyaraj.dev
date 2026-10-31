@@ -16,7 +16,7 @@ const ym=d=>d.slice(0,7);
 const uuid=()=>crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:r&3|8).toString(16)});
 
 const saved=LS.get('settings',{}),guess=()=>{const l=(navigator.language||'az').slice(0,2);return ['az','ru','en'].includes(l)?l:'az'};
-const S={lang:saved.lang||guess(),cur:saved.cur||'AZN',sound:saved.sound!==false,user:null,nick:'',admin:false,demo:false,entries:[],goals:{daily:0,days:6},sessions:[],active:null,pending:new Set(),photoQ:new Set(),dirty:{goals:false},lastSync:null,flags:{},tab:'home',filter:'all',overview:null,detail:null,workDetail:null,sheet:null,viewer:null,authMode:'signin',msg:'',syncing:false};
+const S={lang:saved.lang||guess(),cur:saved.cur||'AZN',sound:saved.sound!==false,user:null,nick:'',admin:false,demo:false,entries:[],goals:{daily:0,days:6},sessions:[],days:{},bench:undefined,active:null,pending:new Set(),photoQ:new Set(),dirty:{goals:false},lastSync:null,flags:{},tab:'home',filter:'all',overview:null,detail:null,workDetail:null,sheet:null,viewer:null,authMode:'signin',msg:'',syncing:false};
 const t=()=>T[S.lang];
 const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'bt.auth'}}):null;
 const saveSettings=()=>LS.set('settings',{lang:S.lang,cur:S.cur,sound:S.sound});
@@ -41,8 +41,8 @@ async function compress(file){const bmp=await createImageBitmap(file),k=Math.min
 
 /* ---------- local store ---------- */
 const uid=()=>S.demo?'demo':S.user?.id;
-function persist(){if(S.demo||!S.user)return;LS.set('u.'+uid(),{entries:S.entries,goals:S.goals,sessions:S.sessions.slice(-60),active:S.active,pending:[...S.pending],photoQ:[...S.photoQ],dirty:S.dirty,lastSync:S.lastSync,flags:S.flags})}
-function restore(){const d=S.demo?{}:LS.get('u.'+uid(),{});S.entries=d.entries||[];S.goals={daily:Number(d.goals&&(d.goals.daily??d.goals.sales))||0,days:Number(d.goals&&d.goals.days)||6};S.sessions=d.sessions||[];S.active=d.active||null;S.pending=new Set(d.pending||[]);S.photoQ=new Set(d.photoQ||[]);S.dirty={goals:!!(d.dirty&&d.dirty.goals)};S.lastSync=d.lastSync||null;S.flags=d.flags||{}}
+function persist(){if(S.demo||!S.user)return;LS.set('u.'+uid(),{entries:S.entries,goals:S.goals,sessions:S.sessions.slice(-60),days:S.days,active:S.active,pending:[...S.pending],photoQ:[...S.photoQ],dirty:S.dirty,lastSync:S.lastSync,flags:S.flags})}
+function restore(){const d=S.demo?{}:LS.get('u.'+uid(),{});S.entries=d.entries||[];S.goals={daily:Number(d.goals&&(d.goals.daily??d.goals.sales))||0,days:Number(d.goals&&d.goals.days)||6};S.sessions=d.sessions||[];S.days=d.days||{};S.bench=undefined;S.active=d.active||null;S.pending=new Set(d.pending||[]);S.photoQ=new Set(d.photoQ||[]);S.dirty={goals:!!(d.dirty&&d.dirty.goals)};S.lastSync=d.lastSync||null;S.flags=d.flags||{}}
 
 /* ---------- sync ---------- */
 async function sync(){
@@ -59,6 +59,9 @@ async function sync(){
    if(s.points&&s.points.length){const r=await sb.from('bt_routes').upsert({session_id:s.id,points:s.points});if(r.error)throw r.error}
    s.dirty=false;
   }
+  for(const [day,v] of Object.entries(S.days).filter(([,v])=>v.dirty)){
+   const {error}=await sb.from('bt_days').upsert({user_id:S.user.id,day,km:v.km,hours:v.hours});if(error)throw error;v.dirty=false;
+  }
   if(S.dirty.goals){const {error}=await sb.from('bt_goals').upsert({user_id:S.user.id,daily_target:S.goals.daily,work_days:S.goals.days});if(error)throw error;S.dirty.goals=false}
   let q=sb.from('bt_entries').select('id,kind,amount,category,note,entry_date,created_at,updated_at,deleted_at,photo_path').order('updated_at',{ascending:true}).limit(1000);
   if(S.lastSync)q=q.gt('updated_at',S.lastSync);
@@ -66,6 +69,8 @@ async function sync(){
   for(const r of data){const e={id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,deleted_at:r.deleted_at,photo_path:r.photo_path};const i=S.entries.findIndex(x=>x.id===e.id);if(i<0)S.entries.push(e);else if(!S.pending.has(e.id))S.entries[i]=e;S.lastSync=r.updated_at}
   const ss=await sb.from('bt_sessions').select('id,started_at,ended_at,distance_m,duration_s').order('started_at',{ascending:false}).limit(100);
   if(ss.data)for(const r of ss.data){if(!S.sessions.some(x=>x.id===r.id)&&r.ended_at)S.sessions.push({...r,dirty:false})}
+  const dd=await sb.from('bt_days').select('day,km,hours').order('day',{ascending:false}).limit(120);
+  if(dd.data)for(const r of dd.data){const c=S.days[r.day];if(!c||!c.dirty)S.days[r.day]={km:Number(r.km),hours:Number(r.hours)}}
   if(!S.dirty.goals){const {data:g}=await sb.from('bt_goals').select('daily_target,work_days').maybeSingle();if(g)S.goals={daily:Number(g.daily_target),days:Number(g.work_days)||6}}
   persist();
  }catch(err){console.warn('sync failed',err)}finally{S.syncing=false;render()}
@@ -104,7 +109,7 @@ async function submitAuth(){
  enter(data.user);
 }
 function setMsg(m,ok){S.msg=m;S.msgOk=!!ok;render()}
-async function logout(){stopWatchOnly();if(S.demo){S.demo=false;S.user=null;S.entries=[];S.sessions=[];S.active=null;S.admin=false;render();return}await sb.auth.signOut();S.user=null;S.nick='';S.admin=false;S.entries=[];S.sessions=[];S.active=null;S.tab='home';render()}
+async function logout(){stopWatchOnly();if(S.demo){S.demo=false;S.user=null;S.entries=[];S.sessions=[];S.days={};S.bench=undefined;S.active=null;S.admin=false;render();return}await sb.auth.signOut();S.user=null;S.nick='';S.admin=false;S.entries=[];S.sessions=[];S.days={};S.bench=undefined;S.active=null;S.tab='home';render()}
 
 /* ---------- GPS helpers (also used by the demo) ---------- */
 const R=6371000,rad=x=>x*Math.PI/180;
@@ -118,16 +123,76 @@ function startDemo(admin){
  const d=new Date(),mk=(back,kind,amount,category,note)=>{const x=new Date(d);x.setDate(d.getDate()-back);return{id:uuid(),kind,amount,category,note,date:ymd(x),created_at:x.toISOString(),deleted_at:null}};
  S.entries=[mk(0,'sale',38,'delivery',''),mk(0,'sale',22.5,'delivery',''),mk(0,'sale',6,'tip',''),mk(0,'expense',18,'fuel',''),mk(0,'expense',7.5,'food',''),mk(1,'sale',96,'delivery',''),mk(1,'sale',14,'bonus',''),mk(1,'expense',21,'fuel',''),mk(2,'sale',118,'delivery',''),mk(2,'expense',45,'repair','Zəncir'),mk(3,'sale',84,'delivery',''),mk(3,'expense',6,'parking','')];
  S.sessions=[0,1,2].map(b=>{const p=walk(70+b*15,40.4093+b*0.004,49.8671-b*0.003),dur=p.length*30+3600,st=new Date(Date.now()-b*864e5-dur*1000);return{id:uuid(),started_at:st.toISOString(),ended_at:new Date(st.getTime()+dur*1000).toISOString(),distance_m:Math.round(routeLen(p)),duration_s:dur,points:p,dirty:false}});
+ S.days={};[[0,38.4,6.2],[1,64,8.5],[2,71,9],[3,52,7.4]].forEach(([b,km,h])=>{const x=new Date();x.setDate(x.getDate()-b);S.days[ymd(x)]={km,hours:h}});
+ S.bench={couriers:7,earn_per_km:1.9,cost_per_km:.31,earn_per_hour:21.5};
  S.overview=[{nickname:'ali.kuryer',currency:'PLN',live_at:new Date().toISOString(),today_earn:132,today_expense:18,week_earn:540,daily_target:120,work_days:6,today_km:38.4,today_hours:6.2,month_earn:2940,total_earn:9810,last_activity:new Date().toISOString()},{nickname:'leyla_m',currency:'AZN',today_earn:74,today_expense:12,week_earn:410,daily_target:150,work_days:5,today_km:21.7,today_hours:4.1,month_earn:3120,total_earn:12120,last_activity:new Date(Date.now()-36e5).toISOString()}];
  render();say('welcome');
 }
 
 /* ---------- entries ---------- */
-async function addEntry({kind,amount,category,note,date,photo}){
+async function addEntry({kind,amount,category,note,date,photo,quiet}){
  const e={id:uuid(),kind,amount,category,note,date,created_at:new Date().toISOString(),deleted_at:null};
  if(photo){e.photo_path=`${uid()}/${e.id}.jpg`;if(S.demo)demoPhotos.set(e.id,photo);else{await idb.put(e.id,photo).catch(()=>{});S.photoQ.add(e.id)}}
  S.entries.push(e);if(!S.demo)S.pending.add(e.id);
- const sound=alertFor(e);persist();say(sound);sync();
+ const sound=quiet?null:alertFor(e);persist();if(sound)say(sound);sync();
+}
+
+/* ---------- day totals: one entry per day, with km and hours, and the per-km / per-hour numbers they give ---------- */
+const n2=v=>Number(String(v??'').replace(',','.'))||0;
+function dayNums(d){
+ const en=live().filter(e=>e.date===d),r=S.days[d];let km=r?r.km:0,h=r?r.hours:0;
+ if(!km||!h){const ss=S.sessions.filter(q=>q.ended_at&&localDate(q.started_at)===d);if(!km)km=ss.reduce((p,q)=>p+kmOf(q),0);if(!h)h=ss.reduce((p,q)=>p+(q.duration_s||0),0)/3600}
+ return{earn:sum(en,'sale'),spent:sum(en,'expense'),km,h};
+}
+function ratios(n){const net=n.earn-n.spent;return{net,perKm:n.km>0?n.earn/n.km:null,costKm:n.km>0?n.spent/n.km:null,netKm:n.km>0?net/n.km:null,perHour:n.h>0?n.earn/n.h:null,netHour:n.h>0?net/n.h:null}}
+function range30(){
+ const a={net:0,k:{e:0,s:0,v:0},h:{e:0,s:0,v:0}};
+ for(let i=0;i<30;i++){const x=new Date();x.setDate(x.getDate()-i);const n=dayNums(ymd(x));a.net+=n.earn-n.spent;if(n.km>0){a.k.e+=n.earn;a.k.s+=n.spent;a.k.v+=n.km}if(n.h>0){a.h.e+=n.earn;a.h.s+=n.spent;a.h.v+=n.h}}
+ const k=a.k,h=a.h;
+ return{any:k.v>0||h.v>0,net:a.net,perKm:k.v>0?k.e/k.v:null,costKm:k.v>0?k.s/k.v:null,netKm:k.v>0?(k.e-k.s)/k.v:null,perHour:h.v>0?h.e/h.v:null,netHour:h.v>0?(h.e-h.s)/h.v:null};
+}
+const kpi=(label,v)=>`<div><small>${esc(label)}</small><b>${v==null?'—':money(v)}</b></div>`;
+function kpis(r,withNet=true){
+ const x=t();
+ return `<div class="kpis">${withNet?`<div class="wide pocket"><small>${esc(x.pocket)}</small><b>${money(r.net)}</b></div>`:''}${kpi(x.perKm,r.perKm)}${kpi(x.perHour,r.perHour)}${kpi(x.costKm,r.costKm)}${kpi(x.cost100,r.costKm==null?null:r.costKm*100)}${withNet?kpi(x.pocketKm,r.netKm)+kpi(x.pocketHour,r.netHour):''}</div>`;
+}
+async function loadBench(){
+ S.bench=null;
+ try{const {data}=await sb.rpc('bt_benchmarks'),r=Array.isArray(data)?data[0]:data,f=v=>v==null?null:Number(v);
+  if(r&&(r.earn_per_km!=null||r.cost_per_km!=null||r.earn_per_hour!=null))S.bench={couriers:r.couriers,earn_per_km:f(r.earn_per_km),cost_per_km:f(r.cost_per_km),earn_per_hour:f(r.earn_per_hour)}}catch(e){console.warn(e)}
+ render();
+}
+function statsCard(){
+ const x=t(),n=dayNums(today()),has=n.km>0||n.h>0,m=range30(),b=S.bench;
+ if(S.bench===undefined&&!S.demo&&sb&&S.user)loadBench();
+ return `<section class="card"><h3>${esc(x.statsTitle)}</h3>${has?`<small class="muted">${esc(x.statsToday)}</small>${kpis(ratios(n))}`:`<p class="muted">${esc(x.statsNone)}</p>`}${m.any?`<small class="muted">${esc(x.stats30)}</small>${kpis(m)}`:''}${b?`<small class="muted">${esc(x.avgCourier)} · ${esc(x.stats30)}</small>${kpis({perKm:b.earn_per_km,perHour:b.earn_per_hour,costKm:b.cost_per_km},false)}<small class="muted">${esc(x.benchNote)}</small>`:''}</section>`;
+}
+function fillDay(sh){
+ const en=live().filter(e=>e.date===sh.date&&e.category==='daily'),r=S.days[sh.date],v=n=>n?String(n):'';
+ sh.earn=v(sum(en,'sale'));sh.spent=v(sum(en,'expense'));sh.km=v(r&&r.km);sh.hours=v(r&&r.hours);
+}
+function openDay(){S.sheet={type:'day',date:today()};fillDay(S.sheet)}
+function dayPrev(sh){
+ const earn=n2(sh.earn),spent=n2(sh.spent),km=n2(sh.km),h=n2(sh.hours);
+ return earn>0&&(km>0||h>0)?kpis(ratios({earn,spent,km,h})):'';
+}
+function syncDayForm(){
+ const sh=S.sheet;if(!sh||sh.type!=='day')return;
+ const date=$('#d-date').value;
+ if(date&&date!==sh.date){sh.date=date;fillDay(sh);$('#d-earn').value=sh.earn;$('#d-spent').value=sh.spent;$('#d-km').value=sh.km;$('#d-h').value=sh.hours}
+ else{sh.earn=$('#d-earn').value;sh.spent=$('#d-spent').value;sh.km=$('#d-km').value;sh.hours=$('#d-h').value}
+ $('#day-prev').innerHTML=dayPrev(sh);
+ const ex=$('#day-ex');if(ex)ex.hidden=!live().some(e=>e.date===sh.date&&e.category==='daily');
+}
+function saveDay(){
+ syncDayForm();const sh=S.sheet,earn=n2(sh.earn),spent=n2(sh.spent),km=Math.min(4999,n2(sh.km)),h=Math.min(24,n2(sh.hours)),date=sh.date||today();
+ if(!(earn>0)||earn>=1e9){say('error');return}
+ const now=new Date().toISOString();
+ live().filter(e=>e.date===date&&e.category==='daily').forEach(e=>{e.deleted_at=now;if(!S.demo)S.pending.add(e.id)});
+ S.days[date]={km:Math.round(km*10)/10,hours:Math.round(h*10)/10,dirty:!S.demo};
+ addEntry({kind:'sale',amount:earn,category:'daily',note:'',date});
+ if(spent>0)addEntry({kind:'expense',amount:spent,category:'daily',note:'',date,quiet:true});
+ closeSheet();
 }
 function alertFor(e){
  if(e.kind==='sale'&&S.goals.daily>0&&e.date===today()){
@@ -282,12 +347,13 @@ function authView(){
  <form class="card form" data-act="auth" novalidate><h2>${esc(signup?x.signup:x.signin)}</h2>
  <label>${esc(x.email)}<input id="f-email" type="email" autocomplete="email" inputmode="email"></label>
  <label>${esc(x.password)}<input id="f-pw" type="password" autocomplete="${signup?'new-password':'current-password'}"></label>
- ${signup?`<label>${esc(x.nickname)}<input id="f-nick" autocomplete="username" maxlength="20"><small>${esc(x.nickRule)}</small></label><div class="notice"><strong>${esc(x.supNoticeTitle)}</strong><p>${esc(x.supNotice)}</p><label class="check"><input id="f-consent" type="checkbox"> ${esc(x.consent)}</label></div>`:''}
+ ${signup?`<label>${esc(x.nickname)}<input id="f-nick" autocomplete="username" maxlength="20"><small>${esc(x.nickRule)}</small></label><div class="notice slim"><label class="check"><input id="f-consent" type="checkbox"> ${esc(x.consent)}</label>${supMore()}</div>`:''}
  ${S.msg?`<p class="msg${S.msgOk?' ok':''}" role="alert">${esc(S.msg)}</p>`:''}
  <button class="btn primary" type="submit">${esc(signup?x.signup:x.signin)}</button>
  <button class="link" type="button" data-act="mode">${esc(signup?x.haveAcc:x.noAcc)}</button></form>
- <dialog id="apk"><div class="dlg"><h2>${esc(x.apkTitle)}</h2><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="notice"><strong>${esc(x.supNoticeTitle)}</strong><p>${esc(x.supNotice)}</p><label class="check"><input id="apk-ok" type="checkbox"> ${esc(x.consent)}</label></div><p class="msg" id="apk-soon" hidden>${esc(x.apkSoon)}</p><div class="row"><a id="apk-go" class="btn primary" href="${APK_URL}" download aria-disabled="true">${esc(x.apkGo)}</a><button class="btn ghost" data-act="apk-close" type="button">${esc(x.close)}</button></div></div></dialog></main>`;
+ <dialog id="apk"><div class="dlg"><h2>${esc(x.apkTitle)}</h2><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="notice slim"><label class="check"><input id="apk-ok" type="checkbox"> ${esc(x.consent)}</label>${supMore()}</div><p class="msg" id="apk-soon" hidden>${esc(x.apkSoon)}</p><div class="row"><a id="apk-go" class="btn primary" href="${APK_URL}" download aria-disabled="true">${esc(x.apkGo)}</a><button class="btn ghost" data-act="apk-close" type="button">${esc(x.close)}</button></div></div></dialog></main>`;
 }
+const supMore=()=>{const x=t();return `<details class="sup"><summary>${esc(x.supShort)} <u>${esc(x.supMore)}</u></summary><p>${esc(x.supNotice)}</p></details>`};
 function langBar(){return `<div class="seg" role="group" aria-label="Language">${['az','ru','en'].map(l=>`<button type="button" data-act="lang" data-v="${l}" aria-pressed="${S.lang===l}">${l.toUpperCase()}</button>`).join('')}</div>`}
 
 function appView(){
@@ -304,6 +370,7 @@ function homeView(){
  const C=2*Math.PI*40,len=C*pct/100,plan=monthPlan(),tips=advice(plan),mpct=plan.target>0?Math.min(100,Math.round(plan.earn/plan.target*100)):0;
  return `<section class="card bales"><div class="bales-wrap"><div class="bales-art">${goal>0?bundlesSvg(weekEarn,goal,days):''}</div><div class="bales-text"><small>${esc(x.weekTitle)} · ${esc(x.daysLabel.replace('{n}',days))}</small>${goal>0?`<strong class="big">${money(weekEarn)}</strong><span class="muted">${esc(x.of)} ${money(goal*days)}</span><span class="muted tiny">${esc(x.baleHint)}</span>`:`<span class="muted">${esc(x.noBales)}</span>`}</div></div></section>
  <section class="card goal"><small>${esc(x.today)} · ${esc(x.dailyGoal)}</small><div class="goal-row"><div class="goal-ring"><svg class="ring goalring" viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="40"/><circle class="seg c1" cx="50" cy="50" r="40" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}"/></svg><span class="pct">${pct}%</span></div><div class="goal-text"><strong class="big">${money(earn)}</strong><span class="muted">${goal>0?`${esc(x.of)} ${money(goal)}`:esc(x.noGoal)}</span>${goal>0?`<span class="${done?'pos':'muted'}">${done?esc(x.reached):`${esc(x.remaining)}: ${money(left)}`}</span>`:''}</div></div><div class="two"><span class="pos">▲ ${esc(x.earned)} ${money(earn)}</span><span class="neg">▼ ${esc(x.spent)} ${money(spent)}</span><span>${esc(x.net)} <b>${money(earn-spent)}</b></span></div></section>
+ ${statsCard()}
  <section class="card"><h3>${esc(x.todayExpenses)}</h3><div class="tiles">${CATS.expense.map(c=>`<button class="tile${byCat[c]?' has':''}" data-act="quick" data-v="${c}"><span>${esc(catName(c))}</span><b>${byCat[c]?money(byCat[c]):'+'}</b></button>`).join('')}</div><small class="muted">${esc(x.tapCat)}</small></section>
  ${goal>0?`<section class="card"><small>${esc(x.monthTarget)}</small><div class="row between"><strong class="big2">${money(plan.target)}</strong><span class="muted">${mpct}%</span></div><progress max="100" value="${mpct}" class="${plan.earn>=plan.target?'done':''}"></progress><div class="two"><span>${esc(x.monthEarned)}: <b>${money(plan.earn)}</b></span><span>${esc(x.forecast)}: <b>${money(plan.forecast)}</b></span></div><small class="muted">${esc(x.monthTargetHint)}</small></section>`:''}
  <section class="card"><h3>${esc(x.monthTitle)}</h3><div class="two"><span class="pos">${esc(x.earned)} <b>${money(sum(mon,'sale'))}</b></span><span class="neg">${esc(x.spent)} <b>${money(sum(mon,'expense'))}</b></span></div></section>
@@ -334,7 +401,7 @@ function sessionView(){
 function settingsView(){
  const x=t();
  return `<form class="card form" data-act="goals"><h3>${esc(x.goalsTitle)}</h3><p class="muted">${esc(x.goalHelp)}</p><label>${esc(x.dailyTarget)}<input id="g-daily" inputmode="decimal" value="${S.goals.daily||''}"></label><label>${esc(x.workDays)}</label><div class="seg wide">${[1,2,3,4,5,6,7].map(n=>`<button type="button" data-act="days" data-v="${n}" aria-pressed="${S.goals.days===n}">${n}</button>`).join('')}</div><button class="btn primary" type="submit">${esc(x.save)}</button>${S.msg?`<p class="msg ok">${esc(S.msg)}</p>`:''}</form>
- <section class="card form"><h3>${esc(x.account)}</h3><p>${esc(S.nick)}${S.user?.email?` · <span class="muted">${esc(S.user.email)}</span>`:''}</p><div class="notice"><strong>${esc(x.supNoticeTitle)}</strong><p>${esc(x.supNotice)}</p></div>
+ <section class="card form"><h3>${esc(x.account)}</h3><p>${esc(S.nick)}${S.user?.email?` · <span class="muted">${esc(S.user.email)}</span>`:''}</p><div class="notice slim">${supMore()}</div>
  <h3>${esc(x.language)}</h3>${langBar()}<h3>${esc(x.currency)}</h3><div class="seg wide">${CURRENCIES.map(c=>`<button data-act="cur" data-v="${c}" aria-pressed="${S.cur===c}">${c}</button>`).join('')}</div>
  <label class="check"><input id="s-sound" type="checkbox" data-act="sound" ${S.sound?'checked':''}> ${esc(x.sound)}</label>
  <button class="btn ghost" data-act="export">${esc(x.export)}</button>${S.demo?'':`<button class="btn ghost" data-act="sync">${esc(x.syncNow)}</button>`}<button class="btn danger" data-act="logout">${esc(x.logout)}</button></section>`;
@@ -349,6 +416,7 @@ function detailView(){
  const x=t(),d=S.detail,cu=d.currency||'AZN',items=d.entries||[],ses=d.sessions||[],sel=d.sel;
  return `<button class="link" data-act="back">← ${esc(x.back)}</button><h3 class="h">@${esc(d.nickname)}</h3><section class="card"><div class="two"><span>${esc(x.kind.sale)}: <b>${money(sum(items,'sale'),cu)}</b></span><span>${esc(x.kind.expense)}: <b>${money(sum(items,'expense'),cu)}</b></span><span>${esc(x.kind.income)}: <b>${money(sum(items,'income'),cu)}</b></span></div></section>
  ${d.live?`<section class="card"><h3><span class="live">● ${esc(x.liveNow)}</span></h3>${mapBox([],[],null,d.live)}<small class="muted">${esc(x.liveAt)}: ${new Date(d.live.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></section>`:''}
+ ${(d.days||[]).length?`<section class="card"><h3>${esc(x.daysTitle)}</h3><ul class="rows">${d.days.map(r=>{const km=Number(r.km),h=Number(r.hours),earn=sum(items.filter(e=>e.date===r.day),'sale');return `<li class="entry"><div><strong>${esc(dateLabel(r.day))}</strong><small>${km.toFixed(1)} ${esc(x.km)} · ${h.toFixed(1)} ${esc(x.hours)}</small></div><b>${km>0&&earn>0?`${money(earn/km,cu)} / ${esc(x.km)}`:money(earn,cu)}</b></li>`}).join('')}</ul></section>`:''}
  ${ses.length?`<section class="card"><h3>${esc(x.sessions)}</h3><ul class="rows">${ses.map(s=>`<li class="entry"><button class="sess" data-act="asession" data-id="${s.id}"><div><strong>${esc(dateLabel(localDate(s.started_at)))}</strong><small>${fmtDur(s.duration_s)} ${esc(x.hours)}</small></div><b>${kmOf(s).toFixed(1)} ${esc(x.km)}</b></button></li>`).join('')}</ul></section>`:''}
  ${sel?`<section class="card"><h3>${esc(x.myMap)} · ${esc(dateLabel(localDate(sel.s.started_at)))}</h3>${sel.points.length?mapBox(sel.points,findStops(sel.points)):`<p class="muted">${esc(x.noRoute)}</p>`}${sel.points.length?stopsHtml(findStops(sel.points)):''}</section>`:''}
  <section class="card"><h3>${esc(x.entries)}</h3>${items.length?`<ul class="rows">${items.map(e=>rowHtml(e,false,cu)).join('')}</ul>`:`<p class="muted">${esc(x.empty)}</p>`}</section>`;
@@ -357,8 +425,16 @@ function sheetView(){
  const x=t(),sh=S.sheet;
  if(sh.type==='nick')return `<div class="sheet-bg"><form class="sheet" data-act="nick"><h3>${esc(x.askNick)}</h3><label><input id="n-nick" maxlength="20" autocomplete="username"><small>${esc(x.nickRule)}</small></label>${S.msg?`<p class="msg">${esc(S.msg)}</p>`:''}<button class="btn primary" type="submit">${esc(x.save)}</button></form></div>`;
  if(sh.type==='gps')return `<div class="sheet-bg" data-act="sheet-bg"><div class="sheet"><h3>${esc(x.gpsTitle)}</h3><div class="notice"><p>${esc(x.gpsText)}</p></div><div class="row"><button class="btn ghost" data-act="sheet-close">${esc(x.cancel)}</button><button class="btn primary" data-act="gps-allow">${esc(x.gpsAllow)}</button></div></div></div>`;
+ if(sh.type==='day')return `<div class="sheet-bg" data-act="sheet-bg"><form class="sheet" id="day-form" data-act="day" novalidate><h3>${esc(x.dayTitle)}</h3><p class="muted">${esc(x.dayHint)}</p>
+ <label>${esc(x.dayEarned)}<input id="d-earn" inputmode="decimal" autocomplete="off" value="${esc(sh.earn)}"></label>
+ <div class="row"><label>${esc(x.dayKm)}<input id="d-km" inputmode="decimal" autocomplete="off" value="${esc(sh.km)}"></label><label>${esc(x.dayHours)}<input id="d-h" inputmode="decimal" autocomplete="off" value="${esc(sh.hours)}"></label></div>
+ <label>${esc(x.daySpent)}<input id="d-spent" inputmode="decimal" autocomplete="off" value="${esc(sh.spent)}"></label>
+ <label>${esc(x.date)}<input id="d-date" type="date" value="${esc(sh.date)}"></label>
+ <div id="day-prev">${dayPrev(sh)}</div><p class="muted" id="day-ex"${live().some(e=>e.date===sh.date&&e.category==='daily')?'':' hidden'}>${esc(x.dayReplace)}</p>
+ <div class="row"><button type="button" class="btn ghost" data-act="sheet-close">${esc(x.cancel)}</button><button class="btn primary" type="submit">${esc(x.save)}</button></div>
+ <button type="button" class="link" data-act="to-single">${esc(x.singleEntry)}</button></form></div>`;
  const kind=sh.kind,cats=CATS[kind];
- return `<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true"><div class="seg wide">${['sale','expense','income'].map(k=>`<button data-act="kind" data-v="${k}" aria-pressed="${kind===k}">${esc(x.kind[k])}</button>`).join('')}</div><div class="amount" id="amt" aria-live="polite">${esc(sh.amount||'0')}</div>
+ return `<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true"><button type="button" class="link" data-act="to-day">${esc(x.dayTitle)} →</button><div class="seg wide">${['sale','expense','income'].map(k=>`<button data-act="kind" data-v="${k}" aria-pressed="${kind===k}">${esc(x.kind[k])}</button>`).join('')}</div><div class="amount" id="amt" aria-live="polite">${esc(sh.amount||'0')}</div>
  <div class="chips">${cats.map(c=>`<button data-act="cat" data-v="${c}" aria-pressed="${sh.category===c}">${esc(catName(c))}</button>`).join('')}</div>
  <div class="keys">${['1','2','3','4','5','6','7','8','9','.','0','⌫'].map(k=>`<button data-act="key" data-v="${k}">${k}</button>`).join('')}</div>
  ${sh.permCam?`<div class="notice"><strong>${esc(x.camTitle)}</strong><p>${esc(x.camText)}</p><button class="btn primary" data-act="cam-allow">${esc(x.camAllow)}</button></div>`:`<div class="row photo-row"><button class="btn ghost" data-act="photo-pick" data-v="cam">📷 ${esc(x.takePhoto)}</button><button class="btn ghost" data-act="photo-pick" data-v="gal">🖼 ${esc(x.pickPhoto)}</button></div>${sh.photoUrl?`<div class="thumb"><img src="${sh.photoUrl}" alt="${esc(x.receipt)}"><button class="x" data-act="photo-rm" aria-label="${esc(x.removePhoto)}">×</button></div>`:''}`}
@@ -378,14 +454,15 @@ async function openAdminSession(id){
 }
 async function openStaff(id){
  const row=(S.overview||[]).find(r=>(r.user_id||r.nickname)===id);if(!row)return;
- if(S.demo){S.detail={nickname:row.nickname,currency:row.currency,entries:[],sessions:S.sessions.map(q=>({...q})),live:row.live_at?{lat:40.4093,lng:49.8671,t:Date.now()}:null};render();return}
- const [en,se,lv]=await Promise.all([sb.from('bt_entries').select('id,kind,amount,category,note,entry_date,created_at,photo_path').eq('user_id',row.user_id).is('deleted_at',null).order('entry_date',{ascending:false}).limit(300),sb.from('bt_sessions').select('id,started_at,ended_at,distance_m,duration_s').eq('user_id',row.user_id).order('started_at',{ascending:false}).limit(30),sb.from('bt_live').select('lat,lng,updated_at').eq('user_id',row.user_id).maybeSingle()]);
+ if(S.demo){S.detail={nickname:row.nickname,currency:row.currency,entries:[],days:Object.entries(S.days).map(([day,v])=>({day,km:v.km,hours:v.hours})),sessions:S.sessions.map(q=>({...q})),live:row.live_at?{lat:40.4093,lng:49.8671,t:Date.now()}:null};render();return}
+ const [en,se,lv,dy]=await Promise.all([sb.from('bt_entries').select('id,kind,amount,category,note,entry_date,created_at,photo_path').eq('user_id',row.user_id).is('deleted_at',null).order('entry_date',{ascending:false}).limit(300),sb.from('bt_sessions').select('id,started_at,ended_at,distance_m,duration_s').eq('user_id',row.user_id).order('started_at',{ascending:false}).limit(30),sb.from('bt_live').select('lat,lng,updated_at').eq('user_id',row.user_id).maybeSingle(),sb.from('bt_days').select('day,km,hours').eq('user_id',row.user_id).order('day',{ascending:false}).limit(30)]);
  const lvOk=lv.data&&Date.now()-new Date(lv.data.updated_at)<10*60*1000;
- S.detail={nickname:row.nickname,currency:row.currency,live:lvOk?{lat:lv.data.lat,lng:lv.data.lng,t:new Date(lv.data.updated_at).getTime()}:null,entries:(en.data||[]).map(r=>({id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,photo_path:r.photo_path})),sessions:se.data||[]};render();
+ S.detail={nickname:row.nickname,currency:row.currency,live:lvOk?{lat:lv.data.lat,lng:lv.data.lng,t:new Date(lv.data.updated_at).getTime()}:null,entries:(en.data||[]).map(r=>({id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,photo_path:r.photo_path})),sessions:se.data||[],days:dy.data||[]};render();
 }
 
 /* ---------- render + events ---------- */
 function render(){
+ if(S.sheet&&S.sheet.type==='day'&&$('#day-form'))return;
  const root=$('#app'),open=$('#apk')?.open;
  document.documentElement.lang=S.lang;document.title=t().app;
  root.innerHTML=!S.user&&!S.demo?authView():appView();
@@ -412,10 +489,13 @@ document.addEventListener('submit',async e=>{
  const f=e.target.closest('[data-act]');if(!f)return;e.preventDefault();
  const act=f.dataset.act;
  if(act==='auth')return submitAuth();
+ if(act==='day')return saveDay();
  if(act==='goals'){const v=Math.max(0,Number(String($('#g-daily').value).replace(',','.'))||0);S.goals.daily=v;S.dirty.goals=true;persist();S.msg=t().goalSaved;render();S.msg='';sync();return}
  if(act==='nick'){const nick=$('#n-nick').value.trim();if(!NICK.test(nick)){S.msg=t().nickRule;return render()}const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur});if(r.error){S.msg=r.error.code==='23505'?t().nickTaken:t().netErr;return render()}S.nick=nick;S.sheet=null;S.msg='';const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data;render();say('welcome');sync()}
 });
+document.addEventListener('input',e=>{if(e.target.closest('#day-form'))syncDayForm()});
 document.addEventListener('change',async e=>{
+ if(e.target.id==='d-date')return syncDayForm();
  const i=e.target;if(i.id!=='in-cam'&&i.id!=='in-gal')return;const file=i.files&&i.files[0];if(!file||!S.sheet)return;
  keepSheet();try{const blob=await compress(file);if(S.sheet.photoUrl)URL.revokeObjectURL(S.sheet.photoUrl);S.sheet.photo=blob;S.sheet.photoUrl=URL.createObjectURL(blob)}catch{alert(t().photoErr)}render();
 });
@@ -426,7 +506,9 @@ document.addEventListener('click',e=>{
  else if(a==='demo')startDemo(new URLSearchParams(location.search).get('demo')==='admin');
  else if(a==='apk')openApk();
  else if(a==='apk-close')$('#apk').close();
- else if(a==='tab'){if(v==='add'){openSheet()}else{S.tab=v;S.detail=null;S.workDetail=null;S.msg='';if(v==='watch'&&!S.demo)S.overview=null}render()}
+ else if(a==='tab'){if(v==='add'){openDay()}else{S.tab=v;S.detail=null;S.workDetail=null;S.msg='';if(v==='watch'&&!S.demo)S.overview=null}render()}
+ else if(a==='to-single'){S.sheet=null;openSheet();render()}
+ else if(a==='to-day'){keepSheet();openDay();render()}
  else if(a==='quick'){openSheet('expense',v);render()}
  else if(a==='filter'){S.filter=v;render()}
  else if(a==='cur'){if(v!==S.cur&&live().length&&!confirm(t().currencyNote))return;S.cur=v;saveSettings();if(S.user&&sb)sb.from('bt_profiles').update({currency:v}).eq('user_id',S.user.id).then(()=>{});render()}

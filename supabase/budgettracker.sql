@@ -119,3 +119,16 @@ grant all on public.bt_profiles, public.bt_entries, public.bt_budgets, public.bt
 -- Currency, live position and admin route access (migration budgettracker_currency_live_routes):
 --   bt_profiles.currency (AZN, PLN, EUR, USD, RUB, TRY), bt_live (current position during a work session, owner write, admin read),
 --   policy bt_routes_admin_read, and bt_overview() now also returns currency, live_lat, live_lng, live_at.
+
+-- Migration budgettracker_days_benchmarks (applied): daily km/hours per courier, overview using them,
+-- and anonymous 30-day averages (bt_benchmarks, only returned when >= 3 couriers share the currency).
+create table if not exists public.bt_days (
+  user_id uuid not null references auth.users(id) on delete cascade default auth.uid(),
+  day date not null,
+  km numeric(8,1) not null default 0 check (km >= 0 and km < 5000),
+  hours numeric(4,1) not null default 0 check (hours >= 0 and hours <= 24),
+  updated_at timestamptz not null default now(),
+  primary key (user_id, day)
+);
+-- RLS: owner read/insert/update, admins read; grants select/insert/update to authenticated.
+-- bt_overview() now also returns today_km/today_hours (day total, else GPS sessions); bt_benchmarks() is new.
