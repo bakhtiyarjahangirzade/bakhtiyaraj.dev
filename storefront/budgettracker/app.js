@@ -382,8 +382,10 @@ function advice(plan){
 
 /* ---------- clay-style 3D money: one bill slab per working day (a stack per week) and a coin stack for today's goal; solid = earned, dashed = still to earn ---------- */
 function bundlesSvg(units,total,pct){
- const perCol=total<=6?total:Math.ceil(total/3),A=46,B=24,H=7.5,P=10,GAP=4,cols=Math.ceil(total/perCol),lv=Math.min(perCol,total),M=16,CR=17,CT=6,CN=10;
- const x0=M+B+CR*2+8,stackH=lv*P,y0=M+stackH,vw=x0+(cols-1)*(A+GAP)+A+M,vh=y0+(cols-1)*(A+GAP)/2+(A+B)/2+M+CR;
+ const n=total<=6?1:total<=14?2:total<=20?3:4,perCol=Math.ceil(total/n),A=42,B=30,H=7.5,P=10,G=1.5,M=14,CR=17,CT=6,CN=10,lv=perCol;
+ const slots=[[0,0],[1,0],[0,1],[1,1]].slice(0,n),off=slots.map(([i,j])=>[i*(A+G)-j*(B+G),i*(A+G)/2+j*(B+G)/2]);
+ const minX=Math.min(...off.map(o=>o[0]))-B,maxX=Math.max(...off.map(o=>o[0]))+A,maxY=Math.max(...off.map(o=>o[1]));
+ const x0=M+CR*2+8-minX,stackH=lv*P,y0=M+stackH,vw=x0+maxX+M,vh=y0+maxY+(A+B)/2+M+CR;
  const uv=(tx,ty,u,v)=>`${(tx+u*A-v*B).toFixed(1)},${(ty+u*A/2+v*B/2).toFixed(1)}`;
  const slab=(tx,ty,h,ghost,art)=>{
   const g=ghost?' ghost':'',Lv=`${tx-B},${ty+B/2}`,Bt=`${tx+A-B},${ty+(A+B)/2}`,Rv=`${tx+A},${ty+A/2}`,Tp=`${tx},${ty}`;
@@ -393,17 +395,17 @@ function bundlesSvg(units,total,pct){
  };
  const coin=(cx,cy,ghost)=>{const g=ghost?' ghost':'';return `<path class="cs${g}" d="M${cx-CR},${cy}v${CT}a${CR},${CR/2} 0 0 0 ${2*CR},0v${-CT}z"/><ellipse class="ct${g}" cx="${cx}" cy="${cy}" rx="${CR}" ry="${CR/2}"/>${ghost?'':`<ellipse class="ci" cx="${cx}" cy="${cy}" rx="${CR*.66}" ry="${CR*.33}"/>`}`};
  let out=`<defs><linearGradient id="gBg" x1="0" y1="0" x2="0" y2="1"><stop class="b1" offset="0"/><stop class="b2" offset="1"/></linearGradient><linearGradient id="gSt" x1="0" y1="0" x2="1" y2="1"><stop class="s1" offset="0"/><stop class="s2" offset="1"/></linearGradient><linearGradient id="gCt" x1="0" y1="0" x2="1" y2="1"><stop class="c1" offset="0"/><stop class="c2" offset="1"/></linearGradient></defs><rect class="bgp" x="0" y="0" width="${vw}" height="${vh}" rx="18"/>`;
- for(let c=0;c<cols;c++){
-  const tx=x0+c*(A+GAP),ty0=y0+c*(A+GAP)/2-H;
+ slots.forEach((sl,c)=>{
+  const tx=x0+off[c][0],ty0=y0+off[c][1]-H;
   out+=`<polygon class="shadow" points="${tx},${ty0+H+2} ${tx+A},${ty0+H+A/2+2} ${tx+A-B},${ty0+H+(A+B)/2+2} ${tx-B},${ty0+H+B/2+2}"/>`;
   for(let l=0;l<perCol;l++){
    const i=c*perCol+l;if(i>=total)break;
    const f=Math.max(0,Math.min(1,units-i)),ty=ty0-l*P,last=l===perCol-1||i+1>=total||units-(i+1)<=.001;
    if(f>=.999)out+=slab(tx,ty,H,false,last);else if(f<=.001)out+=slab(tx,ty,H,true,false);else out+=slab(tx,ty,H*f,false,false)+slab(tx,ty-H*f,H*(1-f),true,false);
   }
- }
- const n=Math.max(0,Math.min(CN,Math.round(pct/10))),ccx=M+CR+2,base=vh-M-CR/2-2;
- for(let k=0;k<CN;k++)out+=coin(ccx,base-k*CT,k>=n);
+ });
+ const nc=Math.max(0,Math.min(CN,Math.round(pct/10))),ccx=M+CR+2,base=vh-M-CR/2-2;
+ for(let k=0;k<CN;k++)out+=coin(ccx,base-k*CT,k>=nc);
  for(const [dx,cnt] of [[CR*2.5,3],[vw-M-CR-ccx,2]])for(let k=0;k<cnt;k++)out+=coin(ccx+dx,base+2-k*CT,false);
  return `<svg class="bundles" viewBox="0 0 ${vw.toFixed(0)} ${vh.toFixed(0)}" role="img" aria-label="${esc(t().monthBales.replace('{n}',total))}">${out}</svg>`;
 }
