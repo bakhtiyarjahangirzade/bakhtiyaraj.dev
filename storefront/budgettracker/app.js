@@ -358,7 +358,7 @@ const stopsHtml=(stops)=>{const x=t();return `<h3>${esc(x.stopsTitle)}</h3>${sto
 function monthPlan(){
  const n=new Date(),dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate(),el=n.getDate(),target=S.goals.daily*S.goals.days*dim/7;
  const earn=sum(live().filter(e=>inMonth(e,ym(today()))),'sale'),left=dim-el,daysLeft=Math.max(1,Math.round(left*S.goals.days/7));
- return {target,earn,forecast:el>0?earn/el*dim:0,need:target>earn&&left>0?(target-earn)/daysLeft:0};
+ return {target,earn,forecast:el>0?earn/el*dim:0,need:target>earn&&left>0?(target-earn)/daysLeft:0,total:Math.max(1,Math.round(S.goals.days*dim/7)),units:S.goals.daily>0?earn/S.goals.daily:0};
 }
 function advice(plan){
  const x=t(),m=ym(today()),mon=live().filter(e=>inMonth(e,m)),earn=sum(mon,'sale'),exp=sum(mon,'expense'),by={};
@@ -380,20 +380,29 @@ function advice(plan){
  return tips.slice(0,4);
 }
 
-/* ---------- 3D cash bundles: one bundle per working day, solid = earned, transparent = still to earn ---------- */
-function bundlesSvg(earn,daily,days){
- const W=62,D=31,H=18,n=Math.max(1,Math.min(7,days)),cx=W+8,base=n*H+2*D+14,vw=2*W+16,vh=base+8,units=daily>0?earn/daily:0;
- const block=(yb,h,ghost)=>{
-  const ty=yb-h-2*D,fl=`${cx-W},${ty+D}`,fr=`${cx+W},${ty+D}`,tp=`${cx},${ty}`,fb=`${cx},${ty+2*D}`,cls=ghost?' ghost':'';
-  const topF=`<polygon class="top${cls}" points="${tp} ${fr} ${fb} ${fl}"/>`,left=`<polygon class="left${cls}" points="${fl} ${fb} ${cx},${yb} ${cx-W},${yb-D}"/>`,right=`<polygon class="right${cls}" points="${fb} ${fr} ${cx+W},${yb-D} ${cx},${yb}"/>`;
-  if(ghost||h<6)return topF+left+right;
-  const slope=D/W,x1=cx-W*.64,x2=cx-W*.36,y1=ty+D+(x1-(cx-W))*slope,y2=ty+D+(x2-(cx-W))*slope,rx1=cx+W*.36,rx2=cx+W*.64,ry1=ty+2*D-(rx1-cx)*slope,ry2=ty+2*D-(rx2-cx)*slope;
-  return topF+left+right+`<polygon class="band" points="${x1},${y1} ${x2},${y2} ${x2},${y2+h} ${x1},${y1+h}"/><polygon class="band" points="${rx1},${ry1} ${rx2},${ry2} ${rx2},${ry2+h} ${rx1},${ry1+h}"/>`;
+/* ---------- 3D cash bundles: one bundle per working day of the month, stacked by week; solid = earned, dashed = still to earn ---------- */
+function bundlesSvg(units,total,perCol){
+ const W=27,D=13.5,H=12,pad=8,cols=Math.ceil(total/perCol),lv=Math.min(perCol,total),y00=pad+lv*H+2*D,vw=(cols+1)*W+2*pad,vh=y00+(cols-1)*D+pad;
+ const block=(cx,yb,h,ghost)=>{
+  const ty=yb-h-2*D,fl=`${cx-W},${ty+D}`,fr=`${cx+W},${ty+D}`,tp=`${cx},${ty}`,fb=`${cx},${ty+2*D}`,g=ghost?' ghost':'';
+  let o=`<polygon class="left${g}" points="${fl} ${fb} ${cx},${yb} ${cx-W},${yb-D}"/><polygon class="right${g}" points="${fb} ${fr} ${cx+W},${yb-D} ${cx},${yb}"/><polygon class="top${g}" points="${tp} ${fr} ${fb} ${fl}"/>`;
+  if(ghost||h<7)return o;
+  const k=D/W,x1=cx-W*.62,x2=cx-W*.38,y1=ty+D+(x1-(cx-W))*k,y2=ty+D+(x2-(cx-W))*k,r1=cx+W*.38,r2=cx+W*.62,s1=ty+2*D-(r1-cx)*k,s2=ty+2*D-(r2-cx)*k;
+  o+=`<polygon class="band" points="${x1},${y1} ${x2},${y2} ${x2},${y2+h} ${x1},${y1+h}"/><polygon class="band" points="${r1},${s1} ${r2},${s2} ${r2},${s2+h} ${r1},${s1+h}"/>`;
+  for(const f of [.34,.67])o+=`<line class="edge" x1="${cx-W}" y1="${ty+D+h*f}" x2="${cx}" y2="${ty+2*D+h*f}"/><line class="edge" x1="${cx}" y1="${ty+2*D+h*f}" x2="${cx+W}" y2="${ty+D+h*f}"/>`;
+  return o;
  };
- let out='';
- for(let i=0;i<n;i++){const f=Math.max(0,Math.min(1,units-i)),yb=base-i*H;
-  if(f>=.999)out+=block(yb,H,false);else if(f<=.001)out+=block(yb,H,true);else out+=block(yb,H*f,false)+block(yb-H*f,H*(1-f),true)}
- return `<svg class="bundles" viewBox="0 0 ${vw} ${vh}" role="img" aria-label="${esc(t().weekTitle)}">${out}</svg>`;
+ let out=`<defs><linearGradient id="gTop" x1="0" y1="0" x2="1" y2="1"><stop class="t1" offset="0"/><stop class="t2" offset="1"/></linearGradient><linearGradient id="gLeft" x1="0" y1="0" x2="0" y2="1"><stop class="l1" offset="0"/><stop class="l2" offset="1"/></linearGradient><linearGradient id="gRight" x1="0" y1="0" x2="0" y2="1"><stop class="r1" offset="0"/><stop class="r2" offset="1"/></linearGradient></defs>`;
+ for(let c=0;c<cols;c++){
+  const cx=pad+W+c*W,yb0=y00+c*D;
+  out+=`<polygon class="shadow" points="${cx},${yb0-2*D+4} ${cx+W},${yb0-D+4} ${cx},${yb0+4} ${cx-W},${yb0-D+4}"/>`;
+  for(let l=0;l<perCol;l++){
+   const i=c*perCol+l;if(i>=total)break;
+   const f=Math.max(0,Math.min(1,units-i)),yb=yb0-l*H;
+   if(f>=.999)out+=block(cx,yb,H,false);else if(f<=.001)out+=block(cx,yb,H,true);else out+=block(cx,yb,H*f,false)+block(cx,yb-H*f,H*(1-f),true);
+  }
+ }
+ return `<svg class="bundles" viewBox="0 0 ${vw} ${vh}" role="img" aria-label="${esc(t().monthBales.replace('{n}',total))}">${out}</svg>`;
 }
 
 /* ---------- views ---------- */
@@ -427,11 +436,11 @@ function homeView(){
  const weekEarn=sum(wk,'sale'),byCat={};day.filter(e=>e.kind==='expense').forEach(e=>byCat[e.category]=(byCat[e.category]||0)+e.amount);
  const recent=live().sort((a,b)=>b.date.localeCompare(a.date)||b.created_at.localeCompare(a.created_at)).slice(0,5);
  const C=2*Math.PI*40,len=C*pct/100,plan=monthPlan(),tips=advice(plan),mpct=plan.target>0?Math.min(100,Math.round(plan.earn/plan.target*100)):0;
- return `<section class="card bales"><div class="bales-wrap"><div class="bales-art">${goal>0?bundlesSvg(weekEarn,goal,days):''}</div><div class="bales-text"><small>${esc(x.weekTitle)} · ${esc(x.daysLabel.replace('{n}',days))}</small>${goal>0?`<strong class="big">${money(weekEarn)}</strong><span class="muted">${esc(x.of)} ${money(goal*days)}</span><span class="muted tiny">${esc(x.baleHint)}</span>`:`<span class="muted">${esc(x.noBales)}</span>`}</div></div></section>
+ return `<section class="card bales"><div class="bales-wrap"><div class="bales-art">${goal>0?bundlesSvg(plan.units,plan.total,Math.max(days,4)):''}</div><div class="bales-text"><small>${esc(x.monthBales.replace('{n}',plan.total))}</small>${goal>0?`<strong class="big">${money(plan.earn)}</strong><span class="muted">${esc(x.of)} ${money(plan.target)} · ${mpct}%</span><span class="muted">${esc(x.forecast)}: <b>${money(plan.forecast)}</b></span><span class="muted tiny">${esc(x.baleHint)}</span>`:`<span class="muted">${esc(x.noBales)}</span>`}</div></div></section>
  <section class="card goal"><small>${esc(x.today)} · ${esc(x.dailyGoal)}</small><div class="goal-row"><div class="goal-ring"><svg class="ring goalring" viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="40"/><circle class="seg c1" cx="50" cy="50" r="40" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}"/></svg><span class="pct">${pct}%</span></div><div class="goal-text"><strong class="big">${money(earn)}</strong><span class="muted">${goal>0?`${esc(x.of)} ${money(goal)}`:esc(x.noGoal)}</span>${goal>0?`<span class="${done?'pos':'muted'}">${done?esc(x.reached):`${esc(x.remaining)}: ${money(left)}`}</span>`:''}</div></div><div class="two"><span class="pos">▲ ${esc(x.earned)} ${money(earn)}</span><span class="neg">▼ ${esc(x.spent)} ${money(spent)}</span><span>${esc(x.net)} <b>${money(earn-spent)}</b></span></div></section>
  ${statsCard()}
  <section class="card"><h3>${esc(x.todayExpenses)}</h3><div class="tiles">${CATS.expense.map(c=>`<button class="tile${byCat[c]?' has':''}" data-act="quick" data-v="${c}"><span>${esc(catName(c))}</span><b>${byCat[c]?money(byCat[c]):'+'}</b></button>`).join('')}</div><small class="muted">${esc(x.tapCat)}</small></section>
- ${goal>0?`<section class="card"><small>${esc(x.monthTarget)}</small><div class="row between"><strong class="big2">${money(plan.target)}</strong><span class="muted">${mpct}%</span></div><progress max="100" value="${mpct}" class="${plan.earn>=plan.target?'done':''}"></progress><div class="two"><span>${esc(x.monthEarned)}: <b>${money(plan.earn)}</b></span><span>${esc(x.forecast)}: <b>${money(plan.forecast)}</b></span></div><small class="muted">${esc(x.monthTargetHint)}</small></section>`:''}
+
  <section class="card"><h3>${esc(x.monthTitle)}</h3><div class="two"><span class="pos">${esc(x.earned)} <b>${money(sum(mon,'sale'))}</b></span><span class="neg">${esc(x.spent)} <b>${money(sum(mon,'expense'))}</b></span></div></section>
  <section class="card"><h3>${esc(x.adviceTitle)}</h3>${tips.length?`<ul class="tips">${tips.map(q=>`<li>${esc(q)}</li>`).join('')}</ul>`:`<p class="muted">${esc(x.adviceNone)}</p>`}<small class="muted">${esc(x.adviceNote)}</small></section>
  <section class="card"><h3>${esc(x.recent)}</h3>${recent.length?`<ul class="rows">${recent.map(e=>rowHtml(e,true)).join('')}</ul>`:`<p class="muted">${esc(x.empty)}</p>`}</section>`;

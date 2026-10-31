@@ -95,3 +95,11 @@ progress.done::-webkit-progress-value{background:var(--pos)}progress.done::-moz-
 .sess{display:flex;align-items:center;gap:12px}
 .legend{display:flex;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted);margin:0 0 10px}.legend span{width:10px;height:10px;border-radius:50%;margin:0 5px 0 0}.legend span:not(:first-child){margin-left:12px}
 .legend .l0{background:#e5433a}.legend .l1{background:#0a84ff}.legend .l2{background:#1f9d55}
+
+/* monthly bundles: gradients, bill edges, soft ground shadow */
+.bales-art{width:176px}
+.bundles .top{fill:url(#gTop)}.bundles .left{fill:url(#gLeft)}.bundles .right{fill:url(#gRight)}
+.bundles .t1{stop-color:#e4fbd9}.bundles .t2{stop-color:#a9e49c}.bundles .l1{stop-color:#6cc67a}.bundles .l2{stop-color:#3f9a50}.bundles .r1{stop-color:#4aa65a}.bundles .r2{stop-color:#2c7a3d}
+.bundles .band{fill:#f6fdf2;opacity:.92}.bundles .edge{stroke:#0b3d1c55;stroke-width:.5;fill:none}
+.bundles .shadow{fill:#000;opacity:.16;stroke:none}.bundles .ghost{fill:currentColor!important;fill-opacity:.06}
+.bales-wrap{flex-direction:column;align-items:stretch;gap:10px}.bales-art{width:100%;max-width:300px;margin:0 auto}.bales-text{overflow-wrap:anywhere}
