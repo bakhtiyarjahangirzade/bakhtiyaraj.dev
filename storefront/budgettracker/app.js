@@ -380,29 +380,32 @@ function advice(plan){
  return tips.slice(0,4);
 }
 
-/* ---------- 3D cash bundles: one bundle per working day of the month, stacked by week; solid = earned, dashed = still to earn ---------- */
-function bundlesSvg(units,total,perCol){
- const W=27,D=13.5,H=12,pad=8,cols=Math.ceil(total/perCol),lv=Math.min(perCol,total),y00=pad+lv*H+2*D,vw=(cols+1)*W+2*pad,vh=y00+(cols-1)*D+pad;
- const block=(cx,yb,h,ghost)=>{
-  const ty=yb-h-2*D,fl=`${cx-W},${ty+D}`,fr=`${cx+W},${ty+D}`,tp=`${cx},${ty}`,fb=`${cx},${ty+2*D}`,g=ghost?' ghost':'';
-  let o=`<polygon class="left${g}" points="${fl} ${fb} ${cx},${yb} ${cx-W},${yb-D}"/><polygon class="right${g}" points="${fb} ${fr} ${cx+W},${yb-D} ${cx},${yb}"/><polygon class="top${g}" points="${tp} ${fr} ${fb} ${fl}"/>`;
-  if(ghost||h<7)return o;
-  const k=D/W,x1=cx-W*.62,x2=cx-W*.38,y1=ty+D+(x1-(cx-W))*k,y2=ty+D+(x2-(cx-W))*k,r1=cx+W*.38,r2=cx+W*.62,s1=ty+2*D-(r1-cx)*k,s2=ty+2*D-(r2-cx)*k;
-  o+=`<polygon class="band" points="${x1},${y1} ${x2},${y2} ${x2},${y2+h} ${x1},${y1+h}"/><polygon class="band" points="${r1},${s1} ${r2},${s2} ${r2},${s2+h} ${r1},${s1+h}"/>`;
-  for(const f of [.34,.67])o+=`<line class="edge" x1="${cx-W}" y1="${ty+D+h*f}" x2="${cx}" y2="${ty+2*D+h*f}"/><line class="edge" x1="${cx}" y1="${ty+2*D+h*f}" x2="${cx+W}" y2="${ty+D+h*f}"/>`;
+/* ---------- clay-style 3D money: one bill slab per working day (a stack per week) and a coin stack for today's goal; solid = earned, dashed = still to earn ---------- */
+function bundlesSvg(units,total,pct){
+ const perCol=total<=6?total:Math.ceil(total/3),A=46,B=24,H=7.5,P=10,GAP=4,cols=Math.ceil(total/perCol),lv=Math.min(perCol,total),M=16,CR=17,CT=6,CN=10;
+ const x0=M+B+CR*2+8,stackH=lv*P,y0=M+stackH,vw=x0+(cols-1)*(A+GAP)+A+M,vh=y0+(cols-1)*(A+GAP)/2+(A+B)/2+M+CR;
+ const uv=(tx,ty,u,v)=>`${(tx+u*A-v*B).toFixed(1)},${(ty+u*A/2+v*B/2).toFixed(1)}`;
+ const slab=(tx,ty,h,ghost,art)=>{
+  const g=ghost?' ghost':'',Lv=`${tx-B},${ty+B/2}`,Bt=`${tx+A-B},${ty+(A+B)/2}`,Rv=`${tx+A},${ty+A/2}`,Tp=`${tx},${ty}`;
+  let o=`<polygon class="sl${g}" points="${Lv} ${Bt} ${tx+A-B},${ty+(A+B)/2+h} ${tx-B},${ty+B/2+h}"/><polygon class="sr${g}" points="${Bt} ${Rv} ${tx+A},${ty+A/2+h} ${tx+A-B},${ty+(A+B)/2+h}"/><polygon class="st${g}" points="${Tp} ${Rv} ${Bt} ${Lv}"/>`;
+  if(art&&!ghost)o+=`<polygon class="bill" points="${uv(tx,ty,.07,.12)} ${uv(tx,ty,.93,.12)} ${uv(tx,ty,.93,.88)} ${uv(tx,ty,.07,.88)}"/><circle class="oval" cx=".5" cy=".5" r=".2" transform="matrix(${A},${A/2},${-B},${B/2},${tx},${ty})"/><circle class="oval" cx=".2" cy=".5" r=".06" transform="matrix(${A},${A/2},${-B},${B/2},${tx},${ty})"/><circle class="oval" cx=".8" cy=".5" r=".06" transform="matrix(${A},${A/2},${-B},${B/2},${tx},${ty})"/>`;
   return o;
  };
- let out=`<defs><linearGradient id="gTop" x1="0" y1="0" x2="1" y2="1"><stop class="t1" offset="0"/><stop class="t2" offset="1"/></linearGradient><linearGradient id="gLeft" x1="0" y1="0" x2="0" y2="1"><stop class="l1" offset="0"/><stop class="l2" offset="1"/></linearGradient><linearGradient id="gRight" x1="0" y1="0" x2="0" y2="1"><stop class="r1" offset="0"/><stop class="r2" offset="1"/></linearGradient></defs>`;
+ const coin=(cx,cy,ghost)=>{const g=ghost?' ghost':'';return `<path class="cs${g}" d="M${cx-CR},${cy}v${CT}a${CR},${CR/2} 0 0 0 ${2*CR},0v${-CT}z"/><ellipse class="ct${g}" cx="${cx}" cy="${cy}" rx="${CR}" ry="${CR/2}"/>${ghost?'':`<ellipse class="ci" cx="${cx}" cy="${cy}" rx="${CR*.66}" ry="${CR*.33}"/>`}`};
+ let out=`<defs><linearGradient id="gBg" x1="0" y1="0" x2="0" y2="1"><stop class="b1" offset="0"/><stop class="b2" offset="1"/></linearGradient><linearGradient id="gSt" x1="0" y1="0" x2="1" y2="1"><stop class="s1" offset="0"/><stop class="s2" offset="1"/></linearGradient><linearGradient id="gCt" x1="0" y1="0" x2="1" y2="1"><stop class="c1" offset="0"/><stop class="c2" offset="1"/></linearGradient></defs><rect class="bgp" x="0" y="0" width="${vw}" height="${vh}" rx="18"/>`;
  for(let c=0;c<cols;c++){
-  const cx=pad+W+c*W,yb0=y00+c*D;
-  out+=`<polygon class="shadow" points="${cx},${yb0-2*D+4} ${cx+W},${yb0-D+4} ${cx},${yb0+4} ${cx-W},${yb0-D+4}"/>`;
+  const tx=x0+c*(A+GAP),ty0=y0+c*(A+GAP)/2-H;
+  out+=`<polygon class="shadow" points="${tx},${ty0+H+2} ${tx+A},${ty0+H+A/2+2} ${tx+A-B},${ty0+H+(A+B)/2+2} ${tx-B},${ty0+H+B/2+2}"/>`;
   for(let l=0;l<perCol;l++){
    const i=c*perCol+l;if(i>=total)break;
-   const f=Math.max(0,Math.min(1,units-i)),yb=yb0-l*H;
-   if(f>=.999)out+=block(cx,yb,H,false);else if(f<=.001)out+=block(cx,yb,H,true);else out+=block(cx,yb,H*f,false)+block(cx,yb-H*f,H*(1-f),true);
+   const f=Math.max(0,Math.min(1,units-i)),ty=ty0-l*P,last=l===perCol-1||i+1>=total||units-(i+1)<=.001;
+   if(f>=.999)out+=slab(tx,ty,H,false,last);else if(f<=.001)out+=slab(tx,ty,H,true,false);else out+=slab(tx,ty,H*f,false,false)+slab(tx,ty-H*f,H*(1-f),true,false);
   }
  }
- return `<svg class="bundles" viewBox="0 0 ${vw} ${vh}" role="img" aria-label="${esc(t().monthBales.replace('{n}',total))}">${out}</svg>`;
+ const n=Math.max(0,Math.min(CN,Math.round(pct/10))),ccx=M+CR+2,base=vh-M-CR/2-2;
+ for(let k=0;k<CN;k++)out+=coin(ccx,base-k*CT,k>=n);
+ for(const [dx,cnt] of [[CR*2.5,3],[vw-M-CR-ccx,2]])for(let k=0;k<cnt;k++)out+=coin(ccx+dx,base+2-k*CT,false);
+ return `<svg class="bundles" viewBox="0 0 ${vw.toFixed(0)} ${vh.toFixed(0)}" role="img" aria-label="${esc(t().monthBales.replace('{n}',total))}">${out}</svg>`;
 }
 
 /* ---------- views ---------- */
@@ -436,7 +439,7 @@ function homeView(){
  const weekEarn=sum(wk,'sale'),byCat={};day.filter(e=>e.kind==='expense').forEach(e=>byCat[e.category]=(byCat[e.category]||0)+e.amount);
  const recent=live().sort((a,b)=>b.date.localeCompare(a.date)||b.created_at.localeCompare(a.created_at)).slice(0,5);
  const C=2*Math.PI*40,len=C*pct/100,plan=monthPlan(),tips=advice(plan),mpct=plan.target>0?Math.min(100,Math.round(plan.earn/plan.target*100)):0;
- return `<section class="card bales"><div class="bales-wrap"><div class="bales-art">${goal>0?bundlesSvg(plan.units,plan.total,Math.max(days,4)):''}</div><div class="bales-text"><small>${esc(x.monthBales.replace('{n}',plan.total))}</small>${goal>0?`<strong class="big">${money(plan.earn)}</strong><span class="muted">${esc(x.of)} ${money(plan.target)} · ${mpct}%</span><span class="muted">${esc(x.forecast)}: <b>${money(plan.forecast)}</b></span><span class="muted tiny">${esc(x.baleHint)}</span>`:`<span class="muted">${esc(x.noBales)}</span>`}</div></div></section>
+ return `<section class="card bales"><div class="bales-wrap"><div class="bales-art">${goal>0?bundlesSvg(plan.units,plan.total,pct):''}</div><div class="bales-text"><small>${esc(x.monthBales.replace('{n}',plan.total))}</small>${goal>0?`<strong class="big">${money(plan.earn)}</strong><span class="muted">${esc(x.of)} ${money(plan.target)} · ${mpct}%</span><span class="muted">${esc(x.forecast)}: <b>${money(plan.forecast)}</b></span><span class="muted tiny">${esc(x.baleHint)} ${esc(x.coinHint)}</span>`:`<span class="muted">${esc(x.noBales)}</span>`}</div></div></section>
  <section class="card goal"><small>${esc(x.today)} · ${esc(x.dailyGoal)}</small><div class="goal-row"><div class="goal-ring"><svg class="ring goalring" viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="40"/><circle class="seg c1" cx="50" cy="50" r="40" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}"/></svg><span class="pct">${pct}%</span></div><div class="goal-text"><strong class="big">${money(earn)}</strong><span class="muted">${goal>0?`${esc(x.of)} ${money(goal)}`:esc(x.noGoal)}</span>${goal>0?`<span class="${done?'pos':'muted'}">${done?esc(x.reached):`${esc(x.remaining)}: ${money(left)}`}</span>`:''}</div></div><div class="two"><span class="pos">▲ ${esc(x.earned)} ${money(earn)}</span><span class="neg">▼ ${esc(x.spent)} ${money(spent)}</span><span>${esc(x.net)} <b>${money(earn-spent)}</b></span></div></section>
  ${statsCard()}
  <section class="card"><h3>${esc(x.todayExpenses)}</h3><div class="tiles">${CATS.expense.map(c=>`<button class="tile${byCat[c]?' has':''}" data-act="quick" data-v="${c}"><span>${esc(catName(c))}</span><b>${byCat[c]?money(byCat[c]):'+'}</b></button>`).join('')}</div><small class="muted">${esc(x.tapCat)}</small></section>

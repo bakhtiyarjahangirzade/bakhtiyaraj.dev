@@ -103,3 +103,15 @@ progress.done::-webkit-progress-value{background:var(--pos)}progress.done::-moz-
 .bundles .band{fill:#f6fdf2;opacity:.92}.bundles .edge{stroke:#0b3d1c55;stroke-width:.5;fill:none}
 .bundles .shadow{fill:#000;opacity:.16;stroke:none}.bundles .ghost{fill:currentColor!important;fill-opacity:.06}
 .bales-wrap{flex-direction:column;align-items:stretch;gap:10px}.bales-art{width:100%;max-width:300px;margin:0 auto}.bales-text{overflow-wrap:anywhere}
+
+/* clay money: soft light-blue stage, glossy green slabs, golden coins */
+.bales-art{max-width:340px}
+.bundles .bgp{fill:url(#gBg)}.bundles .b1{stop-color:#c9f1ff}.bundles .b2{stop-color:#8fd6f7}
+.bundles .st,.bundles .sl,.bundles .sr,.bundles .cs,.bundles .ct,.bundles .ci,.bundles .bill,.bundles .oval{stroke-linejoin:round;stroke-width:2.4}
+.bundles .st{fill:url(#gSt);stroke:#8fe07e}.bundles .s1{stop-color:#b8f3a3}.bundles .s2{stop-color:#6fd35d}
+.bundles .sl{fill:#4fba57;stroke:#4fba57}.bundles .sr{fill:#3a9d49;stroke:#3a9d49}
+.bundles .bill{fill:#f4fbe8;stroke:#f4fbe8;stroke-width:1.6}.bundles .oval{fill:#59c768;stroke:#59c768;stroke-width:.01}
+.bundles .cs{fill:#d8900a;stroke:#d8900a}.bundles .ct{fill:url(#gCt);stroke:#ffd45a}.bundles .c1{stop-color:#ffe07a}.bundles .c2{stop-color:#f0a500}
+.bundles .ci{fill:none;stroke:#d8900a;stroke-width:1.2;opacity:.75}
+.bundles .shadow{fill:#0a5a8a;opacity:.18;stroke:none}
+.bundles .ghost{fill:#fff!important;fill-opacity:.28;stroke:#fff!important;stroke-opacity:.8;stroke-dasharray:3 3;stroke-width:1}
