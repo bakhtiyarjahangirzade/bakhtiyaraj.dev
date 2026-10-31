@@ -129,6 +129,24 @@ function startDemo(admin){
  render();say('welcome');
 }
 
+/* 30-day Warsaw simulation: real street geometry (OSRM, generated offline), modelled timing, pay and costs */
+async function startWarsaw(){
+ let r;try{r=await (await fetch('/budgettracker/warsaw30.json')).json()}catch{return startDemo(false)}
+ S.demo=true;S.sim=true;S.user=null;S.nick='warsaw.sim';S.admin=false;S.tab='home';S.cur='PLN';S.goals={daily:320,days:6};S.pending=new Set();S.flags={};S.active=null;S.entries=[];S.sessions=[];S.days={};
+ S.bench={couriers:11,earn_per_km:3.1,cost_per_km:.48,earn_per_hour:39};
+ const now=Date.now();
+ for(const d of r.days){
+  const base=new Date();base.setDate(base.getDate()-d.back);base.setHours(0,0,0,0);const date=ymd(base),st=base.getTime()+d.start_h*3600e3;
+  if(st+d.hours*3600e3>now)continue;
+  const t0=Math.round(st/1000),pts=d.points.map(p=>[p[0],p[1],t0+p[2]]),dur=pts[pts.length-1][2]-pts[0][2],at=new Date(st+dur*1000).toISOString();
+  S.sessions.push({id:uuid(),started_at:new Date(st).toISOString(),ended_at:at,distance_m:Math.round(routeLen(pts)),duration_s:dur,points:pts,dirty:false});
+  S.days[date]={km:d.km,hours:d.hours};
+  const mk=(kind,amount,category)=>S.entries.push({id:uuid(),kind,amount,category,note:'',date,created_at:at,deleted_at:null});
+  mk('sale',d.earn,'daily');d.expenses.forEach(([c,a])=>mk('expense',a,c));
+ }
+ render();
+}
+
 /* ---------- entries ---------- */
 async function addEntry({kind,amount,category,note,date,photo,quiet}){
  const e={id:uuid(),kind,amount,category,note,date,created_at:new Date().toISOString(),deleted_at:null};
@@ -299,18 +317,30 @@ async function drawMap(el){
    if(live)new g.maps.Marker({position:{lat:live.lat,lng:live.lng},map,label:'●'});
    all.forEach(q=>b.extend({lat:q[0],lng:q[1]}));map.fitBounds(b);return;
   }
-  const L=await loadLeaflet();el.innerHTML='';const map=L.map(el,{zoomControl:true});
+  const L=await loadLeaflet();el.innerHTML='';const map=L.map(el,{zoomControl:true,zoomSnap:.25});
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
   let line=null,end=null;
-  if(all.length>1&&pts.length>1)line=L.polyline(pts.map(p=>[p[0],p[1]]),{color:'#0a84ff',weight:4}).addTo(map);
+  if(all.length>1&&pts.length>1){
+   if(el.id!=='live-map'&&pts[0].length>2){
+    L.polyline(pts.map(p=>[p[0],p[1]]),{color:'#fff',weight:8,opacity:.9,lineJoin:'round'}).addTo(map);
+    speedRuns(pts).forEach(r=>L.polyline(r.pts,{color:['#e5433a','#0a84ff','#1f9d55'][r.c],weight:5,lineJoin:'round'}).addTo(map));
+   }else line=L.polyline(pts.map(p=>[p[0],p[1]]),{color:'#0a84ff',weight:4}).addTo(map);
+  }
   if(pts.length){L.circleMarker([pts[0][0],pts[0][1]],{radius:7,color:'#fff',weight:2,fillColor:'#1f9d55',fillOpacity:1}).addTo(map);end=L.circleMarker([pts[pts.length-1][0],pts[pts.length-1][1]],{radius:7,color:'#fff',weight:2,fillColor:'#e5433a',fillOpacity:1}).addTo(map)}
   stops.forEach((st,k)=>L.circleMarker([st.lat,st.lng],{radius:11,color:'#fff',weight:2,fillColor:'#ff9f0a',fillOpacity:1}).bindTooltip(String(k+1),{permanent:true,direction:'center',className:'stop-tip'}).addTo(map));
   if(live)L.circleMarker([live.lat,live.lng],{radius:9,color:'#fff',weight:3,fillColor:'#0a84ff',fillOpacity:1}).addTo(map);
   if(all.length===1)map.setView(all[0],16);else map.fitBounds(L.latLngBounds(all).pad(.2),{maxZoom:17});
-  setTimeout(()=>map.invalidateSize(),60);
+  setTimeout(()=>{map.invalidateSize();if(all.length>1)map.fitBounds(L.latLngBounds(all).pad(.15),{maxZoom:17})},120);
   if(el.id==='live-map')liveM={map,line,end,L};
  }catch(err){console.warn('map',err);if(!el.querySelector('svg'))el.textContent=t().mapErr}
 }
+/* route colour by speed: red = slow or standing, blue = medium, green = fast */
+function speedRuns(pts){
+ const runs=[];let cur=null;
+ for(let i=1;i<pts.length;i++){const dt=pts[i][2]-pts[i-1][2],v=dt>0?hav(pts[i-1],pts[i])/dt*3.6:0,c=v<10?0:v<25?1:2;if(!cur||cur.c!==c){cur={c,pts:[[pts[i-1][0],pts[i-1][1]]]};runs.push(cur)}cur.pts.push([pts[i][0],pts[i][1]])}
+ return runs;
+}
+const legend=()=>{const x=t();return `<div class="legend"><span class="l0"></span>${esc(x.legSlow)}<span class="l1"></span>${esc(x.legMid)}<span class="l2"></span>${esc(x.legFast)}</div>`};
 function updateLiveMap(a){
  const last=a.points[a.points.length-1];if(!last)return;
  if(!liveM){const el=$('#live-map');if(el){el.dataset.points=JSON.stringify(a.points);drawMap(el)}return}
@@ -388,7 +418,7 @@ function langBar(){return `<div class="seg" role="group" aria-label="Language">$
 function appView(){
  const x=t(),tabs=['home','list','add','work','settings'];if(S.admin)tabs.push('watch');
  const body={home:homeView,list:listView,settings:settingsView,watch:watchView,work:workView,add:homeView}[S.tab]();
- return `${S.demo?`<div class="demo-bar">${esc(x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">K</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header><main class="view">${body}</main>
+ return `${S.demo?`<div class="demo-bar">${esc(S.sim?x.simBanner:x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">K</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header><main class="view">${body}</main>
  <nav class="tabs" aria-label="Navigation">${tabs.map(k=>`<button data-act="tab" data-v="${k}" class="${k==='add'?'plus':''}" aria-current="${S.tab===k&&k!=='add'}" aria-label="${esc(x[k])}">${icon(k)}<span>${esc(x[k])}</span></button>`).join('')}</nav></div>${S.sheet?sheetView():''}${S.viewer?`<div class="sheet-bg" data-act="viewer-close"><div class="viewer"><img src="${S.viewer}" alt=""><button class="btn ghost" data-act="viewer-close">${esc(x.close)}</button></div></div>`:''}`;
 }
 function homeView(){
@@ -425,7 +455,7 @@ function workView(){
 }
 function sessionView(){
  const x=t(),s=S.workDetail,km=kmOf(s),h=s.duration_s/3600;
- return `<button class="link" data-act="work-back">← ${esc(x.back)}</button><h3 class="h">${esc(dateLabel(localDate(s.started_at)))}</h3><section class="card">${mapBox(s.points,findStops(s.points||[]))}<div class="stats"><div><small>${esc(x.distance)}</small><b>${km.toFixed(2)} ${esc(x.km)}</b></div><div><small>${esc(x.duration)}</small><b>${fmtDur(s.duration_s)}</b></div></div>${moveGrid(s.points)}<small class="muted">${esc(x.speedNote)}</small></section><section class="card">${stopsHtml(findStops(s.points||[]))}</section>`;
+ return `<button class="link" data-act="work-back">← ${esc(x.back)}</button><h3 class="h">${esc(dateLabel(localDate(s.started_at)))}</h3><section class="card">${mapBox(s.points,findStops(s.points||[]))}${legend()}<div class="stats"><div><small>${esc(x.distance)}</small><b>${km.toFixed(2)} ${esc(x.km)}</b></div><div><small>${esc(x.duration)}</small><b>${fmtDur(s.duration_s)}</b></div></div>${moveGrid(s.points)}<small class="muted">${esc(x.speedNote)}</small></section><section class="card">${stopsHtml(findStops(s.points||[]))}</section>`;
 }
 function settingsView(){
  const x=t();
@@ -447,7 +477,7 @@ function detailView(){
  ${d.live?`<section class="card"><h3><span class="live">● ${esc(x.liveNow)}</span></h3>${mapBox([],[],null,d.live)}<small class="muted">${esc(x.liveAt)}: ${new Date(d.live.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></section>`:''}
  ${(d.days||[]).length?`<section class="card"><h3>${esc(x.daysTitle)}</h3><ul class="rows">${d.days.map(r=>{const km=Number(r.km),h=Number(r.hours),earn=sum(items.filter(e=>e.date===r.day),'sale');return `<li class="entry"><div><strong>${esc(dateLabel(r.day))}</strong><small>${km.toFixed(1)} ${esc(x.km)} · ${h.toFixed(1)} ${esc(x.hours)}</small></div><b>${km>0&&earn>0?`${money(earn/km,cu)} / ${esc(x.km)}`:money(earn,cu)}</b></li>`}).join('')}</ul></section>`:''}
  ${ses.length?`<section class="card"><h3>${esc(x.sessions)}</h3><ul class="rows">${ses.map(s=>`<li class="entry"><button class="sess" data-act="asession" data-id="${s.id}"><div><strong>${esc(dateLabel(localDate(s.started_at)))}</strong><small>${fmtDur(s.duration_s)} ${esc(x.hours)}</small></div><b>${kmOf(s).toFixed(1)} ${esc(x.km)}</b></button></li>`).join('')}</ul></section>`:''}
- ${sel?`<section class="card"><h3>${esc(x.myMap)} · ${esc(dateLabel(localDate(sel.s.started_at)))}</h3>${sel.points.length?mapBox(sel.points,findStops(sel.points))+moveGrid(sel.points):`<p class="muted">${esc(x.noRoute)}</p>`}${sel.points.length?stopsHtml(findStops(sel.points)):''}</section>`:''}
+ ${sel?`<section class="card"><h3>${esc(x.myMap)} · ${esc(dateLabel(localDate(sel.s.started_at)))}</h3>${sel.points.length?mapBox(sel.points,findStops(sel.points))+legend()+moveGrid(sel.points):`<p class="muted">${esc(x.noRoute)}</p>`}${sel.points.length?stopsHtml(findStops(sel.points)):''}</section>`:''}
  <section class="card"><h3>${esc(x.entries)}</h3>${items.length?`<ul class="rows">${items.map(e=>rowHtml(e,false,cu)).join('')}</ul>`:`<p class="muted">${esc(x.empty)}</p>`}</section>`;
 }
 function sheetView(){
@@ -575,6 +605,7 @@ async function boot(){
  render();
  if('serviceWorker' in navigator)navigator.serviceWorker.register('/budgettracker/sw.js',{scope:'/budgettracker/'}).catch(()=>{});
  const q=new URLSearchParams(location.search);
+ if(q.get('demo')==='warsaw')return startWarsaw();
  if(q.has('demo'))return startDemo(q.get('demo')==='admin');
  if(!sb)return;
  const {data}=await sb.auth.getSession();
