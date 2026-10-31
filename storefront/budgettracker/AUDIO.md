@@ -1,4 +1,4 @@
-# BAKHY Budget — spoken feedback files
+# KuryeBro — spoken feedback files
 
 Put one short file per line in `storefront/public/budgettracker/audio/<lang>/<name>.mp3` (1–3 seconds, mono, ≤100 KB, normalised volume).
 Only languages listed in `AUDIO_LANGS` (`strings.js`) are played; today that is `az`. A missing file is skipped silently.

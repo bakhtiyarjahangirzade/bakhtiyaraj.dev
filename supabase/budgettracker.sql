@@ -115,3 +115,7 @@ grant all on public.bt_profiles, public.bt_entries, public.bt_budgets, public.bt
 --   bt_entries.photo_path, bt_goals.work_days (1-7, default 6),
 --   bt_sessions (summary: admins may read) and bt_routes (route points: owner only),
 --   private storage bucket bt-receipts (owner read/write, admins read) and a bt_overview() that adds week_earn, work_days, today_km, today_hours.
+
+-- Currency, live position and admin route access (migration budgettracker_currency_live_routes):
+--   bt_profiles.currency (AZN, PLN, EUR, USD, RUB, TRY), bt_live (current position during a work session, owner write, admin read),
+--   policy bt_routes_admin_read, and bt_overview() now also returns currency, live_lat, live_lng, live_at.

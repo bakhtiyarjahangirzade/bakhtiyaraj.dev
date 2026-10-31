@@ -20,7 +20,7 @@ const S={lang:saved.lang||guess(),cur:saved.cur||'AZN',sound:saved.sound!==false
 const t=()=>T[S.lang];
 const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'bt.auth'}}):null;
 const saveSettings=()=>LS.set('settings',{lang:S.lang,cur:S.cur,sound:S.sound});
-const money=n=>{try{return new Intl.NumberFormat({az:'az-AZ',ru:'ru-RU',en:'en-GB'}[S.lang],{style:'currency',currency:S.cur,maximumFractionDigits:2}).format(n||0)}catch{return (n||0).toFixed(2)+' '+S.cur}};
+const money=(n,cur=S.cur)=>{try{return new Intl.NumberFormat({az:'az-AZ',ru:'ru-RU',en:'en-GB'}[S.lang],{style:'currency',currency:cur,maximumFractionDigits:2}).format(n||0)}catch{return (n||0).toFixed(2)+' '+cur}};
 const dateLabel=d=>{try{return new Date(d+'T00:00:00').toLocaleDateString({az:'az-AZ',ru:'ru-RU',en:'en-GB'}[S.lang],{day:'numeric',month:'long',weekday:'short'})}catch{return d}};
 const live=()=>S.entries.filter(e=>!e.deleted_at);
 const sum=(arr,k)=>arr.filter(e=>e.kind===k).reduce((a,e)=>a+e.amount,0);
@@ -80,10 +80,10 @@ async function enter(user){
  render();say('loginOk');if(S.active)startWatch();sync();
 }
 async function ensureProfile(){
- const {data}=await sb.from('bt_profiles').select('nickname').eq('user_id',S.user.id).maybeSingle();
- if(data){S.nick=data.nickname;return true}
+ const {data}=await sb.from('bt_profiles').select('nickname,currency').eq('user_id',S.user.id).maybeSingle();
+ if(data){S.nick=data.nickname;if(data.currency&&data.currency!==S.cur){S.cur=data.currency;saveSettings()}return true}
  const nick=S.user.user_metadata?.nickname;
- if(nick&&NICK.test(nick)){const r=await sb.from('bt_profiles').insert({nickname:nick});if(!r.error){S.nick=nick;return true}if(r.error.code!=='23505')throw r.error;S.msg=t().nickTaken}
+ if(nick&&NICK.test(nick)){const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur});if(!r.error){S.nick=nick;return true}if(r.error.code!=='23505')throw r.error;S.msg=t().nickTaken}
  S.sheet={type:'nick'};return false;
 }
 async function submitAuth(){
@@ -118,7 +118,7 @@ function startDemo(admin){
  const d=new Date(),mk=(back,kind,amount,category,note)=>{const x=new Date(d);x.setDate(d.getDate()-back);return{id:uuid(),kind,amount,category,note,date:ymd(x),created_at:x.toISOString(),deleted_at:null}};
  S.entries=[mk(0,'sale',38,'delivery',''),mk(0,'sale',22.5,'delivery',''),mk(0,'sale',6,'tip',''),mk(0,'expense',18,'fuel',''),mk(0,'expense',7.5,'food',''),mk(1,'sale',96,'delivery',''),mk(1,'sale',14,'bonus',''),mk(1,'expense',21,'fuel',''),mk(2,'sale',118,'delivery',''),mk(2,'expense',45,'repair','Zəncir'),mk(3,'sale',84,'delivery',''),mk(3,'expense',6,'parking','')];
  S.sessions=[0,1,2].map(b=>{const p=walk(70+b*15,40.4093+b*0.004,49.8671-b*0.003),dur=p.length*30+3600,st=new Date(Date.now()-b*864e5-dur*1000);return{id:uuid(),started_at:st.toISOString(),ended_at:new Date(st.getTime()+dur*1000).toISOString(),distance_m:Math.round(routeLen(p)),duration_s:dur,points:p,dirty:false}});
- S.overview=[{nickname:'ali.kuryer',today_earn:132,today_expense:18,week_earn:540,daily_target:120,work_days:6,today_km:38.4,today_hours:6.2,month_earn:2940,total_earn:9810,last_activity:new Date().toISOString()},{nickname:'leyla_m',today_earn:74,today_expense:12,week_earn:410,daily_target:150,work_days:5,today_km:21.7,today_hours:4.1,month_earn:3120,total_earn:12120,last_activity:new Date(Date.now()-36e5).toISOString()}];
+ S.overview=[{nickname:'ali.kuryer',currency:'PLN',live_at:new Date().toISOString(),today_earn:132,today_expense:18,week_earn:540,daily_target:120,work_days:6,today_km:38.4,today_hours:6.2,month_earn:2940,total_earn:9810,last_activity:new Date().toISOString()},{nickname:'leyla_m',currency:'AZN',today_earn:74,today_expense:12,week_earn:410,daily_target:150,work_days:5,today_km:21.7,today_hours:4.1,month_earn:3120,total_earn:12120,last_activity:new Date(Date.now()-36e5).toISOString()}];
  render();say('welcome');
 }
 
@@ -146,7 +146,7 @@ async function openPhoto(id,path){
 }
 
 /* ---------- GPS work sessions ---------- */
-let watchId=null,tick=null,wake=null;
+let watchId=null,tick=null,wake=null,lastLive=0;
 async function lockScreen(){try{wake=await navigator.wakeLock?.request('screen')}catch{}}
 function startWatch(){
  if(!navigator.geolocation||watchId!==null)return;
@@ -158,7 +158,8 @@ function onPos(p){
  const a=S.active;if(!a)return;const c=p.coords;if(c.accuracy>60)return;
  const pt=[+c.latitude.toFixed(5),+c.longitude.toFixed(5),Math.round(p.timestamp/1000)],last=a.points[a.points.length-1];
  if(last){const d=hav(last,pt);if(d<8)return;if(d>3000&&pt[2]-last[2]<30)return;a.distance_m+=d}
- a.points.push(pt);persist();const k=$('#live-km');if(k)k.textContent=(a.distance_m/1000).toFixed(2);const r=$('#live-route');if(r)r.innerHTML=routeSvg(a.points);
+ a.points.push(pt);persist();const k=$('#live-km');if(k)k.textContent=(a.distance_m/1000).toFixed(2);updateLiveMap(a);
+ if(!S.demo&&sb&&S.user&&navigator.onLine&&Date.now()-lastLive>30000){lastLive=Date.now();sb.from('bt_live').upsert({user_id:S.user.id,session_id:a.id,lat:pt[0],lng:pt[1],accuracy:Math.round(c.accuracy)}).then(()=>{})}
 }
 function startWork(){
  if(!navigator.geolocation){S.msg=t().noGps;return render()}
@@ -168,6 +169,7 @@ function stopWork(){
  const a=S.active;stopWatchOnly();if(!a){render();return}
  const end=new Date(),dur=Math.max(1,Math.round((end-new Date(a.started_at))/1000)),n=a.points.length,step=Math.max(1,Math.ceil(n/1500));
  S.sessions.push({id:a.id,started_at:a.started_at,ended_at:end.toISOString(),distance_m:Math.round(a.distance_m),duration_s:dur,points:a.points.filter((_,i)=>i%step===0),dirty:!S.demo});
+ if(!S.demo&&sb&&S.user)sb.from('bt_live').delete().eq('user_id',S.user.id).then(()=>{});
  S.active=null;persist();sync();render();
 }
 function sessionsAll(){const arr=[...S.sessions];if(S.active)arr.push({...S.active,duration_s:Math.round((Date.now()-new Date(S.active.started_at))/1000),ended_at:null});return arr.sort((a,b)=>b.started_at.localeCompare(a.started_at))}
@@ -183,6 +185,75 @@ async function openSession(id){
  const s=S.sessions.find(x=>x.id===id);if(!s)return;
  if(!s.points&&!S.demo&&sb){const r=await sb.from('bt_routes').select('points').eq('session_id',id).maybeSingle();s.points=r.data?r.data.points:[]}
  S.workDetail=s;render();
+}
+
+/* ---------- maps: real tiles (OpenStreetMap via Leaflet), or Google Maps when BT_CONFIG.googleMapsKey is set ---------- */
+let leafletP=null,googleP=null,liveM=null;
+function loadLeaflet(){return leafletP||(leafletP=new Promise((res,rej)=>{if(window.L)return res(window.L);const l=document.createElement('link');l.rel='stylesheet';l.href='/vendor/leaflet/leaflet.css';document.head.appendChild(l);const sc=document.createElement('script');sc.src='/vendor/leaflet/leaflet.js';sc.onload=()=>res(window.L);sc.onerror=()=>rej(new Error('leaflet'));document.head.appendChild(sc)}))}
+function loadGoogle(key){return googleP||(googleP=new Promise((res,rej)=>{if(window.google&&window.google.maps)return res(window.google);window.__btGmap=()=>res(window.google);const sc=document.createElement('script');sc.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&callback=__btGmap&loading=async';sc.async=true;sc.onerror=()=>rej(new Error('google'));document.head.appendChild(sc)}))}
+function mapBox(points,stops,id,live){return `<div class="map"${id?` id="${id}"`:''} data-map data-points="${esc(JSON.stringify(points||[]))}" data-stops="${esc(JSON.stringify(stops||[]))}"${live?` data-live="${esc(JSON.stringify(live))}"`:''}>${routeSvg(points)}</div>`}
+async function drawMap(el){
+ let pts=[],stops=[],live=null;try{pts=JSON.parse(el.dataset.points||'[]');stops=JSON.parse(el.dataset.stops||'[]');live=el.dataset.live?JSON.parse(el.dataset.live):null}catch{}
+ if(!pts.length&&!live)return;
+ try{
+  const key=window.BT_CONFIG&&window.BT_CONFIG.googleMapsKey,all=pts.map(p=>[p[0],p[1]]);if(live)all.push([live.lat,live.lng]);
+  if(key){
+   const g=await loadGoogle(key);el.innerHTML='';const map=new g.maps.Map(el,{mapTypeControl:false,streetViewControl:false,fullscreenControl:false}),b=new g.maps.LatLngBounds();
+   const path=pts.map(p=>({lat:p[0],lng:p[1]}));if(path.length>1)new g.maps.Polyline({path,strokeColor:'#0a84ff',strokeWeight:4,map});
+   if(path.length){new g.maps.Marker({position:path[0],map,label:'A'});new g.maps.Marker({position:path[path.length-1],map,label:'B'})}
+   stops.forEach((st,k)=>new g.maps.Marker({position:{lat:st.lat,lng:st.lng},map,label:String(k+1)}));
+   if(live)new g.maps.Marker({position:{lat:live.lat,lng:live.lng},map,label:'●'});
+   all.forEach(q=>b.extend({lat:q[0],lng:q[1]}));map.fitBounds(b);return;
+  }
+  const L=await loadLeaflet();el.innerHTML='';const map=L.map(el,{zoomControl:true});
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map);
+  let line=null,end=null;
+  if(all.length>1&&pts.length>1)line=L.polyline(pts.map(p=>[p[0],p[1]]),{color:'#0a84ff',weight:4}).addTo(map);
+  if(pts.length){L.circleMarker([pts[0][0],pts[0][1]],{radius:7,color:'#fff',weight:2,fillColor:'#1f9d55',fillOpacity:1}).addTo(map);end=L.circleMarker([pts[pts.length-1][0],pts[pts.length-1][1]],{radius:7,color:'#fff',weight:2,fillColor:'#e5433a',fillOpacity:1}).addTo(map)}
+  stops.forEach((st,k)=>L.circleMarker([st.lat,st.lng],{radius:11,color:'#fff',weight:2,fillColor:'#ff9f0a',fillOpacity:1}).bindTooltip(String(k+1),{permanent:true,direction:'center',className:'stop-tip'}).addTo(map));
+  if(live)L.circleMarker([live.lat,live.lng],{radius:9,color:'#fff',weight:3,fillColor:'#0a84ff',fillOpacity:1}).addTo(map);
+  if(all.length===1)map.setView(all[0],16);else map.fitBounds(L.latLngBounds(all).pad(.2),{maxZoom:17});
+  setTimeout(()=>map.invalidateSize(),60);
+  if(el.id==='live-map')liveM={map,line,end,L};
+ }catch(err){console.warn('map',err);if(!el.querySelector('svg'))el.textContent=t().mapErr}
+}
+function updateLiveMap(a){
+ const last=a.points[a.points.length-1];if(!last)return;
+ if(!liveM){const el=$('#live-map');if(el){el.dataset.points=JSON.stringify(a.points);drawMap(el)}return}
+ const ll=[last[0],last[1]],{map,L}=liveM;
+ if(!liveM.line)liveM.line=L.polyline([ll],{color:'#0a84ff',weight:4}).addTo(map);else liveM.line.addLatLng(ll);
+ if(!liveM.end)liveM.end=L.circleMarker(ll,{radius:7,color:'#fff',weight:2,fillColor:'#e5433a',fillOpacity:1}).addTo(map);else liveM.end.setLatLng(ll);
+ map.panTo(ll);
+}
+function findStops(p){
+ const out=[];let i=0;
+ while(i<p.length){let j=i;while(j+1<p.length&&hav(p[i],p[j+1])<60)j++;const dur=p[j][2]-p[i][2];if(dur>=180){out.push({lat:p[i][0],lng:p[i][1],t:p[i][2],min:Math.round(dur/60)});i=j+1}else i++}
+ return out;
+}
+const stopsHtml=(stops)=>{const x=t();return `<h3>${esc(x.stopsTitle)}</h3>${stops.length?`<ul class="rows">${stops.map((st,k)=>`<li class="entry"><div><strong>${k+1}</strong> <small>${new Date(st.t*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></div><b>${esc(x.stopLine.replace('{m}',st.min))}</b></li>`).join('')}</ul>`:`<p class="muted">${esc(x.noStops)}</p>`}`};
+function monthPlan(){
+ const n=new Date(),dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate(),el=n.getDate(),target=S.goals.daily*S.goals.days*dim/7;
+ const earn=sum(live().filter(e=>inMonth(e,ym(today()))),'sale'),left=dim-el,daysLeft=Math.max(1,Math.round(left*S.goals.days/7));
+ return {target,earn,forecast:el>0?earn/el*dim:0,need:target>earn&&left>0?(target-earn)/daysLeft:0};
+}
+function advice(plan){
+ const x=t(),m=ym(today()),mon=live().filter(e=>inMonth(e,m)),earn=sum(mon,'sale'),exp=sum(mon,'expense'),by={};
+ mon.filter(e=>e.kind==='expense').forEach(e=>by[e.category]=(by[e.category]||0)+e.amount);
+ const fill=(str,o)=>str.replace(/\{(\w+)\}/g,(_,k)=>o[k]),pc=v=>Math.round(v/earn*100),tips=[];
+ if(earn>0){
+  if((by.fuel||0)/earn>=.25)tips.push(fill(x.tipFuel,{p:pc(by.fuel)}));
+  if((by.food||0)/earn>=.12)tips.push(fill(x.tipFood,{p:pc(by.food)}));
+  if(exp/earn>=.4){const top=Object.entries(by).sort((a,b)=>b[1]-a[1])[0];tips.push(fill(x.tipTotal,{p:pc(exp),c:top?catName(top[0]):''}))}
+ }
+ if(by.fine>0)tips.push(fill(x.tipFine,{a:money(by.fine)}));
+ if(by.repair>0&&(!earn||by.repair/earn>=.1))tips.push(fill(x.tipRepair,{a:money(by.repair)}));
+ const ws=weekStart(),lw=new Date(ws+'T00:00:00');lw.setDate(lw.getDate()-7);const lws=ymd(lw),thisW=sum(live().filter(e=>e.date>=ws),'expense'),lastW=sum(live().filter(e=>e.date>=lws&&e.date<ws),'expense');
+ if(lastW>0&&thisW>lastW*1.2)tips.push(fill(x.tipWeek,{p:Math.round((thisW/lastW-1)*100)}));
+ const km=S.sessions.filter(q=>localDate(q.started_at).startsWith(m)).reduce((p,q)=>p+kmOf(q),0);
+ if(km>=5&&by.fuel>0)tips.push(fill(x.tipKm,{a:money(by.fuel/km)}));
+ if(plan.need>0&&plan.target>0)tips.push(fill(x.tipPace,{a:money(plan.need)}));
+ if(!tips.length&&earn>0&&exp/earn<.3)tips.push(fill(x.tipGood,{p:pc(exp)}));
+ return tips.slice(0,4);
 }
 
 /* ---------- 3D cash bundles: one bundle per working day, solid = earned, transparent = still to earn ---------- */
@@ -207,7 +278,7 @@ const icon=n=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[n]}"/
 
 function authView(){
  const x=t(),signup=S.authMode==='signup';
- return `<main class="auth"><section class="hero"><div class="brand"><span class="logo">B</span><span>${esc(x.app)}</span></div><h1>${esc(x.tagline)}</h1><h2>${esc(x.featTitle)}</h2><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="hero-actions"><button class="btn dark" data-act="apk">${esc(x.apkBtn)}</button><button class="btn ghost" data-act="demo">${esc(x.demo)}</button></div>${langBar()}</section>
+ return `<main class="auth"><section class="hero"><div class="brand"><span class="logo">K</span><span>${esc(x.app)}</span></div><h1>${esc(x.tagline)}</h1><h2>${esc(x.featTitle)}</h2><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="hero-actions"><button class="btn dark" data-act="apk">${esc(x.apkBtn)}</button><button class="btn ghost" data-act="demo">${esc(x.demo)}</button></div>${langBar()}</section>
  <form class="card form" data-act="auth" novalidate><h2>${esc(signup?x.signup:x.signin)}</h2>
  <label>${esc(x.email)}<input id="f-email" type="email" autocomplete="email" inputmode="email"></label>
  <label>${esc(x.password)}<input id="f-pw" type="password" autocomplete="${signup?'new-password':'current-password'}"></label>
@@ -222,7 +293,7 @@ function langBar(){return `<div class="seg" role="group" aria-label="Language">$
 function appView(){
  const x=t(),tabs=['home','list','add','work','settings'];if(S.admin)tabs.push('watch');
  const body={home:homeView,list:listView,settings:settingsView,watch:watchView,work:workView,add:homeView}[S.tab]();
- return `${S.demo?`<div class="demo-bar">${esc(x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">B</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header><main class="view">${body}</main>
+ return `${S.demo?`<div class="demo-bar">${esc(x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">K</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header><main class="view">${body}</main>
  <nav class="tabs" aria-label="Navigation">${tabs.map(k=>`<button data-act="tab" data-v="${k}" class="${k==='add'?'plus':''}" aria-current="${S.tab===k&&k!=='add'}" aria-label="${esc(x[k])}">${icon(k)}<span>${esc(x[k])}</span></button>`).join('')}</nav></div>${S.sheet?sheetView():''}${S.viewer?`<div class="sheet-bg" data-act="viewer-close"><div class="viewer"><img src="${S.viewer}" alt=""><button class="btn ghost" data-act="viewer-close">${esc(x.close)}</button></div></div>`:''}`;
 }
 function homeView(){
@@ -230,14 +301,16 @@ function homeView(){
  const earn=sum(day,'sale'),spent=sum(day,'expense'),goal=S.goals.daily,days=S.goals.days||6,pct=goal>0?Math.min(100,Math.round(earn/goal*100)):0,left=Math.max(0,goal-earn),done=goal>0&&earn>=goal;
  const weekEarn=sum(wk,'sale'),byCat={};day.filter(e=>e.kind==='expense').forEach(e=>byCat[e.category]=(byCat[e.category]||0)+e.amount);
  const recent=live().sort((a,b)=>b.date.localeCompare(a.date)||b.created_at.localeCompare(a.created_at)).slice(0,5);
- const C=2*Math.PI*40,len=C*pct/100;
+ const C=2*Math.PI*40,len=C*pct/100,plan=monthPlan(),tips=advice(plan),mpct=plan.target>0?Math.min(100,Math.round(plan.earn/plan.target*100)):0;
  return `<section class="card bales"><div class="bales-wrap"><div class="bales-art">${goal>0?bundlesSvg(weekEarn,goal,days):''}</div><div class="bales-text"><small>${esc(x.weekTitle)} · ${esc(x.daysLabel.replace('{n}',days))}</small>${goal>0?`<strong class="big">${money(weekEarn)}</strong><span class="muted">${esc(x.of)} ${money(goal*days)}</span><span class="muted tiny">${esc(x.baleHint)}</span>`:`<span class="muted">${esc(x.noBales)}</span>`}</div></div></section>
  <section class="card goal"><small>${esc(x.today)} · ${esc(x.dailyGoal)}</small><div class="goal-row"><div class="goal-ring"><svg class="ring goalring" viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="40"/><circle class="seg c1" cx="50" cy="50" r="40" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}"/></svg><span class="pct">${pct}%</span></div><div class="goal-text"><strong class="big">${money(earn)}</strong><span class="muted">${goal>0?`${esc(x.of)} ${money(goal)}`:esc(x.noGoal)}</span>${goal>0?`<span class="${done?'pos':'muted'}">${done?esc(x.reached):`${esc(x.remaining)}: ${money(left)}`}</span>`:''}</div></div><div class="two"><span class="pos">▲ ${esc(x.earned)} ${money(earn)}</span><span class="neg">▼ ${esc(x.spent)} ${money(spent)}</span><span>${esc(x.net)} <b>${money(earn-spent)}</b></span></div></section>
  <section class="card"><h3>${esc(x.todayExpenses)}</h3><div class="tiles">${CATS.expense.map(c=>`<button class="tile${byCat[c]?' has':''}" data-act="quick" data-v="${c}"><span>${esc(catName(c))}</span><b>${byCat[c]?money(byCat[c]):'+'}</b></button>`).join('')}</div><small class="muted">${esc(x.tapCat)}</small></section>
+ ${goal>0?`<section class="card"><small>${esc(x.monthTarget)}</small><div class="row between"><strong class="big2">${money(plan.target)}</strong><span class="muted">${mpct}%</span></div><progress max="100" value="${mpct}" class="${plan.earn>=plan.target?'done':''}"></progress><div class="two"><span>${esc(x.monthEarned)}: <b>${money(plan.earn)}</b></span><span>${esc(x.forecast)}: <b>${money(plan.forecast)}</b></span></div><small class="muted">${esc(x.monthTargetHint)}</small></section>`:''}
  <section class="card"><h3>${esc(x.monthTitle)}</h3><div class="two"><span class="pos">${esc(x.earned)} <b>${money(sum(mon,'sale'))}</b></span><span class="neg">${esc(x.spent)} <b>${money(sum(mon,'expense'))}</b></span></div></section>
+ <section class="card"><h3>${esc(x.adviceTitle)}</h3>${tips.length?`<ul class="tips">${tips.map(q=>`<li>${esc(q)}</li>`).join('')}</ul>`:`<p class="muted">${esc(x.adviceNone)}</p>`}<small class="muted">${esc(x.adviceNote)}</small></section>
  <section class="card"><h3>${esc(x.recent)}</h3>${recent.length?`<ul class="rows">${recent.map(e=>rowHtml(e,true)).join('')}</ul>`:`<p class="muted">${esc(x.empty)}</p>`}</section>`;
 }
-function rowHtml(e,del=false){const x=t();return `<li class="entry ${e.kind}"><div><strong>${esc(catName(e.category)||x.kind[e.kind])}</strong><small>${esc(e.note||x.kind[e.kind])} · ${esc(e.date)}</small></div><b>${e.kind==='expense'?'−':'+'}${money(e.amount)}</b>${e.photo_path?`<button class="x" data-act="photo" data-id="${e.id}" data-path="${esc(e.photo_path)}" aria-label="${esc(x.viewPhoto)}">📎</button>`:''}${del?`<button class="x" data-act="del" data-id="${e.id}" aria-label="${esc(x.del)}">×</button>`:''}</li>`}
+function rowHtml(e,del=false,cur=S.cur){const x=t();return `<li class="entry ${e.kind}"><div><strong>${esc(catName(e.category)||x.kind[e.kind])}</strong><small>${esc(e.note||x.kind[e.kind])} · ${esc(e.date)}</small></div><b>${e.kind==='expense'?'−':'+'}${money(e.amount,cur)}</b>${e.photo_path?`<button class="x" data-act="photo" data-id="${e.id}" data-path="${esc(e.photo_path)}" aria-label="${esc(x.viewPhoto)}">📎</button>`:''}${del?`<button class="x" data-act="del" data-id="${e.id}" aria-label="${esc(x.del)}">×</button>`:''}</li>`}
 function listView(){
  const x=t(),f=S.filter,items=live().filter(e=>f==='all'||e.kind===f).sort((a,b)=>b.date.localeCompare(a.date)||b.created_at.localeCompare(a.created_at));
  const groups={};items.forEach(e=>(groups[e.date]=groups[e.date]||[]).push(e));
@@ -248,7 +321,7 @@ function workView(){
  const all=sessionsAll(),d=today(),ws=weekStart(),dayS=all.filter(s=>localDate(s.started_at)===d),weekS=all.filter(s=>localDate(s.started_at)>=ws);
  const tot=arr=>({sec:arr.reduce((p,s)=>p+(s.duration_s||0),0),km:arr.reduce((p,s)=>p+((a&&s.id===a.id)?a.distance_m:s.distance_m)/1000,0)});
  const td=tot(dayS),tw=tot(weekS);
- const main=a?`<section class="card work-live"><small>${esc(x.working)}</small><div class="clock" id="clock">${fmtDur(Math.round((Date.now()-new Date(a.started_at))/1000))}</div><div class="two"><span><b id="live-km">${(a.distance_m/1000).toFixed(2)}</b> ${esc(x.km)}</span></div><div id="live-route">${routeSvg(a.points)}</div><small class="muted">${esc(x.keepOpen)}</small><button class="btn danger" data-act="work-stop">${esc(x.stopWork)}</button></section>`
+ const main=a?`<section class="card work-live"><small>${esc(x.working)}</small><div class="clock" id="clock">${fmtDur(Math.round((Date.now()-new Date(a.started_at))/1000))}</div><div class="two"><span><b id="live-km">${(a.distance_m/1000).toFixed(2)}</b> ${esc(x.km)}</span></div>${mapBox(a.points,[],'live-map')}<small class="muted">${esc(x.keepOpen)}</small><button class="btn danger" data-act="work-stop">${esc(x.stopWork)}</button></section>`
   :`<section class="card work-start"><button class="btn primary big-btn" data-act="work-start">${esc(x.startWork)}</button>${S.msg?`<p class="msg">${esc(S.msg)}</p>`:''}</section>`;
  const done=all.filter(s=>s.ended_at);
  return `${main}<section class="card"><div class="stats"><div><small>${esc(x.today)}</small><b>${fmtDur(td.sec)}</b><span>${td.km.toFixed(1)} ${esc(x.km)}</span></div><div><small>${esc(x.thisWeek)}</small><b>${fmtDur(tw.sec)}</b><span>${tw.km.toFixed(1)} ${esc(x.km)}</span></div></div></section>
@@ -256,7 +329,7 @@ function workView(){
 }
 function sessionView(){
  const x=t(),s=S.workDetail,km=kmOf(s),h=s.duration_s/3600;
- return `<button class="link" data-act="work-back">← ${esc(x.back)}</button><h3 class="h">${esc(dateLabel(localDate(s.started_at)))}</h3><section class="card">${routeSvg(s.points)}<div class="stats"><div><small>${esc(x.distance)}</small><b>${km.toFixed(2)} ${esc(x.km)}</b></div><div><small>${esc(x.duration)}</small><b>${fmtDur(s.duration_s)}</b></div><div><small>${esc(x.avgSpeed)}</small><b>${s.duration_s>=120?`${(km/h).toFixed(1)} ${esc(x.kmh)}`:'—'}</b></div></div></section>`;
+ return `<button class="link" data-act="work-back">← ${esc(x.back)}</button><h3 class="h">${esc(dateLabel(localDate(s.started_at)))}</h3><section class="card">${mapBox(s.points,findStops(s.points||[]))}<div class="stats"><div><small>${esc(x.distance)}</small><b>${km.toFixed(2)} ${esc(x.km)}</b></div><div><small>${esc(x.duration)}</small><b>${fmtDur(s.duration_s)}</b></div><div><small>${esc(x.avgSpeed)}</small><b>${s.duration_s>=120?`${(km/h).toFixed(1)} ${esc(x.kmh)}`:'—'}</b></div></div></section><section class="card">${stopsHtml(findStops(s.points||[]))}</section>`;
 }
 function settingsView(){
  const x=t();
@@ -270,13 +343,15 @@ function watchView(){
  const x=t();if(!S.admin)return `<p class="muted center">${esc(x.noAdmin)}</p>`;
  if(S.detail)return detailView();
  if(!S.overview){loadOverview();return `<p class="muted center">…</p>`}
- return `<h3 class="h">${esc(x.overview)}</h3>${S.overview.length?S.overview.map(r=>{const tg=Number(r.daily_target),te=Number(r.today_earn),p=tg>0?Math.min(100,Math.round(te/tg*100)):0,wt=tg*(Number(r.work_days)||6);return `<button class="card staff" data-act="staff" data-id="${esc(r.user_id||r.nickname)}"><div class="row between"><strong>@${esc(r.nickname)}</strong><span class="muted">${r.last_activity?esc(new Date(r.last_activity).toLocaleDateString()):esc(x.never)}</span></div><div class="row between"><span>${esc(x.today)}</span><b>${money(te)}</b></div><progress max="100" value="${p}" class="${tg>0&&te>=tg?'done':''}"></progress><div class="row between muted"><span>${esc(x.target)}: ${tg>0?money(tg):esc(x.never)} · ${p}%</span><span>${esc(x.spent)}: ${money(Number(r.today_expense))}</span></div><div class="row between muted"><span>${esc(x.weekLbl)}: ${money(Number(r.week_earn))}${wt>0?` ${esc(x.of)} ${money(wt)}`:''}</span><span>${Number(r.today_km).toFixed(1)} ${esc(x.km)} · ${Number(r.today_hours).toFixed(1)} ${esc(x.hours)}</span></div><div class="row between muted"><span>${esc(x.month)}: ${money(Number(r.month_earn))}</span><span>${esc(x.total)}: ${money(Number(r.total_earn))}</span></div></button>`}).join(''):`<p class="muted center">${esc(x.noStaff)}</p>`}`;
+ return `<h3 class="h">${esc(x.overview)}</h3>${S.overview.length?S.overview.map(r=>{const cu=r.currency||'AZN',tg=Number(r.daily_target),te=Number(r.today_earn),p=tg>0?Math.min(100,Math.round(te/tg*100)):0,wt=tg*(Number(r.work_days)||6),mt=tg*(Number(r.work_days)||6)*new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()/7;return `<button class="card staff" data-act="staff" data-id="${esc(r.user_id||r.nickname)}"><div class="row between"><strong>@${esc(r.nickname)} <small class="muted">${esc(cu)}</small></strong>${r.live_at?`<span class="live">● ${esc(x.liveNow)}</span>`:`<span class="muted">${r.last_activity?esc(new Date(r.last_activity).toLocaleDateString()):esc(x.never)}</span>`}</div><div class="row between"><span>${esc(x.today)}</span><b>${money(te,cu)}</b></div><progress max="100" value="${p}" class="${tg>0&&te>=tg?'done':''}"></progress><div class="row between muted"><span>${esc(x.target)}: ${tg>0?money(tg,cu):esc(x.never)} · ${p}%</span><span>${esc(x.spent)}: ${money(Number(r.today_expense),cu)}</span></div><div class="row between muted"><span>${esc(x.weekLbl)}: ${money(Number(r.week_earn),cu)}${wt>0?` ${esc(x.of)} ${money(wt,cu)}`:''}</span><span>${Number(r.today_km).toFixed(1)} ${esc(x.km)} · ${Number(r.today_hours).toFixed(1)} ${esc(x.hours)}</span></div><div class="row between muted"><span>${esc(x.month)}: ${money(Number(r.month_earn),cu)}${mt>0?` ${esc(x.of)} ${money(mt,cu)}`:''}</span><span>${esc(x.total)}: ${money(Number(r.total_earn),cu)}</span></div></button>`}).join(''):`<p class="muted center">${esc(x.noStaff)}</p>`}`;
 }
 function detailView(){
- const x=t(),d=S.detail,items=d.entries||[],ses=d.sessions||[];
- return `<button class="link" data-act="back">← ${esc(x.back)}</button><h3 class="h">@${esc(d.nickname)}</h3><section class="card"><div class="two"><span>${esc(x.kind.sale)}: <b>${money(sum(items,'sale'))}</b></span><span>${esc(x.kind.expense)}: <b>${money(sum(items,'expense'))}</b></span><span>${esc(x.kind.income)}: <b>${money(sum(items,'income'))}</b></span></div></section>
- ${ses.length?`<section class="card"><h3>${esc(x.sessions)}</h3><ul class="rows">${ses.map(s=>`<li class="entry"><div><strong>${esc(dateLabel(localDate(s.started_at)))}</strong><small>${fmtDur(s.duration_s)} ${esc(x.hours)}</small></div><b>${kmOf(s).toFixed(1)} ${esc(x.km)}</b></li>`).join('')}</ul></section>`:''}
- <section class="card"><h3>${esc(x.entries)}</h3>${items.length?`<ul class="rows">${items.map(e=>rowHtml(e)).join('')}</ul>`:`<p class="muted">${esc(x.empty)}</p>`}</section>`;
+ const x=t(),d=S.detail,cu=d.currency||'AZN',items=d.entries||[],ses=d.sessions||[],sel=d.sel;
+ return `<button class="link" data-act="back">← ${esc(x.back)}</button><h3 class="h">@${esc(d.nickname)}</h3><section class="card"><div class="two"><span>${esc(x.kind.sale)}: <b>${money(sum(items,'sale'),cu)}</b></span><span>${esc(x.kind.expense)}: <b>${money(sum(items,'expense'),cu)}</b></span><span>${esc(x.kind.income)}: <b>${money(sum(items,'income'),cu)}</b></span></div></section>
+ ${d.live?`<section class="card"><h3><span class="live">● ${esc(x.liveNow)}</span></h3>${mapBox([],[],null,d.live)}<small class="muted">${esc(x.liveAt)}: ${new Date(d.live.t).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></section>`:''}
+ ${ses.length?`<section class="card"><h3>${esc(x.sessions)}</h3><ul class="rows">${ses.map(s=>`<li class="entry"><button class="sess" data-act="asession" data-id="${s.id}"><div><strong>${esc(dateLabel(localDate(s.started_at)))}</strong><small>${fmtDur(s.duration_s)} ${esc(x.hours)}</small></div><b>${kmOf(s).toFixed(1)} ${esc(x.km)}</b></button></li>`).join('')}</ul></section>`:''}
+ ${sel?`<section class="card"><h3>${esc(x.myMap)} · ${esc(dateLabel(localDate(sel.s.started_at)))}</h3>${sel.points.length?mapBox(sel.points,findStops(sel.points)):`<p class="muted">${esc(x.noRoute)}</p>`}${sel.points.length?stopsHtml(findStops(sel.points)):''}</section>`:''}
+ <section class="card"><h3>${esc(x.entries)}</h3>${items.length?`<ul class="rows">${items.map(e=>rowHtml(e,false,cu)).join('')}</ul>`:`<p class="muted">${esc(x.empty)}</p>`}</section>`;
 }
 function sheetView(){
  const x=t(),sh=S.sheet;
@@ -296,11 +371,17 @@ async function loadOverview(){
  const {data,error}=await sb.rpc('bt_overview');S.loadingOv=false;if(error){console.warn(error);S.overview=[];render();return}
  S.overview=data;render();
 }
+async function openAdminSession(id){
+ const s=(S.detail.sessions||[]).find(q=>q.id===id);if(!s)return;let pts=s.points||[];
+ if(!pts.length&&!S.demo&&sb){const r=await sb.from('bt_routes').select('points').eq('session_id',id).maybeSingle();pts=r.data?r.data.points:[]}
+ S.detail.sel={s,points:pts};render();
+}
 async function openStaff(id){
  const row=(S.overview||[]).find(r=>(r.user_id||r.nickname)===id);if(!row)return;
- if(S.demo){S.detail={nickname:row.nickname,entries:[],sessions:[]};render();return}
- const [en,se]=await Promise.all([sb.from('bt_entries').select('id,kind,amount,category,note,entry_date,created_at,photo_path').eq('user_id',row.user_id).is('deleted_at',null).order('entry_date',{ascending:false}).limit(300),sb.from('bt_sessions').select('id,started_at,ended_at,distance_m,duration_s').eq('user_id',row.user_id).order('started_at',{ascending:false}).limit(30)]);
- S.detail={nickname:row.nickname,entries:(en.data||[]).map(r=>({id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,photo_path:r.photo_path})),sessions:se.data||[]};render();
+ if(S.demo){S.detail={nickname:row.nickname,currency:row.currency,entries:[],sessions:S.sessions.map(q=>({...q})),live:row.live_at?{lat:40.4093,lng:49.8671,t:Date.now()}:null};render();return}
+ const [en,se,lv]=await Promise.all([sb.from('bt_entries').select('id,kind,amount,category,note,entry_date,created_at,photo_path').eq('user_id',row.user_id).is('deleted_at',null).order('entry_date',{ascending:false}).limit(300),sb.from('bt_sessions').select('id,started_at,ended_at,distance_m,duration_s').eq('user_id',row.user_id).order('started_at',{ascending:false}).limit(30),sb.from('bt_live').select('lat,lng,updated_at').eq('user_id',row.user_id).maybeSingle()]);
+ const lvOk=lv.data&&Date.now()-new Date(lv.data.updated_at)<10*60*1000;
+ S.detail={nickname:row.nickname,currency:row.currency,live:lvOk?{lat:lv.data.lat,lng:lv.data.lng,t:new Date(lv.data.updated_at).getTime()}:null,entries:(en.data||[]).map(r=>({id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,photo_path:r.photo_path})),sessions:se.data||[]};render();
 }
 
 /* ---------- render + events ---------- */
@@ -308,6 +389,7 @@ function render(){
  const root=$('#app'),open=$('#apk')?.open;
  document.documentElement.lang=S.lang;document.title=t().app;
  root.innerHTML=!S.user&&!S.demo?authView():appView();
+ liveM=null;document.querySelectorAll('[data-map]').forEach(drawMap);
  if(open&&$('#apk'))$('#apk').showModal();
 }
 function csv(){
@@ -331,7 +413,7 @@ document.addEventListener('submit',async e=>{
  const act=f.dataset.act;
  if(act==='auth')return submitAuth();
  if(act==='goals'){const v=Math.max(0,Number(String($('#g-daily').value).replace(',','.'))||0);S.goals.daily=v;S.dirty.goals=true;persist();S.msg=t().goalSaved;render();S.msg='';sync();return}
- if(act==='nick'){const nick=$('#n-nick').value.trim();if(!NICK.test(nick)){S.msg=t().nickRule;return render()}const r=await sb.from('bt_profiles').insert({nickname:nick});if(r.error){S.msg=r.error.code==='23505'?t().nickTaken:t().netErr;return render()}S.nick=nick;S.sheet=null;S.msg='';const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data;render();say('welcome');sync()}
+ if(act==='nick'){const nick=$('#n-nick').value.trim();if(!NICK.test(nick)){S.msg=t().nickRule;return render()}const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur});if(r.error){S.msg=r.error.code==='23505'?t().nickTaken:t().netErr;return render()}S.nick=nick;S.sheet=null;S.msg='';const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data;render();say('welcome');sync()}
 });
 document.addEventListener('change',async e=>{
  const i=e.target;if(i.id!=='in-cam'&&i.id!=='in-gal')return;const file=i.files&&i.files[0];if(!file||!S.sheet)return;
@@ -347,7 +429,7 @@ document.addEventListener('click',e=>{
  else if(a==='tab'){if(v==='add'){openSheet()}else{S.tab=v;S.detail=null;S.workDetail=null;S.msg='';if(v==='watch'&&!S.demo)S.overview=null}render()}
  else if(a==='quick'){openSheet('expense',v);render()}
  else if(a==='filter'){S.filter=v;render()}
- else if(a==='cur'){S.cur=v;saveSettings();render()}
+ else if(a==='cur'){if(v!==S.cur&&live().length&&!confirm(t().currencyNote))return;S.cur=v;saveSettings();if(S.user&&sb)sb.from('bt_profiles').update({currency:v}).eq('user_id',S.user.id).then(()=>{});render()}
  else if(a==='days'){const i=$('#g-daily');if(i)S.goals.daily=Math.max(0,Number(i.value.replace(',','.'))||0);S.goals.days=Number(v);S.dirty.goals=true;persist();sync();render()}
  else if(a==='sound'){S.sound=b.checked;saveSettings()}
  else if(a==='export')csv();
@@ -357,6 +439,7 @@ document.addEventListener('click',e=>{
  else if(a==='photo')openPhoto(b.dataset.id,b.dataset.path);
  else if(a==='viewer-close'){if(e.target===b||b.tagName==='BUTTON'){URL.revokeObjectURL(S.viewer);S.viewer=null;render()}}
  else if(a==='staff')openStaff(b.dataset.id);
+ else if(a==='asession')openAdminSession(b.dataset.id);
  else if(a==='back'){S.detail=null;render()}
  else if(a==='work-start'){if(LS.get('gpsOk'))startWork();else{S.sheet={type:'gps'};render()}}
  else if(a==='gps-allow'){LS.set('gpsOk',1);S.sheet=null;startWork()}

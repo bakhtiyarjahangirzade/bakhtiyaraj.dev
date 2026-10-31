@@ -9,3 +9,9 @@ const chess = (await readFile(nm('chess.js/dist/esm/chess.js'), 'utf8')).replace
 await writeFile(new URL('chess.mjs', out), chess);
 await cp(nm('chess.js/LICENSE'), new URL('CHESSJS-LICENSE.txt', out));
 console.log('vendor libraries copied to public/vendor');
+// Leaflet (maps for /budgettracker)
+await mkdir(new URL('leaflet/', out), { recursive: true });
+await cp(nm('leaflet/dist/leaflet.js'), new URL('leaflet/leaflet.js', out));
+await cp(nm('leaflet/dist/leaflet.css'), new URL('leaflet/leaflet.css', out));
+await cp(nm('leaflet/LICENSE'), new URL('leaflet/LICENSE.txt', out));
+console.log('leaflet copied');

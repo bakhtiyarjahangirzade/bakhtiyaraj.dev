@@ -1,7 +1,7 @@
 {
-  "name": "BAKHY Budget",
-  "short_name": "Budget",
-  "description": "Gəlir, xərc və satış izləmə",
+  "name": "KuryeBro",
+  "short_name": "KuryeBro",
+  "description": "Kuryerin gündəlik hədəfi, qazancı və xərcləri",
   "start_url": "/budgettracker/",
   "scope": "/budgettracker/",
   "display": "standalone",
