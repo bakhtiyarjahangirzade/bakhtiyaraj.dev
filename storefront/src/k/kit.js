@@ -9,7 +9,8 @@ export const assets={};
 for(const d of readdirSync(kdir,{withFileTypes:true}))if(d.isDirectory()&&existsSync(new URL(`${d.name}/assets.json`,kdir)))Object.assign(assets,JSON.parse(readFileSync(new URL(`${d.name}/assets.json`,kdir),'utf8')));
 
 const IDX={az:0,ru:1,en:2};
-const LOCALE={az:'az-AZ',ru:'ru-RU',en:'en-GB'};
+// az uses the ru-RU grouping (space thousands, decimal comma): browsers often lack az number data, so build and runtime agree.
+const LOCALE={az:'ru-RU',ru:'ru-RU',en:'en-GB'};
 
 // A translatable leaf. Every leaf ever created is registered so tests can check all three languages exist.
 export class Tx{constructor(az,ru,en){this.v=[az,ru,en];Tx.all.push(this)}}
@@ -30,7 +31,7 @@ export function makeCtx(lang){
   t:(leaf,vars)=>esc(raw(leaf,vars)),
   href:p=>`/${lang}${p}`,
   azn:(n,o)=>`${num(n,o)} AZN`,
-  date:(d,o)=>new Intl.DateTimeFormat(loc,o).format(d),
+  date:(d,o)=>new Intl.DateTimeFormat({az:'az-AZ',ru:'ru-RU',en:'en-GB'}[lang]||'az-AZ',o).format(d),
   // <script type="application/json"> payload; CSP allows it because it is never executed.
   data:(obj,id='k-data')=>`<script type="application/json" id="${id}">${JSON.stringify(resolve(obj)).replace(/</g,'\\u003c')}</script>`,
   img:(key,alt,opt={})=>img(ctx,key,alt,opt),
