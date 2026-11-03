@@ -3,7 +3,17 @@
 import {projects} from './projects.js';
 import {renderShowroom,showroomIds} from './showroom.js';
 import {showroomMeta} from './showroom-copy.js';
+import {readdirSync,existsSync} from 'node:fs';
+import {makeCtx} from './k/kit.js';
 export const conceptIds=['casa','olio','aurea','forma','atelier','flow','reserve','stock',...showroomIds];
+// Redesigned concepts live in src/k/<id>/index.js (render) + app.js (runtime, imports its own style.css).
+// They are discovered here so each concept stays an independent module; ids and URLs are unchanged.
+const kdir=new URL('./k/',import.meta.url);
+export const kModules={};
+for(const id of readdirSync(kdir,{withFileTypes:true}).filter(d=>d.isDirectory()&&existsSync(new URL(`${d.name}/index.js`,kdir))).map(d=>d.name)){
+ if(!conceptIds.includes(id))throw new Error(`k/${id}: not a known concept id`);
+ kModules[id]=(await import(new URL(`${id}/index.js`,kdir).href)).default;
+}
 const nav=(...a)=>a;
 export const concepts={
  casa:{kind:'site',brand:'Casa Forma',nav:nav('Layihələr','Studiya','Əlaqə'),headline:'Ruhu olan məkanlar.',cta:'Layihələrə bax',
@@ -32,6 +42,7 @@ export const concepts={
   section:'Anbar cədvəli',board:{head:['Məhsul','Qalıq','Status'],rows:[['Məhsul A',48,'Kifayətdir'],['Məhsul B',12,'Azdır'],['Məhsul C',230,'Kifayətdir']]}}
 };
 for(const id of showroomIds)concepts[id]={kind:showroomMeta[id].kind==='app'?'app':'site',brand:showroomMeta[id].brand,custom:true};
+for(const [id,m] of Object.entries(kModules))concepts[id]={...concepts[id],kind:m.kind,brand:m.brand,k:true};
 // Shared strings used by the shell/ribbon and by service pages.
 export const conceptUi=['Nümunə','Bu, BAKHY tərəfindən hazırlanmış konsept nümunəsidir. Real müştəri və ya xidməti təsvir etmir.','Bu konsepti fərdiləşdir','Bütün konseptlər','Bu səhifədəki ad, mətn və məlumatlar nümunədir.','Konsept nümunələri','Konsept saytını aç','Boş','Rezerv'];
 
@@ -40,7 +51,8 @@ export function conceptMeta(id,T){
  const p=projects.find(x=>x.id===id),c=concepts[id];
  return {title:T('{name} — konsept nümunəsi | BAKHY',{name:c.brand}),desc:T(p.desc),service:c.kind==='app'?'system':'website',design:c.kind==='app'||c.custom?'':id};
 }
-export function renderConcept(id,T){
+export function renderConcept(id,T,lang='az'){
+ if(kModules[id])return kModules[id].render(makeCtx(lang));
  if(concepts[id].custom)return renderShowroom(id,T);
  const c=concepts[id],cards=c.cards.map(([h,d],i)=>`<article><span>0${i+1}</span><h3>${e(T(h))}</h3><p>${e(T(d))}</p></article>`).join('');
  const nav=c.nav.map(n=>`<span>${e(T(n))}</span>`).join('');
