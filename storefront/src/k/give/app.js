@@ -7,7 +7,7 @@ const R=D.r,C=D.cal;
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const fill=(s,v)=>s.replace(/\{(\w+)\}/g,(m,k)=>k in v?v[k]:m);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const SEP={az:'.',ru:' ',en:','}[D.lang]||'.',DEC=D.lang==='en'?'.':',';
+const SEP={az:' ',ru:' ',en:','}[D.lang]||' ',DEC=D.lang==='en'?'.':',';
 const money=n=>{const [i,f]=(Math.round(n*100)/100).toFixed(2).split('.');return `${i.replace(/\B(?=(\d{3})+(?!\d))/g,SEP)}${f==='00'?'':DEC+f} AZN`};
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');
 

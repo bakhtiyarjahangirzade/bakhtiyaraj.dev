@@ -7,7 +7,7 @@ const R=D.r,C=D.cal,ROOMS=D.rooms;
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const fill=(s,v)=>s.replace(/\{(\w+)\}/g,(m,k)=>k in v?v[k]:m);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const SEP={az:'.',ru:' ',en:','}[D.lang]||'.';
+const SEP={az:' ',ru:' ',en:','}[D.lang]||' ';
 const num=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,SEP);
 const azn=n=>`${num(n)} AZN`;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');
