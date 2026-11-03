@@ -36,7 +36,7 @@ Network: `api.openverse.org` (anonymous: 20 requests/min, **200/day shared by ev
 
 ## Fonts
 
-OFL families already vendored (latin, latin-ext for Azerbaijani ə ğ ı ö ş ü ç, and Cyrillic where the family has it) as `storefront/src/k/fonts/<name>.css`: bodoni-moda, comfortaa, commissioner, eb-garamond, exo-2, fira-sans, fira-sans-condensed, geologica, golos-text, ibm-plex-sans, jost, lora, nunito, onest, oswald, pt-sans, rubik, tenor-sans, unbounded, young-serif (no Cyrillic: young-serif, bodoni-moda — give a Cyrillic fallback). The CSS family names are e.g. `'Commissioner Variable'`, `'Fira Sans'`. Do not use the studio fonts (Inter/Archivo) as a concept's identity.
+OFL families already vendored (latin, latin-ext for Azerbaijani ə ğ ı ö ş ü ç, and Cyrillic where the family has it) as `storefront/src/k/fonts/<name>.css`: bodoni-moda, comfortaa, commissioner, eb-garamond, exo-2, fira-sans, fira-sans-condensed, geologica, golos-text, ibm-plex-sans, jost, lora, nunito, onest, oswald, pt-sans, rubik, tenor-sans, unbounded, young-serif (no Cyrillic: young-serif, bodoni-moda — give a Cyrillic fallback). Do not use tenor-sans for Azerbaijani text: it draws a dotted ı and a comma-below ş. The CSS family names are e.g. `'Commissioner Variable'`, `'Fira Sans'`. Do not use the studio fonts (Inter/Archivo) as a concept's identity.
 
 ## Build and check
 
