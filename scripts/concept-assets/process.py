@@ -20,7 +20,9 @@ for concept in sys.argv[2:]:
     sel = json.load(open(os.path.join(HERE, 'selections', concept + '.json')))
     meta = {}
     for f in os.listdir(cache):
-        if f.endswith('.json'): meta.update(json.load(open(os.path.join(cache, f))))
+        if f.endswith('.json'):
+            try: meta.update(json.load(open(os.path.join(cache, f))))
+            except ValueError: pass  # another search is writing it
     outdir = os.path.join(ROOT, 'storefront', 'public', 'assets', 'k', concept); os.makedirs(outdir, exist_ok=True)
     for item in sel:
         m = meta.get(item['id'])

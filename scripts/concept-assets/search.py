@@ -36,4 +36,6 @@ for page in range(1, pages + 1):
         data[x['id']]['queries'] = [query]
     print(f'{concept} "{query}" p{page}: {len(res.get("results", []))} results (total cached {len(data)})')
     time.sleep(1.2)
-json.dump(data, open(path, 'w'), indent=1, ensure_ascii=False)
+tmp = path + '.tmp'
+json.dump(data, open(tmp, 'w'), indent=1, ensure_ascii=False)
+os.replace(tmp, path)
