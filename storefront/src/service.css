@@ -41,3 +41,17 @@
 .secondary-service h3 a{color:inherit}.secondary-service h3 a:hover{text-decoration:underline;text-underline-offset:4px}
 @media(max-width:900px){.service-hero{grid-template-columns:1fr;gap:28px;padding-bottom:56px}.service-grid{grid-template-columns:1fr;gap:44px}.service-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.option-row{grid-template-columns:1fr auto;gap:6px 16px}.option-row span{grid-column:1/-1;order:3}}
 @media(max-width:560px){.service-steps{grid-template-columns:1fr}.service-band{padding:48px 6%}.service-section{padding-top:64px}.service-cta{padding:44px 6%;margin-top:64px}}
+/* Business upgrade: real projects and step responsibilities on service pages */
+.service-cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:18px}
+.service-cases a{display:grid;gap:6px;padding:8px 8px 14px;border:1px solid #dcdcdc;border-radius:18px;background:#fff;color:var(--ink);min-width:0}
+.service-cases a:hover{border-color:var(--ink)}
+.service-cases img{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;border-radius:12px;display:block}
+.service-cases strong{font-size:18px;padding:6px 6px 0}
+.service-cases span{font-size:13px;color:#5f5f5f;padding:0 6px}
+.service-steps article dl{margin:14px 0 0;font-size:13px;line-height:1.45}
+.service-steps article dt{font-weight:600;margin-top:10px;opacity:.75}
+.service-steps article dd{margin:2px 0 0}
+.service-steps+.option-note{margin-top:26px}
+.service-all{display:inline-flex;align-items:center;min-height:44px;margin-top:14px;font-size:14px;text-decoration:underline;text-underline-offset:4px}
+@media (max-width:400px){.service-hero h1{font-size:clamp(28px,9vw,40px);overflow-wrap:anywhere;hyphens:auto}.service-price strong{font-size:clamp(30px,10vw,44px)}.service-hero>div{min-width:0}}
+.service-more-list a{min-width:0;flex-wrap:wrap}.service-more-list a>*{min-width:0;overflow-wrap:anywhere}

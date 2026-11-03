@@ -3,7 +3,8 @@
 import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
 import {rows} from '../storefront/src/i18n/strings.js';
 import {products} from '../storefront/src/product-data.js';
-import {serviceContent,serviceIds} from '../storefront/src/services-content.js';
+import {serviceContent,serviceIds,processSteps,processNote,serviceCases} from '../storefront/src/services-content.js';
+import {cases} from '../storefront/src/cases.js';
 import {concepts,conceptIds,conceptMeta,renderConcept} from '../storefront/src/concepts.js';
 import {projects} from '../storefront/src/projects.js';
 
@@ -105,14 +106,16 @@ function makeT(lang){
  };
 }
 const WA='https://wa.me/48571572697';
-const STEPS=[['01','TANIŞLIQ','Nə yaratmaq istəyirsiniz? Məqsədi, funksiyaları və büdcəni birlikdə dəqiqləşdiririk.'],['02','DİZAYN','Struktur və vizual istiqamət. Dizaynı rəyinizlə birlikdə formalaşdırırıq.'],['03','HAZIRLANMA','Sayt, sistem və inteqrasiyalar. Hər ekranı və funksiyanı işləyən məhsula çeviririk.'],['04','YAYIM','Mobil və masaüstü yoxlamalar, domeninizdə yayım və istifadə üçün təhvil.']];
 function serviceBody(id,lang){
  const T=makeT(lang),p=products[id],c=serviceContent[id],L=x=>`/${lang}${x}`,e=encodeText,ea=encodeAttr;
  const title=T(p.title),price=T('{n} AZN-dən',{n:p.price}),config=L('/product.html?service='+id);
  const related=conceptIds.filter(x=>id==='website'?concepts[x].kind==='site':id==='system'?concepts[x].kind==='app':false);
- const relatedHtml=related.length?`<section class="service-section"><h2>${e(T('Konsept nümunələri'))}</h2><div class="service-more-list">${related.map(x=>`<a href="${L('/concepts/'+x+'.html')}"><strong>${e(concepts[x].brand)}</strong><span>${e(T(projects.find(q=>q.id===x).category))}</span></a>`).join('')}</div></section>`:'';
+ const relatedHtml=()=>related.length?`<section class="service-section"><h2>${e(T('Konsept nümunələri'))}</h2><p class="option-note">${e(T('Konseptlərdəki adlar və məlumatlar nümunədir. Dizayn sizin biznesinizə uyğunlaşdırılır.'))}</p><div class="service-more-list">${related.map(x=>`<a href="${L('/concepts/'+x+'.html')}"><strong>${e(concepts[x].brand)}</strong><span>${e(T(projects.find(q=>q.id===x).category))}</span></a>`).join('')}</div>${catalogueLink}</section>`:'';
  const options=p.options.map(o=>`<div class="option-row"><strong>${e(T(o.label))}</strong><span>${e(T(o.help))}</span><b>+${o.price} AZN</b></div>`).join('')+c.extras.map(([k,v])=>`<div class="option-row"><strong>${e(T(k))}</strong><span></span><b>+${v} AZN</b></div>`).join('');
- const steps=STEPS.map(([n,h,d])=>`<article><span>${n}</span><h3>${e(T(h))}</h3><p>${e(T(d))}</p></article>`).join('');
+ const steps=processSteps.map(([h,d,give,get],i)=>`<article><span>0${i+1}</span><h3>${e(T(h))}</h3><p>${e(T(d))}</p><dl><dt>${e(T('Sizdən'))}</dt><dd>${e(T(give))}</dd><dt>${e(T('Sizə'))}</dt><dd>${e(T(get))}</dd></dl></article>`).join('');
+ const realWork=serviceCases[id].map(x=>projects.find(q=>q.id===x));
+ const realHtml=realWork.length?`<section class="service-section"><h2>${e(T('Real layihələr'))}</h2><div class="service-cases">${realWork.map(r=>`<a href="${L('/#case-'+r.id)}"><img src="${cases[r.id].shots[0].base}-640.jpg" alt="" width="640" height="400" loading="lazy" decoding="async"><strong>${e(r.name)}</strong><span>${e(T(r.category))}: ${e(cases[r.id].domain)}</span></a>`).join('')}</div></section>`:'';
+ const catalogueLink=related.length?`<a class="service-all" href="${L('/catalogue.html?filter='+(id==='system'?'system':'website'))}">${e(T('Kataloqda hamısına baxın'))} ↗</a>`:'';
  const faq=c.faq.map(([q,a,v],i)=>`<details${i===0?' open':''}><summary>${e(T(q))}</summary><p>${e(T(a,v))}</p></details>`).join('');
  const more=serviceIds.filter(x=>x!==id).map(x=>`<a href="${L('/services/'+x+'.html')}"><strong>${e(T(products[x].title))}</strong><span>${e(T('{n} AZN-dən',{n:products[x].price}))}</span></a>`).join('');
  const actions=`<div class="service-actions"><a class="button primary" href="${config}">${e(T('Fərdiləşdir və qiyməti hesabla'))} <span>↗</span></a><a class="button outline" href="${WA}" target="_blank" rel="noopener">${e(T('WhatsApp-da yaz'))} <span>↗</span></a></div>`;
@@ -121,8 +124,8 @@ function serviceBody(id,lang){
   `<section class="service-hero"><div><p class="eyebrow">${e(T(p.group))}</p><h1>${e(title)}</h1></div><div><p class="service-lead">${e(T(p.desc))}</p><div class="service-price"><strong>${e(price)}</strong><span>${e(T('birdəfəlik, başlayan qiymət'))}</span></div>${actions}</div></section>`+
   `<section class="service-band"><div class="service-grid"><div><h2>${e(T('Başlanğıc paketinə daxildir'))}</h2><ul class="service-list">${p.included.map(i=>`<li>${e(T(i))}</li>`).join('')}</ul></div><div><h2>${e(T('Kimlər üçün uyğundur?'))}</h2><ul class="service-list">${c.audience.map(a=>`<li>${e(T(a))}</li>`).join('')}</ul></div></div></section>`+
   `<section class="service-section"><h2>${e(T('Əlavə imkanlar və qiymətlər'))}</h2><p class="option-note">${e(T('Qiymətlər başlanğıc qiymətə əlavə olunur. Yekun məbləğ konfiqurator ilə hesablanır.'))}</p><div class="option-table">${options}</div></section>`+
-  relatedHtml+
-  `<section class="service-section"><h2>${e(T('İş necə gedir?'))}</h2><div class="service-steps">${steps}</div></section>`+
+  realHtml+relatedHtml()+
+  `<section class="service-section"><h2>${e(T('İş necə gedir?'))}</h2><div class="service-steps">${steps}</div><p class="option-note">${e(T(processNote))}</p></section>`+
   `<section class="service-section service-faq"><h2>${e(T('Tez-tez verilən suallar'))}</h2><div class="faq-list">${faq}</div></section>`+
   `<section class="service-cta"><h2>${e(T('Başlamağa hazırsınız?'))}</h2><p>${e(T('Seçimlərinizi edin və qiyməti görün, ya da birbaşa mənə yazın.'))}</p>${actions}</section>`+
   `<section class="service-section"><h2>${e(T('Digər xidmətlər'))}</h2><div class="service-more-list">${more}</div></section>`;
