@@ -1,0 +1,38 @@
+{
+ "clinic/dolls": {
+  "w": 1920,
+  "h": 682,
+  "widths": [
+   640,
+   1280,
+   1920
+  ],
+  "title": "A set of matryoshka dolls in the foreground, on a wooden piece of furniture. In the background, blurred, there is a potted plant and a candle in a glass, almost spent.",
+  "creator": "María Cortés",
+  "license": "CC0 1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "page": "https://wordpress.org/photos/photo/998672c737/",
+  "original": "https://pd.w.org/2024/11/998672c7377d421a7.33310383-2048x1400.jpeg",
+  "source": "wordpress",
+  "sourceName": "WordPress Photo Directory",
+  "openverse": "0f01f595-97d7-4124-ba55-22cd28ddb24f"
+ },
+ "clinic/rainbow": {
+  "w": 1800,
+  "h": 1151,
+  "widths": [
+   640,
+   1280,
+   1800
+  ],
+  "title": "A wooden toy in the shape of a rainbow is placed on a wooden surface with a blurry background of buildings visible through a window. Another wooden tray with small assorted shapes is partially visible on the left side of the image.",
+  "creator": "ev0llution",
+  "license": "CC0 1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "page": "https://wordpress.org/photos/photo/117667f492/",
+  "original": "https://pd.w.org/2024/06/117667f49251b43b5.91981460-2048x1152.jpg",
+  "source": "wordpress",
+  "sourceName": "WordPress Photo Directory",
+  "openverse": "91ff50d7-5a48-4014-a940-1043a79ec328"
+ }
+}

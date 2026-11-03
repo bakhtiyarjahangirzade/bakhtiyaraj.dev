@@ -1,0 +1,188 @@
+@import '../fonts/golos-text.css';
+
+body.concept-wealth{
+ --paper:#EEF1EC;--sheet:#FCFCFB;--ink:#17201B;--ink2:#4A554E;--ink3:#6B756E;--rule:#C9D1C7;--rule2:#DFE5DD;
+ --green:#0E8A5F;--green-a:#0E8A5F33;--amber:#B8620F;--amber-a:#B8620F40;--what:#2B3A8C;--brick:#A63A28;
+ background:var(--paper);color:var(--ink);font:400 16px/1.5 'Golos Text Variable',system-ui,sans-serif;font-variant-numeric:tabular-nums;
+}
+.concept-wealth .gr{max-width:1440px;margin:0 auto;padding:0 clamp(12px,2.2vw,32px) 0}
+.concept-wealth :focus-visible{outline:2px solid var(--what);outline-offset:2px;border-radius:4px}
+
+/* top bar */
+.concept-wealth .gr-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 4px 14px}
+.concept-wealth .gr-brand{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:22px;letter-spacing:-.01em;text-decoration:none}
+.concept-wealth .gr-sprout{width:26px;height:26px;fill:none;stroke:var(--green);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.concept-wealth .gr-nav{display:flex;gap:4px 18px;flex-wrap:wrap}
+.concept-wealth .gr-nav a{color:var(--ink2);text-decoration:none;font-size:15px;padding:6px 2px}
+.concept-wealth .gr-nav a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:4px}
+
+/* app frame */
+.concept-wealth .gr-app{display:grid;grid-template-columns:250px minmax(0,1fr) 340px;grid-template-areas:"goals plan form" "goals table form";grid-template-rows:auto 1fr;gap:0;background:var(--sheet);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.concept-wealth .gr-goals{grid-area:goals;border-right:1px solid var(--rule2);padding:22px 16px;display:flex;flex-direction:column;gap:14px;background:#F6F8F5}
+.concept-wealth .gr-plan{grid-area:plan;padding:26px 28px 18px;min-width:0}
+.concept-wealth .gr-form{grid-area:form;border-left:1px solid var(--rule2);padding:22px 22px 26px;display:flex;flex-direction:column;gap:14px}
+.concept-wealth .gr-table{grid-area:table;padding:4px 28px 28px;min-width:0}
+.concept-wealth .gr-tabs{display:none}
+.concept-wealth h2{font-size:15px;font-weight:600;color:var(--ink2);letter-spacing:0}
+
+/* goals */
+.concept-wealth .gr-goal-list{display:flex;flex-direction:column;gap:6px}
+.concept-wealth .gr-goal-list button{width:100%;text-align:left;display:grid;gap:4px;background:transparent;border:1px solid transparent;border-radius:10px;padding:10px 10px 12px}
+.concept-wealth .gr-goal-list button:hover{background:#EBEFE9}
+.concept-wealth .gr-goal-list button[aria-current=true]{background:var(--sheet);border-color:var(--rule)}
+.concept-wealth .gr-g-name{font-weight:600;font-size:15px;line-height:1.3}
+.concept-wealth .gr-g-meta{font-size:13px;color:var(--ink3)}
+.concept-wealth .gr-g-bar{height:4px;border-radius:4px;background:var(--rule2);overflow:hidden}
+.concept-wealth .gr-g-bar i{display:block;height:100%;background:var(--green);border-radius:4px}
+.concept-wealth .gr-empty{font-size:14px;color:var(--ink2);border:1px dashed var(--rule);border-radius:10px;padding:12px}
+.concept-wealth .gr-aside-note{margin-top:auto;font-size:13px;color:var(--ink3);line-height:1.45}
+
+/* buttons */
+.concept-wealth .gr-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:10px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-weight:600;font-size:15px}
+.concept-wealth .gr-btn:hover{background:#2B362F}
+.concept-wealth .gr-btn-ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+.concept-wealth .gr-btn-ghost:hover{background:#EBEFE9}
+.concept-wealth .gr-btn-quiet{background:transparent;color:var(--brick);border-color:transparent}
+.concept-wealth .gr-btn-quiet:hover{background:#F6E9E6}
+.concept-wealth .gr-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* plan head */
+.concept-wealth .gr-head h1{font-size:clamp(26px,2.4vw,34px);line-height:1.15;font-weight:650;letter-spacing:-.015em;margin-bottom:10px;overflow-wrap:anywhere}
+.concept-wealth .gr-summary{font-size:clamp(19px,1.6vw,23px);line-height:1.35;max-width:36em;font-weight:500}
+.concept-wealth .gr-status{margin-top:8px;font-size:15px;color:var(--ink2);max-width:46em}
+.concept-wealth .gr-status[data-tone=good]::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:8px;vertical-align:1px}
+.concept-wealth .gr-status[data-tone=short]::before{content:'';display:inline-block;width:8px;height:8px;background:var(--brick);margin-right:8px;vertical-align:1px}
+.concept-wealth .is-invalid .gr-summary{color:var(--brick)}
+
+/* chart */
+.concept-wealth .gr-chart{margin:22px 0 0}
+.concept-wealth .gr-legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink2);margin-bottom:8px}
+.concept-wealth .gr-key{display:inline-flex;align-items:center;gap:7px}
+.concept-wealth .gr-key::before{content:'';width:14px;height:10px;border-radius:2px}
+.concept-wealth .gr-key-c::before{background:var(--green)}
+.concept-wealth .gr-key-g::before{background:var(--amber)}
+.concept-wealth .gr-key-w::before{height:0;border-top:2px dashed var(--what);border-radius:0}
+.concept-wealth .gr-key-t::before{height:0;border-top:2px solid var(--ink);border-radius:0}
+.concept-wealth .gr-svgwrap{position:relative}
+.concept-wealth .gr-svg{width:100%;height:auto;overflow:visible;touch-action:pan-y}
+.concept-wealth .gr-grid{stroke:var(--rule2);stroke-width:1}
+.concept-wealth .gr-base{stroke:var(--ink3);stroke-width:1}
+.concept-wealth .gr-ax{fill:var(--ink3);font-size:12px}
+.concept-wealth .gr-unit{font-weight:600}
+.concept-wealth .gr-a-c{fill:var(--green);fill-opacity:.85}
+.concept-wealth .gr-a-g{fill:var(--amber);fill-opacity:.75}
+.concept-wealth .gr-l-b{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round}
+.concept-wealth .gr-l-w{fill:none;stroke:var(--what);stroke-width:2;stroke-dasharray:6 5;stroke-linejoin:round}
+.concept-wealth .gr-l-t{stroke:var(--ink);stroke-width:1.5}
+.concept-wealth .gr-lab{fill:var(--ink);font-size:12.5px;font-weight:600;paint-order:stroke;stroke:var(--sheet);stroke-width:4px}
+.concept-wealth .gr-dot{fill:var(--ink);stroke:var(--sheet);stroke-width:2}
+.concept-wealth .gr-cross line{stroke:var(--ink);stroke-width:1;stroke-dasharray:2 3}
+.concept-wealth .gr-cross circle{fill:var(--sheet);stroke:var(--ink);stroke-width:2}
+.concept-wealth .gr-empty-rect{fill:#F3F5F2;stroke:var(--rule);stroke-dasharray:4 4}
+.concept-wealth .gr-tip{position:absolute;top:8px;min-width:200px;max-width:320px;background:var(--ink);color:#fff;border-radius:8px;padding:9px 11px;font-size:12.5px;line-height:1.45;display:grid;gap:2px;pointer-events:none}
+.concept-wealth .gr-tip strong{font-weight:600;margin-bottom:2px}
+.concept-wealth .gr-tip span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.concept-wealth .gr-status:empty{display:none}
+.concept-wealth .gr-tip b{margin-left:auto;font-weight:600}
+.concept-wealth .gr-sw{width:9px;height:9px;border-radius:2px;flex:none}
+.concept-wealth .gr-sw-c{background:#3FC492}.concept-wealth .gr-sw-g{background:#E9A35E}.concept-wealth .gr-sw-w{background:#A9B4F0}
+.concept-wealth figcaption{margin-top:10px;font-size:13px;color:var(--ink3);max-width:60em}
+.concept-wealth figcaption strong{display:block;margin-top:4px;color:var(--ink2);font-weight:600}
+
+.concept-wealth .gr-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:20px;border-top:1px solid var(--rule2)}
+.concept-wealth .gr-stats>div{padding:14px 12px 4px 0}
+.concept-wealth .gr-stats>div+div{padding-left:16px;border-left:1px solid var(--rule2)}
+.concept-wealth .gr-stats dt{font-size:13px;color:var(--ink3)}
+.concept-wealth .gr-stats dd{margin:2px 0 0;font-size:clamp(20px,1.8vw,26px);font-weight:600;letter-spacing:-.01em}
+.concept-wealth .gr-real{margin-top:10px;font-size:14px;color:var(--ink2)}
+
+/* form */
+.concept-wealth .gr-form h2{margin-bottom:2px}
+.concept-wealth .gr-field{display:grid;gap:5px;border:0;padding:0;margin:0;min-width:0}
+.concept-wealth .gr-field label,.concept-wealth .gr-field legend{font-size:14px;font-weight:500;color:var(--ink);padding:0}
+.concept-wealth .gr-input{position:relative;display:flex;align-items:center}
+.concept-wealth .gr-input input,.concept-wealth .gr-form select{width:100%;min-height:44px;border:1px solid var(--rule);border-radius:8px;background:#fff;padding:0 12px;font-size:16px;font-variant-numeric:tabular-nums}
+.concept-wealth .gr-input input{padding-right:52px}
+.concept-wealth .gr-suffix{position:absolute;right:12px;font-size:13px;color:var(--ink3);pointer-events:none}
+.concept-wealth .gr-input input:focus,.concept-wealth .gr-form select:focus{border-color:var(--what);outline:2px solid #2B3A8C33;outline-offset:0}
+.concept-wealth .is-bad input,.concept-wealth .is-bad select{border-color:var(--brick);background:#FDF5F3}
+.concept-wealth .gr-err{font-size:13px;color:var(--brick);min-height:0}
+.concept-wealth .gr-err:empty{display:none}
+.concept-wealth .gr-hint{font-size:12.5px;color:var(--ink3);line-height:1.4}
+.concept-wealth .gr-date-row{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
+.concept-wealth .gr-rate-row{display:grid;grid-template-columns:1fr 96px;gap:10px;align-items:center}
+.concept-wealth .gr-input-s input{padding-right:28px}
+.concept-wealth input[type=range]{width:100%;accent-color:var(--green);min-height:32px}
+.concept-wealth .gr-whatif{border:1px dashed #8C96C9;border-radius:10px;padding:12px 12px 14px;margin:4px 0 0;display:grid;gap:12px;background:#F5F6FC}
+.concept-wealth .gr-whatif legend{font-weight:600;font-size:14px;padding:0 6px;color:var(--what)}
+.concept-wealth .gr-whatif-out{font-size:14px;line-height:1.45;color:var(--ink)}
+.concept-wealth .gr-actions{display:flex;gap:8px;flex-wrap:wrap}
+.concept-wealth .gr-toast{font-size:14px;color:var(--green);font-weight:500;min-height:1.4em}
+
+/* table */
+.concept-wealth .gr-table-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--rule2);margin-bottom:10px}
+.concept-wealth .gr-table-head .gr-btn{min-height:36px;font-size:14px;padding:0 12px}
+.concept-wealth .gr-scroll{max-height:360px;overflow:auto;border:1px solid var(--rule2);border-radius:10px}
+.concept-wealth table{width:100%;font-size:14px}
+.concept-wealth th,.concept-wealth td{padding:8px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--rule2)}
+.concept-wealth th[scope=row],.concept-wealth thead th:first-child{text-align:left;font-weight:500}
+.concept-wealth thead th{position:sticky;top:0;background:#F3F5F2;font-weight:600;font-size:13px;color:var(--ink2)}
+.concept-wealth tr.is-final{background:#EEF6F1;font-weight:600}
+.concept-wealth .gr-tag{font-size:11.5px;color:var(--green);font-weight:600;margin-left:6px}
+
+/* lower page */
+.concept-wealth .gr-how,.concept-wealth .gr-risks{padding:clamp(48px,7vw,96px) 4px 0}
+.concept-wealth .gr-how h2,.concept-wealth .gr-risks h2{font-size:clamp(28px,3.4vw,44px);line-height:1.1;color:var(--ink);font-weight:650;letter-spacing:-.02em;max-width:18em;margin-bottom:28px}
+.concept-wealth .gr-how-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:clamp(24px,4vw,64px);align-items:start}
+.concept-wealth .gr-lede{font-size:clamp(18px,1.5vw,21px);line-height:1.5;max-width:30em}
+.concept-wealth .gr-steps{counter-reset:s;display:grid;gap:0;border-top:1px solid var(--rule)}
+.concept-wealth .gr-steps li{counter-increment:s;display:grid;grid-template-columns:36px 1fr;padding:16px 0;border-bottom:1px solid var(--rule);font-size:16px;max-width:40em}
+.concept-wealth .gr-steps li::before{content:counter(s);grid-row:span 2;font-weight:700;color:var(--green)}
+.concept-wealth .gr-risk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;border-top:2px solid var(--ink)}
+.concept-wealth .gr-risk-grid article{padding:22px 28px 26px 0;border-bottom:1px solid var(--rule)}
+.concept-wealth .gr-risk-grid article:nth-child(even){padding-left:28px;border-left:1px solid var(--rule)}
+.concept-wealth .gr-risk-grid h3{font-size:19px;font-weight:650;margin-bottom:8px}
+.concept-wealth .gr-risk-grid p{color:var(--ink2);max-width:36em}
+.concept-wealth .gr-disclaimer{margin-top:26px;padding:16px 18px;border-left:4px solid var(--amber);background:var(--sheet);font-weight:500;max-width:60em}
+.concept-wealth .gr-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;padding:56px 4px 40px;margin-top:56px;border-top:1px solid var(--rule);font-size:14px;color:var(--ink2)}
+
+.concept-wealth .gr-empty-cta{display:none;margin-top:18px}
+.concept-wealth .gr-app.is-empty{grid-template-columns:250px minmax(0,1fr);grid-template-areas:"goals plan"}
+.concept-wealth .gr-app.is-empty .gr-form,.concept-wealth .gr-app.is-empty .gr-table,.concept-wealth .gr-app.is-empty .gr-chart,.concept-wealth .gr-app.is-empty .gr-stats{display:none!important}
+.concept-wealth .gr-app.is-empty .gr-empty-cta{display:inline-flex}
+.concept-wealth .gr-app.is-empty .gr-plan{display:block!important;min-height:360px}
+
+/* tablet: form drops under */
+@media (max-width:1180px) and (min-width:900px){
+ .concept-wealth .gr-app{grid-template-columns:230px minmax(0,1fr);grid-template-areas:"goals plan" "goals form" "goals table"}
+ .concept-wealth .gr-form{border-left:0;border-top:1px solid var(--rule2);display:grid;grid-template-columns:1fr 1fr;align-items:start}
+ .concept-wealth .gr-form h2,.concept-wealth .gr-whatif,.concept-wealth .gr-actions,.concept-wealth .gr-toast{grid-column:1/-1}
+}
+
+/* phone: the app becomes a single pane with a bottom tab bar */
+@media (max-width:899px){
+ .concept-wealth .gr-nav{display:none}
+ .concept-wealth .gr-app{display:block;border-radius:12px;padding-bottom:0}
+ .concept-wealth .gr-app>section,.concept-wealth .gr-app>aside,.concept-wealth .gr-app>form{display:none}
+ .concept-wealth .gr-app[data-pane=goals] .gr-goals{display:flex;border:0;min-height:60vh}
+ .concept-wealth .gr-app[data-pane=plan] .gr-plan{display:block;padding:20px 16px 8px}
+ .concept-wealth .gr-app[data-pane=plan] .gr-form{display:flex;border:0;border-top:1px solid var(--rule2);padding:18px 16px 24px}
+ .concept-wealth .gr-app[data-pane=table] .gr-table{display:block;padding:4px 16px 20px}
+ .concept-wealth .gr-app[data-pane=table] .gr-table-head{border-top:0}
+ .concept-wealth .gr-scroll{max-height:none}
+ .concept-wealth th,.concept-wealth td{padding:8px 8px;font-size:13px}
+ .concept-wealth .gr-stats{grid-template-columns:1fr}
+ .concept-wealth .gr-stats>div+div{padding-left:0;border-left:0;border-top:1px solid var(--rule2)}
+ .concept-wealth .gr-stats>div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0}
+ .concept-wealth .gr-stats dd{font-size:20px}
+ .concept-wealth .gr-tabs{display:grid;grid-template-columns:repeat(3,1fr);position:sticky;bottom:0;z-index:20;background:var(--ink);border-radius:0 0 12px 12px}
+ .concept-wealth .gr-tabs button{display:grid;justify-items:center;gap:2px;min-height:58px;padding:8px 4px;background:transparent;border:0;color:#B7C0B9;font-size:12.5px;font-weight:500}
+ .concept-wealth .gr-tabs svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+ .concept-wealth .gr-tabs button[aria-pressed=true]{color:#fff}
+ .concept-wealth .gr-tabs button[aria-pressed=true] svg{stroke:#5FD3A6}
+ .concept-wealth .gr-tabs :focus-visible{outline-color:#fff}
+ .concept-wealth .gr-how-grid,.concept-wealth .gr-risk-grid{grid-template-columns:1fr}
+ .concept-wealth .gr-risk-grid article:nth-child(even){padding-left:0;border-left:0}
+ .concept-wealth .gr-risk-grid article{padding-right:0}
+}
+@media (prefers-reduced-motion:reduce){.concept-wealth *{scroll-behavior:auto!important;transition:none!important}}

@@ -1,0 +1,200 @@
+@import '../fonts/oswald.css';
+@import '../fonts/pt-sans.css';
+
+body.concept-gym{
+ --con:#D3D0C9;--con2:#C4C1B9;--tape:#F6F5F1;--blk:#000;--blue:#2340C4;--red:#B3261E;--g1:#3A3A38;--g2:#5B5A56;
+ background:var(--con);color:var(--blk);font:400 17px/1.55 'PT Sans',system-ui,sans-serif;
+}
+.concept-gym .wp{overflow-x:clip}
+.concept-gym :focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.concept-gym h1,.concept-gym h2,.concept-gym h3,.concept-gym .wp-mark,.concept-gym .wp-btn,.concept-gym .wp-chip,.concept-gym .wp-code,.concept-gym .wp-price b,.concept-gym .wp-tt th{font-family:'Oswald Variable','PT Sans',sans-serif}
+.concept-gym h2{font-size:clamp(44px,7vw,112px);line-height:.9;font-weight:700;text-transform:uppercase;letter-spacing:-.01em}
+.concept-gym section{padding-inline:clamp(16px,3.5vw,56px)}
+
+/* header */
+.concept-gym .wp-top{display:flex;align-items:center;gap:12px 28px;flex-wrap:wrap;background:var(--blk);color:var(--tape);padding:14px clamp(16px,3.5vw,56px)}
+.concept-gym .wp-mark{font-weight:700;font-size:28px;letter-spacing:.06em;text-decoration:none;margin-right:auto;line-height:1}
+.concept-gym .wp-top nav{display:flex;gap:4px 24px;flex-wrap:wrap}
+.concept-gym .wp-top nav a{text-decoration:none;font-size:16px;color:#CFCDC6;padding:6px 0}
+.concept-gym .wp-top nav a:hover{color:#fff;text-decoration:underline;text-underline-offset:6px}
+.concept-gym .wp-btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;background:var(--blue);color:#fff;border:0;font-weight:600;font-size:18px;letter-spacing:.02em;text-decoration:none;text-transform:uppercase}
+.concept-gym .wp-btn:hover{background:#1A2F99}
+.concept-gym .wp-btn-big{min-height:58px;padding:0 28px;font-size:21px}
+.concept-gym .wp-btn-ghost{background:transparent;color:var(--blk);box-shadow:inset 0 0 0 3px var(--blk)}
+.concept-gym .wp-btn-ghost:hover{background:var(--blk);color:#fff}
+
+/* hero poster */
+.concept-gym .wp-hero{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);grid-template-areas:"poster photo" "copy photo" "strip strip";gap:0 clamp(20px,3vw,48px);padding-top:clamp(20px,3vw,40px)}
+.concept-gym .wp-poster{grid-area:poster;display:flex;flex-direction:column;font-weight:700;text-transform:uppercase;line-height:.84;letter-spacing:-.02em;font-size:clamp(64px,10.4vw,176px)}
+.concept-gym .wp-poster span:nth-child(2){font-size:.78em;-webkit-text-stroke:2px var(--blk);color:transparent}
+.concept-gym .wp-poster span:nth-child(3){color:var(--blue)}
+.concept-gym .wp-poster span:nth-child(4){-webkit-text-stroke:2px var(--blk);color:transparent}
+.concept-gym .wp-hero-photo{grid-area:photo;margin:0;align-self:stretch;min-height:420px;position:relative}
+.concept-gym .wp-hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:40% 50%;filter:grayscale(1) contrast(1.15)}
+.concept-gym .wp-hero-copy{grid-area:copy;display:flex;flex-wrap:wrap;align-items:center;gap:18px 28px;padding:28px 0 36px}
+.concept-gym .wp-hero-lede{font-size:clamp(18px,1.5vw,21px);max-width:28em;flex:1 1 320px}
+.concept-gym .wp-strip{grid-area:strip;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--blk);color:var(--tape);margin:0 calc(-1 * clamp(16px,3.5vw,56px))}
+.concept-gym .wp-strip div{padding:16px clamp(16px,3.5vw,56px);border-right:1px dashed #4A4A48}
+.concept-gym .wp-strip div:last-child{border-right:0}
+.concept-gym .wp-strip dt{font-size:14px;color:#A9A7A0}
+.concept-gym .wp-strip dd{margin:0;font-family:'Oswald Variable',sans-serif;font-size:21px;font-weight:500}
+
+/* timetable */
+.concept-gym .wp-tt-sec{padding-top:clamp(48px,6vw,96px);padding-bottom:clamp(40px,5vw,72px)}
+.concept-gym .wp-tt-head{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 40px;align-items:end}
+.concept-gym .wp-tt-head p{max-width:36em;font-size:17px;padding-bottom:8px}
+.concept-gym .wp-filters{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;margin-top:32px;padding:14px 0;border-top:3px solid var(--blk);border-bottom:1px solid var(--blk)}
+.concept-gym .wp-fgroup{display:flex;flex-wrap:wrap;gap:6px}
+.concept-gym .wp-chip{min-height:40px;padding:0 14px;border:2px solid var(--blk);background:transparent;font-size:16px;font-weight:500;letter-spacing:.01em}
+.concept-gym .wp-chip:hover{background:var(--tape)}
+.concept-gym .wp-chip[aria-pressed=true]{background:var(--blk);color:var(--tape)}
+.concept-gym .wp-toggle{display:inline-flex;align-items:center;gap:8px;font-weight:700;min-height:40px}
+.concept-gym .wp-toggle input{width:20px;height:20px;accent-color:var(--blue)}
+.concept-gym .wp-count{font-size:14px;color:var(--g1);margin:10px 0}
+.concept-gym .wp-tt-scroll{overflow-x:auto}
+.concept-gym .wp-tt{width:100%;table-layout:fixed;min-width:1000px}
+.concept-gym .wp-tt thead th{font-size:17px;font-weight:600;text-transform:uppercase;text-align:left;padding:10px 8px;border-bottom:3px solid var(--blk)}
+.concept-gym .wp-tt thead th:first-child{width:72px}
+.concept-gym .wp-tt tbody th{font-size:22px;font-weight:600;text-align:left;vertical-align:top;padding:10px 8px 10px 0}
+.concept-gym .wp-tt td{vertical-align:top;padding:6px 4px;border-bottom:1px solid #A9A69F}
+.concept-gym .wp-tt td:nth-child(even){background:#CBC8C0}
+.concept-gym .wp-cls{display:grid;gap:1px;width:100%;text-align:left;background:var(--tape);border:2px solid var(--blk);padding:0 10px 9px;position:relative;font-size:14px;line-height:1.3}
+.concept-gym .wp-cls::before{content:'';display:block;height:8px;margin:0 -10px 7px;background:var(--blk)}
+.concept-gym .wp-cls[data-disc=mt]::before{background:repeating-linear-gradient(90deg,var(--blk) 0 6px,transparent 6px 10px)}
+.concept-gym .wp-cls[data-disc=bjj]::before{background:repeating-linear-gradient(135deg,var(--blk) 0 3px,transparent 3px 7px)}
+.concept-gym .wp-cls[data-disc=box]::before{background:linear-gradient(var(--blk) 0 3px,transparent 3px 5px,var(--blk) 5px 8px)}
+.concept-gym .wp-cls:hover{background:#fff;transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--blk)}
+.concept-gym .wp-code{font-size:24px;font-weight:700;line-height:1}
+.concept-gym .wp-lvl{font-weight:700}
+.concept-gym .wp-co{color:var(--g2)}
+.concept-gym .wp-left{font-weight:700;color:var(--blue)}
+.concept-gym .wp-cls.is-full{background:repeating-linear-gradient(135deg,#E3E1DB 0 6px,#D6D3CC 6px 12px);color:var(--g2)}
+.concept-gym .wp-cls.is-full .wp-left{color:var(--red);text-transform:uppercase}
+.concept-gym .wp-cls.is-yours{background:var(--blue);color:#fff;border-color:var(--blue)}
+.concept-gym .wp-cls.is-yours .wp-co,.concept-gym .wp-cls.is-yours .wp-left{color:#fff}
+.concept-gym .wp-cls.is-yours::before{background:#fff}
+.concept-gym .wp-mobile{display:none}
+.concept-gym .wp-empty{padding:28px;border:3px dashed var(--blk);margin-top:16px;display:flex;gap:16px 24px;align-items:center;flex-wrap:wrap;font-size:20px;font-weight:700}
+.concept-gym .wp-legend{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:16px;font-size:14px;color:var(--g1)}
+.concept-gym .wp-legend span::before{content:'';display:inline-block;width:16px;height:12px;margin-right:6px;vertical-align:-1px}
+.concept-gym .wp-legend span:last-child::before{display:none}
+.concept-gym .wp-k-full::before{background:repeating-linear-gradient(135deg,#E3E1DB 0 3px,#B9B6AE 3px 6px);outline:1px solid var(--blk)}
+.concept-gym .wp-k-yours::before{background:var(--blue)}
+
+/* dialog */
+.concept-gym .wp-dlg{border:0;padding:0;background:transparent;max-width:min(640px,calc(100vw - 24px));width:100%;max-height:calc(100vh - 24px)}
+.concept-gym .wp-dlg::backdrop{background:rgb(0 0 0 / .72)}
+.concept-gym .wp-dlg-in{background:var(--tape);border:3px solid var(--blk);padding:26px 26px 28px;position:relative;box-shadow:10px 10px 0 var(--blue)}
+.concept-gym .wp-close{position:absolute;right:10px;top:10px;width:44px;height:44px;border:2px solid var(--blk);background:var(--tape);font-size:26px;line-height:1}
+.concept-gym .wp-close:hover{background:var(--blk);color:#fff}
+.concept-gym .wp-dlg-code{font-family:'Oswald Variable',sans-serif;font-weight:500;font-size:17px;white-space:pre;color:var(--g1)}
+.concept-gym .wp-dlg h2{font-size:clamp(36px,6vw,56px);margin:2px 0 16px;padding-right:48px}
+.concept-gym .wp-dlg h3{font-size:22px;font-weight:600;text-transform:uppercase;margin:18px 0 6px}
+.concept-gym .wp-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.concept-gym .wp-facts dt{font-size:13px;color:var(--g2)}
+.concept-gym .wp-facts dd{margin:0;font-weight:700}
+.concept-gym .wp-capbar{height:10px;background:#DAD7D0;border:2px solid var(--blk);margin-top:12px}
+.concept-gym .wp-capbar i{display:block;height:100%;background:var(--blk)}
+.concept-gym .wp-note{margin-top:16px;padding:12px 14px;border-left:6px solid var(--red);background:#fff;font-weight:700}
+.concept-gym .wp-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.concept-gym .wp-field{display:grid;gap:4px;align-content:start}
+.concept-gym .wp-field label{font-weight:700;font-size:15px}
+.concept-gym .wp-field input,.concept-gym .wp-field select{width:100%;min-height:48px;border:2px solid var(--blk);background:#fff;padding:0 12px;font-size:17px;border-radius:0}
+.concept-gym .wp-field input:focus,.concept-gym .wp-field select:focus{outline:3px solid var(--blue);outline-offset:0}
+.concept-gym .is-bad input,.concept-gym .is-bad select{border-color:var(--red);background:#FFF4F2}
+.concept-gym .wp-ferr{color:var(--red);font-size:14px;font-weight:700}
+.concept-gym .wp-ferr:empty{display:none}
+.concept-gym .wp-check{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:15px}
+.concept-gym .wp-check input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:var(--blue)}
+.concept-gym .wp-form .wp-btn{margin-top:18px;width:100%}
+.concept-gym .wp-ok{margin-top:18px;padding:16px;background:var(--blue);color:#fff;font-weight:700;font-size:18px}
+
+/* prices */
+.concept-gym .wp-prices{background:var(--blk);color:var(--tape);padding-top:clamp(56px,7vw,104px);padding-bottom:clamp(56px,7vw,104px)}
+.concept-gym .wp-sub{color:#B9B7B0;margin-top:14px;max-width:40em}
+.concept-gym .wp-plan-list{margin-top:36px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #3F3F3D}
+.concept-gym .wp-plan-list li{padding:24px 28px 28px 0;border-bottom:1px solid #3F3F3D}
+.concept-gym .wp-plan-list li:not(:nth-child(3n+1)){padding-left:28px;border-left:1px solid #3F3F3D}
+.concept-gym .wp-plan-list h3{font-size:24px;font-weight:500;text-transform:uppercase}
+.concept-gym .wp-price{margin:6px 0 10px;color:#fff}
+.concept-gym .wp-price b{font-size:clamp(56px,6vw,88px);font-weight:700;line-height:1}
+.concept-gym .wp-price span{font-size:17px;color:#B9B7B0}
+.concept-gym .wp-plan-list li:first-child .wp-price b{color:#8EA2FF}
+.concept-gym .wp-plan-list p:last-child{color:#CFCDC6;max-width:28em}
+
+/* first visit */
+.concept-gym .wp-first{padding-top:clamp(56px,7vw,104px)}
+.concept-gym .wp-steps{counter-reset:st;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:36px;border-top:3px solid var(--blk)}
+.concept-gym .wp-steps li{counter-increment:st;padding:18px 22px 22px 0}
+.concept-gym .wp-steps li+li{padding-left:22px;border-left:1px solid var(--blk)}
+.concept-gym .wp-steps li::before{content:counter(st);display:block;font-family:'Oswald Variable',sans-serif;font-size:72px;font-weight:700;line-height:1;color:var(--blue)}
+.concept-gym .wp-steps h3{font-size:24px;font-weight:600;text-transform:uppercase;margin:8px 0 6px}
+.concept-gym .wp-bring-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:40px}
+.concept-gym .wp-bring-grid div{background:var(--tape);border:2px solid var(--blk);padding:16px 18px}
+.concept-gym .wp-bring-grid h3{font-size:22px;font-weight:600;text-transform:uppercase;margin-bottom:6px}
+.concept-gym .wp-bring-grid p{font-size:16px}
+
+/* rules */
+.concept-gym .wp-rules{padding-top:clamp(56px,7vw,104px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px clamp(24px,4vw,64px);align-items:start}
+.concept-gym .wp-rules ul{border-top:3px solid var(--blk)}
+.concept-gym .wp-rules li{padding:14px 0 14px 44px;border-bottom:1px solid var(--blk);position:relative;font-size:18px}
+.concept-gym .wp-rules li::before{content:'';position:absolute;left:0;top:19px;width:24px;height:14px;background:var(--blk)}
+
+/* coaches */
+.concept-gym .wp-coaches{padding-top:clamp(56px,7vw,104px);padding-bottom:clamp(56px,7vw,104px)}
+.concept-gym .wp-coaches ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:32px;border-top:3px solid var(--blk)}
+.concept-gym .wp-coaches li{padding:18px 24px 22px 0;border-bottom:1px solid var(--blk)}
+.concept-gym .wp-coaches li:not(:nth-child(3n+1)){padding-left:24px;border-left:1px solid var(--blk)}
+.concept-gym .wp-coaches h3{font-size:28px;font-weight:600;text-transform:uppercase;line-height:1.05}
+.concept-gym .wp-co-d{font-weight:700;color:var(--blue);margin:2px 0 8px}
+.concept-gym .wp-co-cls{margin-top:8px;font-family:'Oswald Variable',sans-serif;font-size:15px;color:var(--g1)}
+
+.concept-gym .wp-foot{background:var(--blk);color:var(--tape);padding:40px clamp(16px,3.5vw,56px) 48px;display:grid;gap:10px}
+.concept-gym .wp-foot .wp-mark{font-size:clamp(56px,12vw,200px);letter-spacing:.02em;line-height:.85;color:#1F1F1E;-webkit-text-stroke:1px #6A6965}
+.concept-gym .wp-foot-note{font-size:14px;color:#A9A7A0;max-width:60em}
+
+@media (max-width:1100px){
+ .concept-gym .wp-plan-list,.concept-gym .wp-coaches ul{grid-template-columns:1fr 1fr}
+ .concept-gym .wp-plan-list li:not(:nth-child(3n+1)),.concept-gym .wp-coaches li:not(:nth-child(3n+1)){padding-left:0;border-left:0}
+ .concept-gym .wp-plan-list li:nth-child(even),.concept-gym .wp-coaches li:nth-child(even){padding-left:24px;border-left:1px solid #3F3F3D}
+ .concept-gym .wp-coaches li:nth-child(even){border-left-color:var(--blk)}
+ .concept-gym .wp-steps,.concept-gym .wp-bring-grid{grid-template-columns:1fr 1fr}
+ .concept-gym .wp-steps li:nth-child(3){padding-left:0;border-left:0}
+}
+@media (max-width:899px){
+ .concept-gym .wp-top nav{display:none}
+ .concept-gym .wp-hero{grid-template-columns:1fr;grid-template-areas:"poster" "photo" "copy" "strip"}
+ .concept-gym .wp-hero-photo{min-height:0;aspect-ratio:4/3;margin-top:20px}
+ .concept-gym .wp-poster{font-size:clamp(56px,19vw,120px)}
+ .concept-gym .wp-strip{grid-template-columns:1fr}
+ .concept-gym .wp-strip div{border-right:0;border-bottom:1px dashed #4A4A48;padding:12px 16px}
+ .concept-gym .wp-tt-head{grid-template-columns:1fr}
+ .concept-gym .wp-tt-scroll{display:none}
+ .concept-gym .wp-mobile{display:block}
+ .concept-gym .wp-mobile.is-none{display:none}
+ .concept-gym .wp-filters{flex-direction:column;align-items:stretch;gap:10px}
+ .concept-gym .wp-fgroup{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+ .concept-gym .wp-chip{flex:none}
+ .concept-gym .wp-daybar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+ .concept-gym .wp-daybtn{min-height:48px;border:2px solid var(--blk);background:var(--tape);font-family:'Oswald Variable',sans-serif;font-weight:600;font-size:16px;padding:0}
+ .concept-gym .wp-daybtn abbr{text-decoration:none}
+ .concept-gym .wp-daybtn[aria-pressed=true]{background:var(--blk);color:#fff}
+ .concept-gym .wp-daybtn.is-empty{border-style:dashed;color:var(--g2);background:transparent}
+ .concept-gym .wp-mday-h{font-size:34px;font-weight:700;text-transform:uppercase;margin:16px 0 8px}
+ .concept-gym .wp-mlist{display:grid;gap:8px}
+ .concept-gym .wp-cls-row{grid-template-columns:62px 56px 1fr;align-items:center;gap:4px 10px;padding:0 12px 10px}
+ .concept-gym .wp-cls-row::before{grid-column:1/-1;margin:0 -12px 6px}
+ .concept-gym .wp-time{font-family:'Oswald Variable',sans-serif;font-size:22px;font-weight:600}
+ .concept-gym .wp-mname{display:grid;font-weight:700;font-size:16px}
+ .concept-gym .wp-mname small{font-weight:400;font-size:14px;color:var(--g2)}
+ .concept-gym .wp-cls-row .wp-left{grid-column:3}
+ .concept-gym .is-yours .wp-mname small{color:#fff}
+ .concept-gym .wp-mnone{padding:16px;border:2px dashed var(--blk);font-weight:700}
+ .concept-gym .wp-plan-list,.concept-gym .wp-coaches ul,.concept-gym .wp-steps,.concept-gym .wp-bring-grid,.concept-gym .wp-rules{grid-template-columns:1fr}
+ .concept-gym .wp-plan-list li,.concept-gym .wp-coaches li,.concept-gym .wp-steps li{padding-left:0!important;border-left:0!important;padding-right:0}
+ .concept-gym .wp-fields{grid-template-columns:1fr}
+ .concept-gym .wp-dlg-in{padding:20px 16px 22px;box-shadow:6px 6px 0 var(--blue)}
+ .concept-gym .wp-steps li::before{font-size:56px}
+}
+@media (prefers-reduced-motion:reduce){.concept-gym .wp-cls:hover{transform:none}}
+.concept-gym .wp-dlg h2{text-transform:none}
