@@ -1,0 +1,54 @@
+{
+ "gym/floor": {
+  "w": 1280,
+  "h": 1262,
+  "widths": [
+   640,
+   1280
+  ],
+  "title": "Top-down view of black and blue sneakers and a black 10 kg dumbbell on a black rubber gym mat.",
+  "creator": "diaz827",
+  "license": "CC0 1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "page": "https://wordpress.org/photos/photo/8856a9e742/",
+  "original": "https://pd.w.org/2026/09/8856a9e74232931d2.59595277-1536x2048.jpg",
+  "source": "wordpress",
+  "sourceName": "WordPress Photo Directory",
+  "openverse": "wp-240726"
+ },
+ "gym/ring": {
+  "w": 1880,
+  "h": 1357,
+  "widths": [
+   640,
+   1280,
+   1880
+  ],
+  "title": "Two young boxers wearing protection equipment training in a boxing ring.",
+  "creator": "Roberto Vazquez",
+  "license": "CC0 1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "page": "https://wordpress.org/photos/photo/31767a9e15/",
+  "original": "https://pd.w.org/2025/02/31767a9e159781829.36428743-2048x1360.jpeg",
+  "source": "wordpress",
+  "sourceName": "WordPress Photo Directory",
+  "openverse": "wp-109872"
+ },
+ "gym/ropes": {
+  "w": 1080,
+  "h": 1354,
+  "widths": [
+   640,
+   1080
+  ],
+  "title": "A boxing referee making inquiries to one of the boxers during a training bout.",
+  "creator": "Roberto Vazquez",
+  "license": "CC0 1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "page": "https://wordpress.org/photos/photo/6267b3176a/",
+  "original": "https://pd.w.org/2025/02/6267b3176a94d512.30323368-2048x1360.jpeg",
+  "source": "wordpress",
+  "sourceName": "WordPress Photo Directory",
+  "openverse": "wp-110639"
+ }
+}

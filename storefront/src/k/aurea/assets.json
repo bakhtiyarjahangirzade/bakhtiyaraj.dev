@@ -51,38 +51,38 @@
   "openverse": "87ac02d2-4c7a-4d84-ae12-6ce1b7a7ba77"
  },
  "aurea/breakfast": {
-  "w": 1280,
-  "h": 1116,
+  "w": 1000,
+  "h": 1190,
   "widths": [
    640,
-   1280
+   1000
   ],
-  "title": "A breakfast plate on a woven mat featuring a fried poori bread, a small bowl of curry, sweet corn kernels, roasted black chickpeas, and a cup of milk tea.",
-  "creator": "Alina Kakshapati",
+  "title": "A glass of Turkish tea with sugar cubes on a saucer.",
+  "creator": "Rubel Miah",
   "license": "CC0 1.0",
   "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-  "page": "https://wordpress.org/photos/photo/6386a197d5/",
-  "original": "https://pd.w.org/2026/05/6386a197d51113386.14929843-2048x1536.jpg",
+  "page": "https://wordpress.org/photos/photo/8636890a5e/",
+  "original": "https://pd.w.org/2025/08/8636890a5e8c36c54.45906496-1347x2048.jpg",
   "source": "wordpress",
   "sourceName": "WordPress Photo Directory",
-  "openverse": "269afe3e-48b8-4e73-b4ea-22df5141483a"
+  "openverse": "wp-138942"
  },
  "aurea/court": {
   "w": 1280,
-  "h": 1403,
+  "h": 1571,
   "widths": [
    640,
    1280
   ],
-  "title": "A courtyard with a circular stone fountain as the centerpiece, surrounded by lush green grass. The courtyard is enclosed by orange-painted buildings with white accents and arched doorways. The sky above is clear and blue, and the scene is partially framed by green foliage in the foreground.",
-  "creator": "Priscilla Chacon",
+  "title": "Two glass pendant lights hang from the ceiling. The courtyard features wooden outdoor furniture, including a bench with two cushions and a small chair",
+  "creator": "Nazmul Hassan",
   "license": "CC0 1.0",
   "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-  "page": "https://wordpress.org/photos/photo/64369e4407/",
-  "original": "https://pd.w.org/2026/04/64369e4407b938b49.24493277-1536x2048.jpeg",
+  "page": "https://wordpress.org/photos/photo/1386654233/",
+  "original": "https://pd.w.org/2024/05/1386654233ed3a101.57355005-1536x2048.jpeg",
   "source": "wordpress",
   "sourceName": "WordPress Photo Directory",
-  "openverse": "26982c37-54f1-4f57-bc3e-6392e317b9fc"
+  "openverse": "wp-77763"
  },
  "aurea/terraces": {
   "w": 1280,
