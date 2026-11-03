@@ -197,3 +197,15 @@ p.hello-pill{margin:0;color:#3a3a3a}
  .case-thumbs span{display:none}
 }
 @media (prefers-reduced-motion:reduce){.hero-offers a{transition:none}}
+#project-dialog .case-screen{max-height:min(52svh,560px)}
+#project-dialog .case-role,#project-dialog .case-facts>p{font-size:15px}
+#project-dialog .case-role{font-size:14px}
+/* The offer headline wraps to four lines on phones: keep the stickers clear of the letters. */
+@media (max-width:500px){
+ .intro-section .hero-stage{margin-top:60px;margin-bottom:46px}
+ .intro-section .sticker-code{top:-52px}
+ .intro-section .sticker-smile{top:-56px}
+ .intro-section .sticker-name{bottom:-50px}
+ .intro-section .sticker-star{bottom:-58px}
+}
+@media (max-width:360px){nav.floating-nav a>svg{display:none}nav.floating-nav a{padding-inline:9px}}
