@@ -1,0 +1,235 @@
+@import '../fonts/nunito.css';
+
+body.concept-clinic{
+ --ink:#1C2A4A;--ink2:#46557A;--ink3:#67739A;--sun:#FFC633;--sun2:#FFE59A;--sky:#E7F0FA;--sky2:#F3F7FC;--mint:#1F8A6B;--mint2:#DDF2EA;--red:#C62F2F;--rule:#D6DEE9;
+ background:#fff;color:var(--ink);font:400 17px/1.55 'Nunito Variable',system-ui,sans-serif;font-variant-numeric:tabular-nums;
+}
+.concept-clinic .sk{overflow-x:clip}
+.concept-clinic :focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:6px}
+.concept-clinic h1,.concept-clinic h2,.concept-clinic h3{font-weight:800;letter-spacing:-.01em;line-height:1.15}
+.concept-clinic h2{font-size:clamp(28px,3.4vw,44px)}
+.concept-clinic .sk-lead{color:var(--ink2);max-width:42em;margin-top:10px}
+.concept-clinic section{padding-inline:clamp(16px,4vw,64px)}
+
+/* emergency strip */
+.concept-clinic .sk-sos{padding:10px clamp(16px,4vw,64px);background:#FFF5F4;border-bottom:1px solid #F1C9C6;font-size:15px}
+.concept-clinic .sk-sos p{max-width:80em}
+.concept-clinic .sk-sos strong{color:var(--red)}
+.concept-clinic .sk-sos a{color:var(--red);font-weight:900;font-size:17px;text-underline-offset:3px}
+
+/* header */
+.concept-clinic .sk-top{display:flex;align-items:center;gap:12px 28px;padding:18px clamp(16px,4vw,64px);flex-wrap:wrap}
+.concept-clinic .sk-brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;font-size:23px;margin-right:auto}
+.concept-clinic .sk-brand svg{width:36px;height:36px;fill:var(--sun);stroke:var(--ink);stroke-width:2.4;stroke-linecap:round}
+.concept-clinic .sk-top nav{display:flex;gap:4px 22px;flex-wrap:wrap}
+.concept-clinic .sk-top nav a{text-decoration:none;font-weight:700;color:var(--ink2);padding:6px 0}
+.concept-clinic .sk-top nav a:hover{color:var(--ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.concept-clinic .sk-tel{font-weight:800;white-space:nowrap;text-decoration:none;border-bottom:2px solid var(--sun)}
+
+/* buttons */
+.concept-clinic .sk-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:999px;border:2px solid var(--ink);background:var(--ink);color:#fff;font-weight:800;font-size:16px;text-decoration:none}
+.concept-clinic .sk-btn:hover{background:#2C3D66}
+.concept-clinic .sk-btn-big{min-height:56px;padding:0 28px;font-size:17px}
+.concept-clinic .sk-btn-ghost{background:#fff;color:var(--ink)}
+.concept-clinic .sk-btn-ghost:hover{background:var(--sky)}
+
+/* hero */
+.concept-clinic .sk-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:start;padding-top:clamp(20px,4vw,56px);padding-bottom:clamp(40px,6vw,88px)}
+.concept-clinic .sk-hero h1{font-size:clamp(36px,5vw,68px);line-height:1.05;letter-spacing:-.025em;max-width:13em}
+.concept-clinic .sk-hero-text>p{font-size:clamp(18px,1.5vw,21px);color:var(--ink2);max-width:32em;margin-top:22px}
+.concept-clinic .sk-hero-cta{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap;margin-top:30px;color:var(--ink2)}
+.concept-clinic .sk-today{background:var(--sun);border-radius:28px 28px 28px 6px;padding:26px 26px 22px}
+.concept-clinic .sk-today h2{font-size:24px}
+.concept-clinic .sk-open{font-weight:800;margin:6px 0 16px;display:flex;align-items:center;gap:10px}
+.concept-clinic .sk-open::before{content:'';width:12px;height:12px;border-radius:50%;background:var(--ink);flex:none}
+.concept-clinic .sk-open[data-state=open]::before{background:var(--mint);box-shadow:0 0 0 3px #fff}
+.concept-clinic .sk-today-list li{display:grid;grid-template-columns:1fr auto;gap:0 14px;padding:11px 0;border-top:1.5px solid #E5A800}
+.concept-clinic .sk-today-list strong{font-weight:800}
+.concept-clinic .sk-today-list span:nth-of-type(1){grid-column:1;font-size:15px;color:#4A4021}
+.concept-clinic .sk-today-time{grid-column:2;grid-row:1/span 2;align-self:center;font-weight:800;background:#fff;border-radius:999px;padding:3px 12px;font-size:15px}
+.concept-clinic .sk-today-list li.is-past{opacity:.55}
+.concept-clinic .sk-today-empty{font-weight:700;padding:12px 0;border-top:1.5px solid #E5A800}
+
+/* request */
+.concept-clinic .sk-request{background:var(--sky);padding-top:clamp(40px,6vw,80px);padding-bottom:clamp(40px,6vw,80px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:clamp(24px,4vw,64px);align-items:start}
+.concept-clinic .sk-req-intro{position:sticky;top:24px}
+.concept-clinic .sk-req-intro p{margin-top:14px;color:var(--ink2);max-width:26em}
+.concept-clinic .sk-form,.concept-clinic .sk-done{display:grid;gap:12px;min-width:0}
+.concept-clinic .sk-step{background:#fff;border-radius:20px;border:2px solid transparent}
+.concept-clinic .sk-step.is-open{border-color:var(--ink)}
+.concept-clinic .sk-step.is-later{background:var(--sky2);color:var(--ink3)}
+.concept-clinic .sk-step-head{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:2px 14px;padding:16px 20px}
+.concept-clinic .sk-num{grid-row:span 2;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--sky);color:var(--ink)}
+.concept-clinic .is-open .sk-num{background:var(--sun)}
+.concept-clinic .is-done .sk-num{background:var(--mint);color:#fff}
+.concept-clinic .sk-step h3{font-size:19px;grid-column:2}
+.concept-clinic .sk-step h3:focus{outline:none}
+.concept-clinic .sk-step-sum{grid-column:2;font-size:15px;color:var(--ink2);font-weight:600}
+.concept-clinic .sk-step-sum:empty{display:none}
+.concept-clinic .sk-edit{grid-column:3;grid-row:1/span 2;background:none;border:0;font-weight:800;color:var(--ink);text-decoration:underline;text-underline-offset:4px;min-height:44px;padding:0 4px}
+.concept-clinic .sk-step-body{padding:0 20px 20px}
+.concept-clinic .sk-step-actions{margin-top:18px;display:flex;gap:10px}
+.concept-clinic .sk-err{color:var(--red);font-weight:700;margin-top:10px}
+.concept-clinic .sk-err:empty{display:none}
+.concept-clinic fieldset{border:0;padding:0;margin:0;min-width:0}
+.concept-clinic .sk-sub{font-weight:800;font-size:15px;margin:4px 0 10px;padding:0}
+.concept-clinic fieldset+fieldset{margin-top:18px}
+
+.concept-clinic .sk-specs,.concept-clinic .sk-docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.concept-clinic .sk-spec,.concept-clinic .sk-doc{position:relative;display:block;cursor:pointer}
+.concept-clinic .sk-spec input,.concept-clinic .sk-doc input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.concept-clinic .sk-spec span,.concept-clinic .sk-doc span{display:grid;gap:3px;height:100%;border:2px solid var(--rule);border-radius:14px;padding:12px 14px}
+.concept-clinic .sk-spec small,.concept-clinic .sk-doc small{font-size:14px;color:var(--ink2);line-height:1.4}
+.concept-clinic .sk-spec input:checked+span,.concept-clinic .sk-doc input:checked+span{border-color:var(--ink);background:var(--sun2)}
+.concept-clinic .sk-spec input:focus-visible+span,.concept-clinic .sk-doc input:focus-visible+span{outline:3px solid var(--ink);outline-offset:2px}
+.concept-clinic .sk-spec:hover span,.concept-clinic .sk-doc:hover span{border-color:var(--ink2)}
+
+.concept-clinic .sk-days{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scroll-snap-type:x proximity}
+.concept-clinic .sk-day{flex:none;display:grid;justify-items:center;width:64px;padding:8px 0;border-radius:14px;border:2px solid var(--rule);background:#fff;scroll-snap-align:start;line-height:1.2}
+.concept-clinic .sk-day span{font-size:13px;color:var(--ink2);font-weight:700}
+.concept-clinic .sk-day b{font-size:22px;font-weight:900}
+.concept-clinic .sk-day small{font-size:12px;color:var(--ink3)}
+.concept-clinic .sk-day:disabled{background:var(--sky2);border-style:dashed;color:#A8B2C8;cursor:not-allowed}
+.concept-clinic .sk-day:disabled *{color:#A8B2C8}
+.concept-clinic .sk-day[aria-pressed=true]{border-color:var(--ink);background:var(--ink);color:#fff}
+.concept-clinic .sk-day[aria-pressed=true] *{color:#fff}
+.concept-clinic .sk-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
+.concept-clinic .sk-slot{min-height:44px;border-radius:12px;border:2px solid var(--mint);background:var(--mint2);font-weight:800;color:#0F5A45}
+.concept-clinic .sk-slot:hover:not(:disabled){background:#C4E8DA}
+.concept-clinic .sk-slot:disabled{border-color:transparent;background:repeating-linear-gradient(135deg,#EEF1F6 0 6px,#E3E8F0 6px 12px);color:#98A3BA;text-decoration:line-through;cursor:not-allowed}
+.concept-clinic .sk-slot[aria-pressed=true]{background:var(--mint);color:#fff}
+.concept-clinic .sk-legend{display:flex;gap:18px;font-size:14px;color:var(--ink2);margin-top:12px}
+.concept-clinic .sk-legend span::before{content:'';display:inline-block;width:14px;height:14px;border-radius:4px;margin-right:6px;vertical-align:-2px}
+.concept-clinic .sk-key-free::before{background:var(--mint2);border:2px solid var(--mint)}
+.concept-clinic .sk-key-taken::before{background:repeating-linear-gradient(135deg,#EEF1F6 0 3px,#D3DAE6 3px 6px)}
+.concept-clinic .sk-empty{padding:14px 16px;border:2px dashed var(--rule);border-radius:14px;color:var(--ink2);font-weight:700}
+
+.concept-clinic .sk-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+.concept-clinic .sk-wide{grid-column:1/-1}
+.concept-clinic .sk-field{display:grid;gap:6px;align-content:start}
+.concept-clinic .sk-field label{font-weight:800;font-size:15px}
+.concept-clinic .sk-field input,.concept-clinic .sk-field select,.concept-clinic .sk-field textarea{width:100%;min-height:50px;border:2px solid var(--rule);border-radius:12px;padding:10px 14px;background:#fff;font-size:17px}
+.concept-clinic .sk-field textarea{resize:vertical;min-height:90px}
+.concept-clinic .sk-field input:focus,.concept-clinic .sk-field select:focus,.concept-clinic .sk-field textarea:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 3px var(--sun2)}
+.concept-clinic .sk-field.is-bad input,.concept-clinic .sk-field.is-bad select,.concept-clinic .sk-field.is-bad textarea{border-color:var(--red);background:#FFF7F6}
+.concept-clinic .sk-hint{font-size:14px;color:var(--ink3)}
+.concept-clinic .sk-ferr{font-size:14px;font-weight:700;color:var(--red)}
+.concept-clinic .sk-ferr:empty{display:none}
+.concept-clinic .sk-check{display:flex;align-items:center;gap:10px;font-weight:700;min-height:44px}
+.concept-clinic .sk-check input{width:22px;height:22px;accent-color:var(--ink)}
+.concept-clinic .sk-review{display:grid;gap:0}
+.concept-clinic .sk-review div{display:grid;grid-template-columns:minmax(120px,1fr) 2fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.concept-clinic .sk-review dt{color:var(--ink2);font-weight:700;font-size:15px}
+.concept-clinic .sk-review dd{margin:0;font-weight:700;overflow-wrap:anywhere}
+.concept-clinic .sk-demo{margin-top:14px;font-size:15px;color:var(--ink2);background:var(--sky2);border-radius:12px;padding:10px 14px}
+.concept-clinic .sk-done{background:#fff;border-radius:20px;border:2px solid var(--mint);padding:24px}
+.concept-clinic .sk-done:focus{outline:none;box-shadow:0 0 0 4px var(--sun)}
+.concept-clinic .sk-done h3{font-size:28px;color:var(--mint)}
+.concept-clinic .sk-done h4{font-size:17px;font-weight:800;margin-top:6px}
+.concept-clinic .sk-done #sk-done-text{font-weight:800;font-size:19px}
+.concept-clinic .sk-done .sk-btn{justify-self:start}
+
+/* services */
+.concept-clinic .sk-services{padding-top:clamp(56px,7vw,104px)}
+.concept-clinic .sk-serv-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(24px,4vw,64px);margin-top:32px}
+.concept-clinic .sk-serv{padding:22px 0;border-top:2px solid var(--ink);display:grid;gap:8px;align-content:start}
+.concept-clinic .sk-serv h3{font-size:22px}
+.concept-clinic .sk-serv-who{color:var(--ink2);font-weight:700;font-size:15px}
+.concept-clinic .sk-serv dl{display:flex;gap:28px}
+.concept-clinic .sk-serv dt{font-size:13px;color:var(--ink3);font-weight:700}
+.concept-clinic .sk-serv dd{margin:0;font-weight:800;font-size:18px}
+.concept-clinic .sk-serv dd small{font-weight:600;font-size:13px;color:var(--ink2)}
+.concept-clinic .sk-bring{background:var(--sky2);border-radius:4px 16px 16px 16px;padding:12px 14px;font-size:16px}
+
+/* doctors grid */
+.concept-clinic .sk-doctors{padding-top:clamp(56px,7vw,104px)}
+.concept-clinic .sk-grid-wrap{position:relative;margin-top:28px;overflow-x:auto;border:2px solid var(--ink);border-radius:20px}
+.concept-clinic .sk-grid{width:100%;min-width:820px}
+.concept-clinic .sk-grid th,.concept-clinic .sk-grid td{padding:12px 10px;border-bottom:1px solid var(--rule);text-align:center;vertical-align:middle}
+.concept-clinic .sk-grid thead th{font-size:14px;color:var(--ink2);background:var(--sky2)}
+.concept-clinic .sk-grid abbr{text-decoration:none}
+.concept-clinic .sk-grid tbody th{text-align:left;display:grid;font-weight:400;padding-left:18px}
+.concept-clinic .sk-grid tbody th span{font-size:14px;color:var(--ink2)}
+.concept-clinic .sk-grid td.is-on span{display:inline-block;background:var(--mint2);color:#0F5A45;font-weight:800;border-radius:999px;padding:4px 10px;font-size:14px;white-space:nowrap}
+.concept-clinic .sk-grid tr:last-child>*{border-bottom:0}
+.concept-clinic .sk-link{font-weight:800;font-size:14px;white-space:nowrap;text-underline-offset:3px}
+
+/* ages */
+.concept-clinic .sk-ages{padding-top:clamp(56px,7vw,104px)}
+.concept-clinic .sk-ages-photo img{width:100%;aspect-ratio:1920/682;object-fit:cover;border-radius:28px 28px 6px 28px}
+.concept-clinic .sk-ages h2{margin-top:32px;max-width:18em}
+.concept-clinic .sk-age-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin-top:26px}
+.concept-clinic .sk-age-list li{padding:16px 18px 6px 0;border-top:6px solid var(--sun)}
+.concept-clinic .sk-age-list li+li{padding-left:18px;border-left:1px solid var(--rule)}
+.concept-clinic .sk-age-list h3{font-size:24px;margin-bottom:8px}
+.concept-clinic .sk-age-list p{font-size:16px;color:var(--ink2)}
+
+/* visit */
+.concept-clinic .sk-visit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:center;padding-top:clamp(56px,7vw,104px)}
+.concept-clinic .sk-visit-list{margin-top:22px;display:grid;gap:14px}
+.concept-clinic .sk-visit-list li{padding-left:30px;position:relative;max-width:34em}
+.concept-clinic .sk-visit-list li::before{content:'';position:absolute;left:0;top:.45em;width:14px;height:14px;border-radius:50%;background:var(--sun);box-shadow:0 0 0 2px var(--ink)}
+.concept-clinic .sk-visit-photo img{border-radius:6px 28px 28px 28px;width:100%}
+
+/* hours */
+.concept-clinic .sk-hours{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,64px);padding-top:clamp(56px,7vw,104px)}
+.concept-clinic .sk-hours-t{margin:22px 0 16px;width:100%;max-width:440px}
+.concept-clinic .sk-hours-t th,.concept-clinic .sk-hours-t td{padding:9px 0;border-bottom:1px solid var(--rule);text-align:left;font-weight:600}
+.concept-clinic .sk-hours-t td{text-align:right;font-weight:800}
+.concept-clinic .sk-hours-t tr.is-today{background:var(--sun2)}
+.concept-clinic .sk-hours-t tr.is-today th{padding-left:8px}
+.concept-clinic .sk-hours-t tr.is-today td{padding-right:8px}
+.concept-clinic .sk-addr{margin-bottom:6px}
+.concept-clinic .sk-urgent{border:3px solid var(--red);border-radius:28px;padding:26px;display:grid;gap:12px;align-content:start}
+.concept-clinic .sk-urgent h2{font-size:clamp(24px,2.4vw,32px);color:var(--red)}
+.concept-clinic .sk-big-tel{display:flex;gap:14px}
+.concept-clinic .sk-big-tel a{font-size:44px;font-weight:900;color:#fff;background:var(--red);border-radius:18px;padding:2px 22px;text-decoration:none;line-height:1.3}
+
+/* faq */
+.concept-clinic .sk-faq{padding-top:clamp(56px,7vw,104px);padding-bottom:clamp(40px,6vw,80px);max-width:960px}
+.concept-clinic .sk-faq h2{margin-bottom:20px}
+.concept-clinic .sk-faq details{border-top:2px solid var(--rule)}
+.concept-clinic .sk-faq details:last-child{border-bottom:2px solid var(--rule)}
+.concept-clinic .sk-faq summary{cursor:pointer;font-weight:800;font-size:19px;padding:16px 36px 16px 0;list-style:none;position:relative}
+.concept-clinic .sk-faq summary::-webkit-details-marker{display:none}
+.concept-clinic .sk-faq summary::after{content:'+';position:absolute;right:4px;top:10px;font-size:28px;font-weight:600}
+.concept-clinic .sk-faq details[open] summary::after{content:'−'}
+.concept-clinic .sk-faq details p{padding:0 0 18px;color:var(--ink2);max-width:40em}
+
+.concept-clinic .sk-foot{background:var(--ink);color:#fff;padding:36px clamp(16px,4vw,64px) 44px;display:grid;gap:12px}
+.concept-clinic .sk-foot .k-credits{opacity:.8}
+
+@media (max-width:1000px){
+ .concept-clinic .sk-hero,.concept-clinic .sk-request,.concept-clinic .sk-visit,.concept-clinic .sk-hours{grid-template-columns:1fr}
+ .concept-clinic .sk-req-intro{position:static}
+ .concept-clinic .sk-age-list{grid-template-columns:1fr 1fr}
+ .concept-clinic .sk-age-list li+li{padding-left:0;border-left:0}
+ .concept-clinic .sk-age-list li{padding-right:18px}
+}
+@media (max-width:700px){
+ body.concept-clinic{font-size:17px}
+ .concept-clinic .sk-top nav{display:none}
+ .concept-clinic .sk-serv-list,.concept-clinic .sk-fields,.concept-clinic .sk-age-list{grid-template-columns:1fr}
+ .concept-clinic .sk-step-head{padding:14px 14px;grid-template-columns:36px minmax(0,1fr) auto;gap:2px 10px}
+ .concept-clinic .sk-step-body{padding:0 14px 16px}
+ .concept-clinic .sk-today{padding:20px 18px}
+ .concept-clinic .sk-review div{grid-template-columns:1fr;gap:2px}
+ .concept-clinic .sk-ages-photo img{aspect-ratio:4/3}
+ .concept-clinic .sk-big-tel a{font-size:36px}
+ .concept-clinic .sk-hero-cta .sk-btn{width:100%}
+ .concept-clinic .sk-specs{grid-template-columns:1fr 1fr;gap:8px}
+ .concept-clinic .sk-spec span{padding:10px 12px}
+ .concept-clinic .sk-spec small{font-size:13px}
+ .concept-clinic .sk-docs{grid-template-columns:1fr}
+ .concept-clinic .sk-grid-wrap{border:0;border-radius:0;overflow:visible}
+ .concept-clinic .sk-grid{min-width:0}
+ .concept-clinic .sk-grid thead{display:none}
+ .concept-clinic .sk-grid,.concept-clinic .sk-grid tbody,.concept-clinic .sk-grid tr{display:block}
+ .concept-clinic .sk-grid tr{display:flex;flex-wrap:wrap;gap:8px;padding:14px 0;border-top:2px solid var(--ink)}
+ .concept-clinic .sk-grid tbody th{flex:1 0 100%;padding:0 0 4px;border:0}
+ .concept-clinic .sk-grid td{display:none;border:0;padding:0}
+ .concept-clinic .sk-grid td.is-on{display:block}
+ .concept-clinic .sk-grid td.is-on span::before{content:attr(data-d) ' ';font-weight:600}
+ .concept-clinic .sk-grid td:last-child{display:block;flex:1 0 100%;text-align:left;padding-top:4px}
+}
+@media (prefers-reduced-motion:reduce){.concept-clinic *{scroll-behavior:auto!important}}
