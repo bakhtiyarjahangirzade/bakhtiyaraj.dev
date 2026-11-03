@@ -21,7 +21,10 @@ export const icon = name => {
     zoom: 'M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm4.8 11.3L20 20M10.5 7.5v6M7.5 10.5h6',
     full: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5', book: 'M12 6c-2-1.3-5-1.8-8-1.5v13c3-.3 6 .2 8 1.5 2-1.3 5-1.8 8-1.5v-13c-3-.3-6 .2-8 1.5Zm0 0v13',
     page: 'M7 3.5h7l4 4V20.5H7z', plus: 'M12 5v14M5 12h14', minus: 'M5 12h14', check: 'M5 12.5l4.5 4.5L19 7.5',
-    bookmark: 'M7 4h10v16l-5-4-5 4z', wa: 'M12 3.5a8.5 8.5 0 0 0-7.3 12.9L3.5 20.5l4.2-1.1A8.5 8.5 0 1 0 12 3.5Z',
+    bookmark: 'M7 4h10v16l-5-4-5 4z', arrow: 'M5 12h13M13 6l6 6-6 6', search: 'M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm4.8 11.3L20 20',
+    chevron: 'M9.5 6l6 6-6 6', more: 'M5 12h.01M12 12h.01M19 12h.01', home: 'M4 11.5 12 5l8 6.5V20h-5v-5H9v5H4z',
+    user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c.8-3.4 3.6-5.5 7-5.5s6.2 2.1 7 5.5', shield: 'M12 3.5 5 6v5.5c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6z', clock: 'M12 4a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm0 3.5V12l3 2',
+    wa: 'M12 3.5a8.5 8.5 0 0 0-7.3 12.9L3.5 20.5l4.2-1.1A8.5 8.5 0 1 0 12 3.5Z',
   };
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('class', 'ic');
@@ -43,6 +46,25 @@ export function jacket(t, { small = true, eager = false } = {}) {
       h('span', { class: 'jacket-title', lang: t.language === 'ru' ? 'ru' : 'en', text: t.title }),
       h('span', { class: 'jacket-creator', text: t.creator })),
     h('span', { class: 'jacket-moon', 'aria-hidden': 'true' }));
+}
+
+// Bento tile with the cover art as a decorative background (CSS crop). The full, uncropped cover is shown on the
+// title page and in the reader; tiles only frame it.
+export function artTile(t, { cls = '', chip, title = t.title, sub, desc, actions = [], href, eager = false } = {}) {
+  const lang = t.language === 'ru' ? 'ru' : 'en';
+  return h('article', { class: `tile tile-art ${cls}`, vars: { '--tone': t.tone } },
+    h('img', { class: 'tile-img', src: coverSrc(t, !cls.includes('tile-tall')), alt: '', loading: eager ? 'eager' : 'lazy', decoding: 'async' }),
+    h('span', { class: 'tile-shade', 'aria-hidden': 'true' }),
+    h('div', { class: 'tile-body' },
+      chip ? h('span', { class: 'chip', text: chip }) : null,
+      h('h3', { class: 'tile-title', lang: title === t.title ? lang : 'az' }, href ? h('a', { href, 'data-nav': true, class: 'tile-link', text: title }) : title),
+      sub ? h('p', { class: 'tile-sub', text: sub }) : null,
+      desc ? h('p', { class: 'tile-desc', text: desc }) : null,
+      actions.length ? h('div', { class: 'tile-actions' }, actions) : null));
+}
+export function avatar(name, tone) {
+  const initials = name.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  return h('span', { class: 'avatar', 'aria-hidden': 'true', vars: { '--tone': tone } }, h('span', { text: initials }));
 }
 
 export const accessBadge = t => h('span', { class: `badge badge-${t.access}`, text: t.access === 'sample' ? `${ACCESS.sample}, satışda deyil` : ACCESS.free });

@@ -16,7 +16,7 @@ Checked on 3 November 2026. Every bundled image comes from the official Pepper&C
 
 **How Luna complies.**
 - Attribution on every title page, inside the reader (colophon / end-of-preview leaf) and in the storefront footer: title, creator, translators/proofreaders, source link, license name and link.
-- Changes indicated: "converted to WebP; not cropped or altered". Pages are re-encoded only (Pillow, quality 80, original 1200 px width); covers are re-encoded at 1100 px and 560 px. Luna's book jackets place the untouched cover file inside a frame; CSS never crops it (`object-fit: contain`).
+- Changes indicated: "converted to WebP; not cropped or altered". Pages are re-encoded only (Pillow, quality 80, original 1200 px width); covers are re-encoded at 1100 px and 560 px. The full, uncropped cover is shown on every title page, in catalogue cards (box matches the cover ratio) and in the reader; storefront tiles additionally use it as a decorative background crop (CSS only, file unchanged).
 - The author's "AI derivation prohibited" statement is respected: Luna does not generate, extend, translate or alter any art, story or dialogue. Synopses on the site are Luna's own short descriptive copy in Azerbaijani, labelled as descriptions; comic text stays in its original language. No AI-generated imagery of the characters is used anywhere in the Luna identity.
 - Sample paid products only bundle their preview pages, and the UI states that the full episode is free at the source under CC BY 4.0.
 
@@ -25,7 +25,8 @@ Checked on 3 November 2026. Every bundled image comes from the official Pepper&C
 | Font | License | Source in repo |
 |---|---|---|
 | Young Serif | SIL OFL 1.1 (`storefront/public/Luna/fonts/young-serif-OFL.txt`) | copied from `storefront/public/assets/k/fonts/young-serif/` |
-| Commissioner | SIL OFL 1.1 (`storefront/public/Luna/fonts/commissioner-OFL.txt`) | copied from `storefront/public/assets/k/fonts/commissioner/` |
+| Commissioner (Cyrillic subset) | SIL OFL 1.1 (`storefront/public/Luna/fonts/commissioner-OFL.txt`) | copied from `storefront/public/assets/k/fonts/commissioner/` |
+| Inter | SIL OFL 1.1 (`storefront/public/Luna/fonts/inter-OFL.txt`) | copied from `storefront/public/assets/fonts/` |
 
 ## Titles
 

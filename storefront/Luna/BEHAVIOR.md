@@ -4,7 +4,7 @@
 
 | URL | View |
 |---|---|
-| `/Luna` (canonical; `/Luna/` serves the same page) | Shop: hero, continue shelf, featured shelf, catalogue |
+| `/Luna` (canonical; `/Luna/` serves the same page) | Kəşf et: bento grid (featured tiles, authors, recent searches, menu) and the full catalogue |
 | `/Luna#kataloq` | Shop scrolled to the catalogue |
 | `/Luna?eser=<slug>` | Title page |
 | `/Luna?oxu=<slug>` | Reader at the saved position (or the jacket) |
@@ -25,6 +25,12 @@ No personal data or entitlements appear in URLs. Unknown slugs show "Bu əsər t
 - Fullscreen button where the browser supports element fullscreen.
 - Loading: current page eager with high priority, two before / three after preloaded; the storefront only loads small covers and (on the hero) one page. A failed page shows "Səhifə N yüklənmədi" with "Yenidən yüklə"; the position is kept.
 - Status: "Səhifə 3–4 / 7" in an `aria-live` region; focus moves to the stage on open and returns on close.
+
+## Discovery
+
+- Catalogue: search field, segmented access control (Hamısı / Pulsuz / Nümunə), chip rows for language and genre (radio semantics), live count, empty state with reset.
+- Genre and sample tiles apply the matching filter and scroll to the catalogue. Author avatars and search pills run a search.
+- Recent searches (3+ characters, after a pause or Enter) are kept on this device only (`luna.searches.v1`, max 8) and can be cleared. Before any search the card shows fixed suggestions, labelled as such.
 
 ## Sample products
 

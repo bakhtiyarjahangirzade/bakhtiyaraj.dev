@@ -19,7 +19,7 @@ Live path: `https://www.bakhtiyaraj.dev/Luna` (after merge and deploy — not de
 | Asset import | `scripts/luna/import-peppercarrot.py` (+ `import-report.json` with source hashes) |
 | Production-like local server | `node scripts/luna/preview.mjs` (serves `dist/` with the vercel.json CSP and rewrites) |
 | Tests | `tests/luna.test.mjs` |
-| Design and behaviour | `storefront/Luna/DESIGN.md`, `storefront/Luna/BEHAVIOR.md` |
+| Design and behaviour | `storefront/Luna/DESIGN.md` (dark bento + Apple-style direction), `storefront/Luna/BEHAVIOR.md` |
 | Rights evidence | `docs/luna-content-credits.md` |
 
 No framework and no animation library: page turns use the Web Animations API. The Supabase client (`@supabase/supabase-js`, already a dependency) is a dynamic import, so anonymous readers never download it (`luna-*.js` ≈ 19 kB gzip, CSS ≈ 6 kB gzip).
