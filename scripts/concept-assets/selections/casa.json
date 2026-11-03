@@ -1,0 +1,209 @@
+[
+ {
+  "key": "stair-steel",
+  "id": "fd8a3340-c62d-4f30-9358-6ede170c8438",
+  "grade": "mono",
+  "q": 70,
+  "widths": [
+   640,
+   1280,
+   1600
+  ]
+ },
+ {
+  "key": "stair-oak",
+  "id": "fc42bd7f-0925-4ac2-ab4b-a19d4c887c8a",
+  "widths": [
+   640,
+   1280
+  ],
+  "grade": "mono",
+  "q": 70
+ },
+ {
+  "key": "oak-niche",
+  "id": "c4c83882-362d-4599-8e06-c7fd92cd8735",
+  "widths": [
+   640,
+   1280
+  ],
+  "crop": [
+   0,
+   0,
+   1,
+   0.62
+  ],
+  "grade": "mono",
+  "q": 70
+ },
+ {
+  "key": "shell",
+  "id": "6e4d850d-1da8-413d-a53a-c22645a844e8",
+  "widths": [
+   640,
+   1280,
+   1536
+  ],
+  "grade": "mono",
+  "q": 70
+ },
+ {
+  "key": "shell-steps",
+  "id": "83db32d0-b43f-41a1-b5e6-96e6d79ba8a2",
+  "widths": [
+   640,
+   1280
+  ],
+  "grade": "mono",
+  "q": 70
+ },
+ {
+  "key": "tower",
+  "id": "9348419c-f011-47a1-a9fb-d7652b0d8720",
+  "grade": "mono",
+  "q": 70,
+  "widths": [
+   640,
+   1280,
+   1600
+  ]
+ },
+ {
+  "key": "tower-stair",
+  "id": "a50dac80-848c-44e5-b1f1-c091acb3fa12",
+  "widths": [
+   640,
+   1280
+  ],
+  "grade": "mono",
+  "q": 70
+ },
+ {
+  "key": "steps",
+  "id": "96c6a6d8-3c32-4977-90ae-d53f1bae50b7",
+  "grade": "mono",
+  "q": 70,
+  "widths": [
+   640,
+   1280,
+   1600
+  ]
+ },
+ {
+  "key": "steps-green",
+  "id": "0ec456f5-5a37-4686-8cc8-4e7d67c9d110",
+  "widths": [
+   640,
+   1100
+  ],
+  "grade": "mono",
+  "q": 58
+ },
+ {
+  "key": "atrium",
+  "id": "63084a24-99e7-4ea4-986c-4fc534051815",
+  "grade": "mono",
+  "q": 70,
+  "widths": [
+   640,
+   1280,
+   1600
+  ]
+ },
+ {
+  "key": "atrium-night",
+  "id": "69b19d6a-ec02-48ac-a60b-8962b594ecce",
+  "grade": "mono",
+  "q": 70,
+  "widths": [
+   640,
+   1280,
+   1600
+  ]
+ },
+ {
+  "key": "old-stair",
+  "id": "1291189b-03bc-43f4-9c3e-3650de7210d2",
+  "widths": [
+   640,
+   1100
+  ],
+  "grade": "mono",
+  "q": 58
+ },
+ {
+  "key": "old-window",
+  "id": "45434b99-b7f8-49cf-bccf-6fa3b969dbf6",
+  "widths": [
+   640,
+   1280
+  ],
+  "grade": "mono",
+  "q": 70
+ },
+ {
+  "key": "mat-stone",
+  "id": "43d5f16b-c3cc-456e-8c3c-bafc7c407ff2",
+  "widths": [
+   480,
+   960
+  ],
+  "crop": [
+   0,
+   0.1,
+   0.72,
+   0.42
+  ],
+  "q": 58
+ },
+ {
+  "key": "mat-oak",
+  "id": "b4ca2ce3-87fe-40ec-b0be-1da14b291d32",
+  "widths": [
+   480,
+   960
+  ],
+  "crop": [
+   0,
+   0.2,
+   1,
+   0.8
+  ],
+  "q": 66
+ },
+ {
+  "key": "mat-green",
+  "id": "febc9fea-54f5-4a97-8054-88ce374f634d",
+  "widths": [
+   480,
+   960
+  ],
+  "q": 66,
+  "crop": [
+   0.1,
+   0.45,
+   0.9,
+   1
+  ]
+ },
+ {
+  "key": "mat-floor",
+  "id": "71b10d0d-8caa-47a9-9fa0-a676c1602a55",
+  "widths": [
+   480,
+   960
+  ],
+  "q": 58
+ },
+ {
+  "key": "spiral",
+  "id": "78187d94-1b2f-471f-846f-9fd9f1c3f3c6",
+  "grade": "mono",
+  "q": 58,
+  "widths": [
+   640,
+   1280,
+   1600
+  ]
+ }
+]

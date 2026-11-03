@@ -6,7 +6,7 @@ Reads   scripts/concept-assets/selections/<concept>.json  [{"key":"hall","id":"<
 Writes  storefront/public/assets/k/<concept>/<key>-<w>.webp
 Writes  storefront/src/k/<concept>/assets.json (full provenance; read by k/kit.js at build time).
 Run credits.py afterwards to refresh docs/concept-asset-credits.md.
-crop values are fractions of the original (0-1). Widths larger than the cropped original are skipped.
+crop values are fractions of the original (0-1); "grade":"mono" converts to a contrast-normalised black-and-white print; "q" sets WebP quality (default 74). Widths larger than the cropped original are skipped.
 """
 import json, sys, os
 from PIL import Image, ImageOps
@@ -24,6 +24,7 @@ for concept in sys.argv[2:]:
             try: meta.update(json.load(open(os.path.join(cache, f))))
             except ValueError: pass  # another search is writing it
     outdir = os.path.join(ROOT, 'storefront', 'public', 'assets', 'k', concept); os.makedirs(outdir, exist_ok=True)
+    produced = set()
     for item in sel:
         m = meta.get(item['id'])
         if not m: raise SystemExit(f'{concept}/{item["key"]}: id {item["id"]} not in cache')
@@ -31,17 +32,19 @@ for concept in sys.argv[2:]:
         if item.get('crop'):
             x0, y0, x1, y1 = item['crop']; W, H = im.size
             im = im.crop((round(x0 * W), round(y0 * H), round(x1 * W), round(y1 * H)))
+        if item.get('grade') == 'mono':
+            im = ImageOps.autocontrast(im.convert('L'), cutoff=0.4).convert('RGB')
         widths = [w for w in item.get('widths', [640, 1280, 1920]) if w <= im.width] or [im.width]
         for w in widths:
             h = round(im.height * w / im.width)
             im.resize((w, h), Image.LANCZOS).save(os.path.join(outdir, f'{item["key"]}-{w}.webp'), 'WEBP', quality=item.get('q', 74), method=6)
+            produced.add(f'{item["key"]}-{w}.webp')
         big = widths[-1]
         manifest[f'{concept}/{item["key"]}'] = {'w': big, 'h': round(im.height * big / im.width), 'widths': widths,
             'title': m['title'], 'creator': m.get('creator') or '', 'license': LIC.get(m['license'], m['license']) + ('' if m['license'] in ('cc0', 'pdm') else ' ' + (m.get('license_version') or '')),
             'licenseUrl': m.get('license_url'), 'page': m['foreign_landing_url'], 'original': m['url'], 'source': m['source'], 'sourceName': SOURCES.get(m['source'], m['source']), 'openverse': m['id']}
         print(concept, item['key'], widths)
     # remove stale files
-    keys = {i['key'] for i in sel}
     for f in os.listdir(outdir):
-        if f.rsplit('-', 1)[0] not in keys: os.remove(os.path.join(outdir, f))
+        if f not in produced: os.remove(os.path.join(outdir, f))
     json.dump(dict(sorted(manifest.items())), open(os.path.join(ROOT, 'storefront', 'src', 'k', concept, 'assets.json'), 'w'), indent=1, ensure_ascii=False)
