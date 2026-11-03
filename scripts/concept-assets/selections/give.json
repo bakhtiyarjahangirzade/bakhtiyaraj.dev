@@ -1,0 +1,8 @@
+[
+ {"key":"tomato","id":"ded4e33e-9e23-4c7f-9523-9821c3cae044","widths":[640,1280,1920]},
+ {"key":"onion","id":"5b453b17-5c80-440b-b22c-0f10a481be98","widths":[640,1280]},
+ {"key":"cabbage","id":"c2cd7862-4aea-4951-8398-af6aac903743","crop":[0,0.12,1,0.85],"widths":[640,1280]},
+ {"key":"persimmon","id":"40a9c034-9240-46ce-bbd2-b473b293802b","crop":[0,0.12,1,0.9],"widths":[640,1280]},
+ {"key":"bread","id":"cf81e0b9-a5e9-4b11-a2a0-7769decded9f","widths":[640,1280]},
+ {"key":"pot","id":"15b4a017-dd67-4a44-af4d-23d80aaf74b4","crop":[0,0.06,1,0.8],"widths":[640,1280]}
+]

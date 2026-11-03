@@ -1,0 +1,11 @@
+[
+ {"key":"court","id":"26982c37-54f1-4f57-bc3e-6392e317b9fc","crop":[0,0.04,0.9,0.78],"widths":[640,1280]},
+ {"key":"alley","id":"b6bcb751-479b-4b3d-9803-83b0ed87f43e","widths":[640,1280]},
+ {"key":"valley","id":"55860ecc-3a37-4ceb-8641-5a8b9a4c54c0","widths":[640,1280,1920]},
+ {"key":"terraces","id":"28c9aaf1-d940-473a-9f0d-2cd1c4c58a28","widths":[640,1280]},
+ {"key":"bath","id":"52f66b86-ef71-4bba-8a67-fb521704adba","widths":[640,1280]},
+ {"key":"beams","id":"87ac02d2-4c7a-4d84-ae12-6ce1b7a7ba77","crop":[0,0.06,1,0.86],"widths":[640,1280]},
+ {"key":"walnut","id":"3e6f2cad-03a3-4fba-bccf-075226a22b64","widths":[640,1280]},
+ {"key":"window","id":"e8eb09c3-83e8-4df6-8776-3a225d0fe8f1","crop":[0,0.06,0.92,1],"widths":[640,1280]},
+ {"key":"breakfast","id":"269afe3e-48b8-4e73-b4ea-22df5141483a","crop":[0.12,0,0.98,1],"widths":[640,1280]}
+]
