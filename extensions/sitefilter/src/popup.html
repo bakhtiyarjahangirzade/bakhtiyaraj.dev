@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteFilter</title>
+<link rel="stylesheet" href="ui.css">
+</head>
+<body class="popup">
+  <header class="top">
+    <img src="../icons/icon32.png" width="22" height="22" alt="">
+    <div class="brand">
+      <strong>SiteFilter</strong>
+      <span id="host" class="host">—</span>
+    </div>
+    <label class="switch" data-i18n-title="globalSwitch">
+      <input type="checkbox" id="globalOn">
+      <span></span>
+    </label>
+  </header>
+
+  <section id="unsupported" class="card note" hidden>
+    <p data-i18n="unsupported"></p>
+  </section>
+
+  <main id="main">
+    <section class="card status">
+      <div class="row">
+        <label class="switch small"><input type="checkbox" id="siteOn"><span></span></label>
+        <span data-i18n="siteSwitch"></span>
+        <span id="preset" class="pill"></span>
+      </div>
+      <div class="vfd">
+        <div><b id="nListings">0</b><span data-i18n="statListings"></span></div>
+        <div><b id="nAds">0</b><span data-i18n="statAds"></span></div>
+        <div><b id="nCards">0</b><span data-i18n="statCards"></span></div>
+      </div>
+      <div class="row gap">
+        <button id="peek" class="btn ghost" type="button" aria-pressed="false" data-i18n="peek"></button>
+        <button id="pick" class="btn amber" type="button" data-i18n="pick"></button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 data-i18n="hideWords"></h2>
+      <form class="adder" id="kwForm">
+        <input id="kwInput" type="text" autocomplete="off" data-i18n-placeholder="kwPlaceholder">
+        <button class="btn" type="submit" data-i18n="add"></button>
+      </form>
+      <ul class="chips" id="kwList"></ul>
+      <details class="help">
+        <summary data-i18n="syntaxTitle"></summary>
+        <p data-i18n="syntaxBody"></p>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2 data-i18n="modeTitle"></h2>
+      <div class="seg" role="radiogroup">
+        <label><input type="radio" name="mode" value="block"><span data-i18n="modeBlock"></span></label>
+        <label><input type="radio" name="mode" value="only"><span data-i18n="modeOnly"></span></label>
+      </div>
+      <div id="onlyBox" hidden>
+        <form class="adder" id="allowForm">
+          <input id="allowInput" type="text" autocomplete="off" data-i18n-placeholder="allowPlaceholder">
+          <button class="btn" type="submit" data-i18n="add"></button>
+        </form>
+        <ul class="chips allow" id="allowList"></ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 data-i18n="priceTitle"></h2>
+      <div class="row gap">
+        <input id="priceMin" type="number" inputmode="decimal" min="0" data-i18n-placeholder="priceMin">
+        <span class="dash">–</span>
+        <input id="priceMax" type="number" inputmode="decimal" min="0" data-i18n-placeholder="priceMax">
+      </div>
+      <p class="hint" data-i18n="priceHint"></p>
+    </section>
+
+    <section class="card toggles">
+      <label class="row"><span data-i18n="toggleAds"></span><span class="switch small"><input type="checkbox" id="adsOn"><span></span></span></label>
+      <label class="row"><span data-i18n="toggleSponsored"></span><span class="switch small"><input type="checkbox" id="sponsoredOn"><span></span></span></label>
+    </section>
+
+    <section class="card meta">
+      <div class="row"><span data-i18n="hiddenLinks"></span><b id="nLinks">0</b><button class="link" id="clearLinks" type="button" data-i18n="clear"></button></div>
+      <div class="row"><span data-i18n="customSelectors"></span><b id="nSelectors">0</b><button class="link" id="clearSelectors" type="button" data-i18n="clear"></button></div>
+      <div class="row"><span data-i18n="cardDetector"></span><code id="cardSel"></code><button class="link" id="clearCard" type="button" data-i18n="reset" hidden></button></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <button class="link" id="rescan" type="button" data-i18n="rescan"></button>
+    <a href="options.html" target="_blank" class="link" data-i18n="allSettings"></a>
+  </footer>
+  <script src="lib.js"></script>
+  <script src="presets.js"></script>
+  <script src="i18n.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

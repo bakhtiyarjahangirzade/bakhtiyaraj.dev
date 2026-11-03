@@ -6,6 +6,8 @@ await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 await cp(new URL('../public/', import.meta.url), output, { recursive: true });
 console.log('BAKHY static build ready in dist/');
+// SiteFilter Chrome extension zip (pure JS, always built)
+execFileSync(process.execPath, [fileURLToPath(new URL('../extensions/sitefilter/build.mjs', import.meta.url)), fileURLToPath(new URL('downloads/', output))], { stdio: 'inherit' });
 // Windows installers for the games (Neutralinojs + NSIS). Skipped with BAKHY_SKIP_DESKTOP=1.
 if (!process.env.BAKHY_SKIP_DESKTOP) {
   try {

@@ -1,0 +1,73 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="SiteFilter: a free Chrome extension that hides unwanted listings, sponsored posts and ads on marketplaces like Tap.az, Turbo.az, Sahibinden, OLX and eBay.">
+<meta name="theme-color" content="#121214">
+<title>SiteFilter — BAKHY</title>
+<link rel="icon" href="icon.png"><link rel="stylesheet" href="sitefilter.css">
+</head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><a class="brand" href="/">BAKHY</a><span>BKY-X03 · Chrome extension</span></header>
+<main id="main">
+  <section class="hero">
+    <img src="icon.png" width="96" height="96" alt="">
+    <div>
+      <h1>SiteFilter</h1>
+      <p class="lede">Hide the listings you never want to see. Filter by keyword, price, seller link or sponsored badge on any marketplace, and strip ad slots while you're at it.</p>
+      <p class="langs">Interface in English, Türkçe and Azərbaycanca.</p>
+      <div class="actions">
+        <a class="btn amber" href="/downloads/BAKHY-SiteFilter.zip" download>Download for Chrome · v1.0.0</a>
+        <a class="btn" href="#install">How to install</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="vfd" aria-label="What it does">
+    <div><b>Keywords</b><span>hide listings containing “replika”, “kirayə”, “iphone &amp; kırık”…</span></div>
+    <div><b>Show only</b><span>flip it: keep only listings that match your words</span></div>
+    <div><b>Price</b><span>min / max; reads AZN, ₼, TL, ₺, $, €, ₽ and more</span></div>
+    <div><b>Sponsored</b><span>drop VIP, premium, “Sponsorlu”, “Reklam” listings</span></div>
+    <div><b>Ads</b><span>removes AdSense, GPT, Yandex RTB, Taboola and site banners</span></div>
+    <div><b>Picker</b><span>click any listing or block on the page to hide it for good</span></div>
+  </section>
+
+  <section id="install" class="card">
+    <h2>Install (2 minutes)</h2>
+    <ol class="steps">
+      <li>Download <a href="/downloads/BAKHY-SiteFilter.zip" download>BAKHY-SiteFilter.zip</a> and unzip it. You get a folder called <code>SiteFilter</code>.</li>
+      <li>Open <code>chrome://extensions</code> in Chrome (Edge: <code>edge://extensions</code>, Brave, Opera and Yandex work too).</li>
+      <li>Turn on <b>Developer mode</b> in the top-right corner.</li>
+      <li>Click <b>Load unpacked</b> and pick the <code>SiteFilter</code> folder. Pin the funnel icon from the puzzle menu.</li>
+    </ol>
+    <p class="note">Keep the folder where it is: Chrome loads the extension from it. To update, replace the folder's contents and press the reload arrow on the extension card.</p>
+  </section>
+
+  <section class="card">
+    <h2>Using it</h2>
+    <ul class="list">
+      <li><b>Toolbar icon:</b> add words, switch between “Hide matches” and “Show only these”, set a price range, toggle ads and sponsored listings. The badge counts what was removed on the page.</li>
+      <li><b>Right-click a listing link</b> → “SiteFilter: hide this listing”. <b>Select text</b> → “hide listings containing …”.</li>
+      <li><b>Pick &amp; hide</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>): hover, use ↑/↓ to grow or shrink the box, click, then hide that listing, that element, or every element like it.</li>
+      <li><b>Turn a site off</b> with <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>. “Show hidden” outlines filtered listings instead of removing them.</li>
+      <li><b>Settings page:</b> words for every site, custom sponsor badges, per-site rules, fade instead of remove, JSON export / import.</li>
+    </ul>
+    <h3>Keyword syntax</h3>
+    <table class="syntax">
+      <tr><td><code>kırık</code></td><td>anywhere, ignoring case and accents: matches “KIRIK”, “kirik”</td></tr>
+      <tr><td><code>"kira"</code></td><td>whole word only: “kira” but not “kiralık”</td></tr>
+      <tr><td><code>iphone &amp; sınıq</code></td><td>every part has to appear</td></tr>
+      <tr><td><code>/v\d{2}/</code></td><td>a JavaScript regular expression</td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Sites</h2>
+    <p>Tuned layouts for Tap.az, Turbo.az, Bina.az, Lalafo, Sahibinden, Arabam, Hepsiemlak, Emlakjet, Trendyol, Hepsiburada, N11, Letgo, OLX, Avito, Kolesa / Krisha, eBay, Amazon, AliExpress, Etsy, Facebook Marketplace, YouTube and Google search. Every other site uses automatic card detection (repeating blocks with a link), and you can teach it the right card with the picker.</p>
+  </section>
+
+  <section class="card">
+    <h2>Privacy</h2>
+    <p>No account, no servers, no analytics. Rules live in <code>chrome.storage.local</code> on your computer. The extension needs access to the pages you visit only to read and hide listings on them. Source code is in the <a href="https://github.com/bakhtiyarjahangirzade/bakhtiyaraj.dev/tree/main/extensions/sitefilter">repository</a> under the MIT licence.</p>
+  </section>
+</main>
+<footer><span>SiteFilter / BAKHY</span><span>Free &amp; open source · MIT</span></footer>
+</body></html>

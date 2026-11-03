@@ -18,7 +18,8 @@ game or extension, or is clearly marked **On the bench** while it is being built
 | Focus Room | Live | `/apps/focus-room/` · Windows release |
 | Authentic (beta) | Live | `/authentic/` · AI-writing checker for assignments, Edge Function `authentic` |
 | PreviewMaster | On the bench | Windows Explorer preview handler |
-| ColorPicker, Color+, SiteFilter | On the bench | Chrome extensions |
+| SiteFilter | Live | `/apps/sitefilter/` · Chrome extension, source in `extensions/sitefilter/` |
+| ColorPicker, Color+ | On the bench | Chrome extensions |
 
 ## Accounts and play chips
 

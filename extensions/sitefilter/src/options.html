@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SiteFilter</title>
+<link rel="stylesheet" href="ui.css">
+</head>
+<body class="options">
+<div class="wrap">
+  <h1><img src="../icons/icon48.png" width="28" height="28" alt=""> <span data-i18n="optionsTitle"></span></h1>
+  <p class="lede" data-i18n="optionsLede"></p>
+
+  <section class="card">
+    <h2 data-i18n="general"></h2>
+    <div class="grid2">
+      <label class="row"><span class="switch"><input type="checkbox" id="enabled"><span></span></span><span data-i18n="globalSwitch"></span></label>
+      <label class="field"><span data-i18n="displayMode"></span>
+        <select id="display">
+          <option value="hide" data-i18n="displayHide"></option>
+          <option value="dim" data-i18n="displayDim"></option>
+        </select>
+      </label>
+      <label class="row"><span class="switch"><input type="checkbox" id="hideAds"><span></span></span><span data-i18n="toggleAdsDefault"></span></label>
+      <label class="row"><span class="switch"><input type="checkbox" id="hideSponsored"><span></span></span><span data-i18n="toggleSponsoredDefault"></span></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="everywhere"></h2>
+    <div class="grid2">
+      <label class="field"><span data-i18n="globalKeywords"></span>
+        <textarea id="globalKeywords" spellcheck="false"></textarea>
+      </label>
+      <label class="field"><span data-i18n="sponsorLabels"></span>
+        <textarea id="sponsorLabels" spellcheck="false"></textarea>
+      </label>
+    </div>
+    <div class="toolbar" style="margin-top:10px">
+      <button class="btn amber" id="saveGlobal" type="button" style="flex:none" data-i18n="save"></button>
+      <span class="saved" id="savedGlobal" data-i18n="saved"></span>
+      <span class="spacer"></span>
+      <button class="link" id="resetLabels" type="button" data-i18n="resetLabels"></button>
+    </div>
+    <details class="help">
+      <summary data-i18n="syntaxTitle"></summary>
+      <p data-i18n="syntaxBody"></p>
+    </details>
+  </section>
+
+  <section class="card">
+    <div class="toolbar" style="margin-bottom:10px">
+      <h2 style="margin:0" data-i18n="sitesTitle"></h2>
+      <span class="spacer"></span>
+      <form id="addSite" class="adder" style="max-width:320px">
+        <input id="newSite" type="text" placeholder="tap.az" autocomplete="off">
+        <button class="btn" type="submit" data-i18n="addSite"></button>
+      </form>
+    </div>
+    <table class="sites">
+      <thead><tr>
+        <th data-i18n="colSite"></th><th data-i18n="colOn"></th><th data-i18n="colMode"></th>
+        <th data-i18n="colWords"></th><th data-i18n="colLinks"></th><th data-i18n="colPrice"></th><th></th>
+      </tr></thead>
+      <tbody id="sites"></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="backup"></h2>
+    <div class="toolbar">
+      <button class="btn" id="export" type="button" data-i18n="export"></button>
+      <label class="btn" style="cursor:pointer"><span data-i18n="import"></span><input id="import" type="file" accept="application/json,.json" hidden></label>
+      <span class="spacer"></span>
+      <button class="btn danger" id="resetAll" type="button" data-i18n="resetAll"></button>
+    </div>
+    <p class="hint" id="backupMsg"></p>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="shortcuts"></h2>
+    <p class="hint"><span class="kbd">Alt</span>+<span class="kbd">Shift</span>+<span class="kbd">F</span> — <span data-i18n="cmdToggle"></span></p>
+    <p class="hint"><span class="kbd">Alt</span>+<span class="kbd">Shift</span>+<span class="kbd">X</span> — <span data-i18n="cmdPick"></span></p>
+    <p class="hint" data-i18n="shortcutsHint"></p>
+  </section>
+</div>
+
+<template id="editorTpl">
+  <tr class="editor"><td colspan="7">
+    <div class="grid2">
+      <label class="field"><span data-i18n="hideWords"></span><textarea data-f="keywords" spellcheck="false"></textarea></label>
+      <label class="field"><span data-i18n="allowWords"></span><textarea data-f="allow" spellcheck="false"></textarea></label>
+      <label class="field"><span data-i18n="hiddenLinks"></span><textarea data-f="hiddenLinks" spellcheck="false"></textarea></label>
+      <label class="field"><span data-i18n="customSelectors"></span><textarea data-f="selectors" spellcheck="false"></textarea></label>
+      <label class="field"><span data-i18n="modeTitle"></span>
+        <select data-f="mode"><option value="block" data-i18n="modeBlock"></option><option value="only" data-i18n="modeOnly"></option></select>
+      </label>
+      <label class="field"><span data-i18n="cardSelector"></span><input type="text" data-f="cardSelector" spellcheck="false" data-i18n-placeholder="autoDetect"></label>
+      <label class="field"><span data-i18n="priceMin"></span><input type="number" data-f="priceMin"></label>
+      <label class="field"><span data-i18n="priceMax"></span><input type="number" data-f="priceMax"></label>
+      <label class="field"><span data-i18n="toggleAds"></span>
+        <select data-f="ads"><option value="" data-i18n="inherit"></option><option value="true" data-i18n="yes"></option><option value="false" data-i18n="no"></option></select>
+      </label>
+      <label class="field"><span data-i18n="toggleSponsored"></span>
+        <select data-f="sponsored"><option value="" data-i18n="inherit"></option><option value="true" data-i18n="yes"></option><option value="false" data-i18n="no"></option></select>
+      </label>
+    </div>
+    <div class="toolbar" style="margin-top:10px">
+      <button class="btn amber" data-act="save" type="button" style="flex:none" data-i18n="save"></button>
+      <button class="btn" data-act="close" type="button" data-i18n="cancel"></button>
+      <span class="saved" data-i18n="saved"></span>
+    </div>
+  </td></tr>
+</template>
+
+<script src="lib.js"></script>
+<script src="i18n.js"></script>
+<script src="options.js"></script>
+</body>
+</html>
