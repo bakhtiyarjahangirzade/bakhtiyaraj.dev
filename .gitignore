@@ -12,5 +12,6 @@ apps/games-desktop/work/
 apps/games-desktop/node_modules/
 public/downloads/
 public/vendor/
+storefront/public/Luna/vendor/
 apps/authentic-desktop/work/
 .cache/

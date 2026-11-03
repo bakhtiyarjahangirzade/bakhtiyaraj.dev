@@ -2,28 +2,29 @@
 // Real e-mail + password auth handled by Supabase: passwords never touch Luna's storage.
 // The Supabase client is loaded on demand so anonymous readers never download it.
 import * as store from './store.js';
+import { SB_URL, SB_KEY } from './config.js'; // public, RLS-protected publishable key
 
-const SB_URL = 'https://yxiedrrahclzqukfnqrn.supabase.co';
-const SB_KEY = 'sb_publishable_n0X-RVe8A6z9HviK4qsWAg_FgTTKJq2'; // public, RLS-protected publishable key
 const AUTH_KEY = 'luna.auth';
 const MISSING = new Set(['PGRST205', '42P01', 'PGRST202']);
 
 const listeners = new Set();
 // status: idle (never contacted) | loading | signed-out | signed-in | unavailable
 // sync:   none | checking | ready | missing (tables not installed) | error
-let state = { status: 'idle', user: null, sync: 'none', message: '' };
+// editor: undefined while unknown, then true/false as decided by the server (public.luna_editor_me, which reads
+//         public.luna_editors). Never derived from client-editable profile metadata or anything the browser sets.
+let state = { status: 'idle', user: null, sync: 'none', message: '', editor: false };
 const set = patch => { state = { ...state, ...patch }; listeners.forEach(f => f(state)); };
 export const onAccount = f => (listeners.add(f), f(state), () => listeners.delete(f));
 export const account = () => state;
 
 let clientP = null, signingOut = false;
-function client() {
+export function client() {
   clientP ||= import('@supabase/supabase-js').then(({ createClient }) => {
     const sb = createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: AUTH_KEY } });
     sb.auth.onAuthStateChange((event, session) => {
       const user = session?.user && !session.user.is_anonymous ? session.user : null;
       if (event === 'SIGNED_OUT' && state.user && !signingOut) {
-        set({ status: 'signed-out', user: null, sync: 'none', message: 'Sessiyanın müddəti bitdi. Kitabxananızı görmək üçün yenidən daxil olun.' });
+        set({ status: 'signed-out', user: null, sync: 'none', editor: false, message: 'Sessiyanın müddəti bitdi. Kitabxananızı görmək üçün yenidən daxil olun.' });
         store.useDevice();
       } else if (user && user.id !== state.user?.id) {
         connect(user);
@@ -65,8 +66,9 @@ function connect(user) {
   return connecting.p;
 }
 async function doConnect(user) {
-  set({ status: 'signed-in', user: { id: user.id, email: user.email }, sync: 'checking', message: '' });
+  set({ status: 'signed-in', user: { id: user.id, email: user.email }, sync: 'checking', message: '', editor: undefined, editorError: false });
   const sb = await client();
+  checkEditor(sb);
   try {
     const r = await store.useAccount(adapter(sb, user.id));
     set({ sync: 'ready', message: r.moved ? `Bu cihazdakı ${r.moved} əsər hesabınıza köçürüldü.` : '' });
@@ -74,6 +76,24 @@ async function doConnect(user) {
     store.useDevice();
     set({ sync: MISSING.has(e?.code) ? 'missing' : 'error' });
   }
+}
+
+async function checkEditor(sb) {
+  try {
+    const { data, error } = await sb.rpc('luna_editor_me');
+    if (error) throw error;
+    if (state.status === 'signed-in') set({ editor: data?.editor === true });
+  } catch (e) {
+    // Not installed yet (PGRST202) or offline: nobody is an editor.
+    if (state.status === 'signed-in') set({ editor: false, editorError: true });
+  }
+}
+// Fresh access token for editor requests (supabase-js refreshes it automatically).
+export async function accessToken() {
+  const sb = await client();
+  const { data } = await sb.auth.getSession();
+  if (!data.session?.access_token) throw Object.assign(new Error('Sessiya bitib. Yenidən daxil olun.'), { code: 'auth' });
+  return data.session.access_token;
 }
 
 function adapter(sb, uid) {
@@ -144,5 +164,5 @@ export async function signOut() {
   catch (e) { console.warn('Luna sign-out', e); try { localStorage.removeItem(AUTH_KEY); } catch { /* ignore */ } }
   finally { signingOut = false; }
   store.useDevice();
-  set({ status: 'signed-out', user: null, sync: 'none', message: 'Hesabdan çıxdınız.' });
+  set({ status: 'signed-out', user: null, sync: 'none', editor: false, message: 'Hesabdan çıxdınız.' });
 }

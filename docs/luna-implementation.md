@@ -38,6 +38,9 @@ Starter collection: 8 Pepper&Carrot episodes by David Revoy (CC BY 4.0) — 5 fr
 
 ### Adding a comic
 
+Own comics are now uploaded and published from the editor panel without code changes: see `docs/luna-publishing-implementation.md`. The steps below are only for the bundled, licensed starter collection.
+
+
 1. Confirm the rights from a primary source (license from the rights holder for that exact edition; free availability or age alone is not enough) and add a section to `docs/luna-content-credits.md`.
 2. Put the files in `storefront/public/Luna/comics/<slug>/`: `cover.webp` (≈1100 px wide), `cover-sm.webp` (≈560 px), pages `p01.webp`, `p02.webp`, … all with the same size. For a sample/paid title, add **only** the preview pages. (For Pepper&Carrot, add a row to `EPISODES` in the import script and run it.)
 3. Add an entry to `titles` in `storefront/Luna/src/catalogue.js`:

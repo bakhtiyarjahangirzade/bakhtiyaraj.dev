@@ -1,0 +1,318 @@
+{
+  "extName": {
+    "message": "SiteFilter — elan və reklam filtri"
+  },
+  "extDesc": {
+    "message": "Alqı-satqı və bütün saytlarda lazımsız elanları, sponsorlu paylaşımları və reklamları gizlət: söz, qiymət, elan filtrləri."
+  },
+  "cmdToggle": {
+    "message": "Bu saytda SiteFilter-i aç/bağla"
+  },
+  "cmdPick": {
+    "message": "Gizlətmək üçün element seç"
+  },
+  "menuHideLink": {
+    "message": "SiteFilter: bu elanı gizlət"
+  },
+  "menuBlockText": {
+    "message": "SiteFilter: “%s” olan elanları gizlət"
+  },
+  "menuPick": {
+    "message": "SiteFilter: gizlədiləcək elementi seç…"
+  },
+  "menuToggleSite": {
+    "message": "SiteFilter: bu saytda aç/bağla"
+  },
+  "pickerHint": {
+    "message": "Yox etmək istədiyinə klik et. ↑/↓ seçimi genişləndirir və ya daraldır."
+  },
+  "cancel": {
+    "message": "Ləğv et"
+  },
+  "pickHideListing": {
+    "message": "Bu elanı gizlət"
+  },
+  "pickHideElement": {
+    "message": "Yalnız bu elementi gizlət"
+  },
+  "pickHideSimilar": {
+    "message": "Buna oxşar bütün elementləri gizlət"
+  },
+  "pickTeachCard": {
+    "message": "Bu bir elandır — kartları buna görə tanı"
+  },
+  "pickBack": {
+    "message": "Geri"
+  },
+  "globalSwitch": {
+    "message": "SiteFilter aktiv (bütün saytlar)"
+  },
+  "unsupported": {
+    "message": "SiteFilter adi veb səhifələrdə (http/https) işləyir. Bir sayt aç və ikona yenidən klik et."
+  },
+  "siteSwitch": {
+    "message": "Bu saytı filtrlə"
+  },
+  "statListings": {
+    "message": "elan gizlədildi"
+  },
+  "statAds": {
+    "message": "reklam silindi"
+  },
+  "statCards": {
+    "message": "kart yoxlanıldı"
+  },
+  "peek": {
+    "message": "Gizlədilənləri göstər"
+  },
+  "peekOff": {
+    "message": "Yenidən gizlət"
+  },
+  "pick": {
+    "message": "Seç və gizlət"
+  },
+  "hideWords": {
+    "message": "Bunları ehtiva edən elanları gizlət"
+  },
+  "kwPlaceholder": {
+    "message": "məs. sınıq, replika, \"kirayə\""
+  },
+  "add": {
+    "message": "Əlavə et"
+  },
+  "syntaxTitle": {
+    "message": "Söz sintaksisi"
+  },
+  "syntaxBody": {
+    "message": "söz — hər yerdə uyğunlaşır, böyük/kiçik hərf və diakritika fərq etmir (sinig = SINIQ)\n\"söz\" — yalnız tam söz\niphone & sınıq — bütün hissələr olmalıdır\n/regex/ — JavaScript müntəzəm ifadəsi\nBir neçə sözü vergüllə ayır."
+  },
+  "modeTitle": {
+    "message": "Rejim"
+  },
+  "modeBlock": {
+    "message": "Uyğunları gizlət"
+  },
+  "modeOnly": {
+    "message": "Yalnız bunları göstər"
+  },
+  "modeBlockShort": {
+    "message": "Gizlət"
+  },
+  "modeOnlyShort": {
+    "message": "Yalnız"
+  },
+  "allowPlaceholder": {
+    "message": "yalnız bunu ehtiva edənləri göstər…"
+  },
+  "allowWords": {
+    "message": "Yalnız bunları ehtiva edənləri göstər"
+  },
+  "priceTitle": {
+    "message": "Qiymət aralığı"
+  },
+  "priceMin": {
+    "message": "Ən az"
+  },
+  "priceMax": {
+    "message": "Ən çox"
+  },
+  "priceHint": {
+    "message": "Aralıqdan kənar elanlar gizlədilir. Qiyməti oxunmayan elanlar görünür qalır."
+  },
+  "toggleAds": {
+    "message": "Reklam yerlərini və bannerləri sil"
+  },
+  "toggleSponsored": {
+    "message": "Sponsorlu / VIP / premium elanları gizlət"
+  },
+  "toggleAdsDefault": {
+    "message": "Defolt olaraq reklam yerlərini sil"
+  },
+  "toggleSponsoredDefault": {
+    "message": "Defolt olaraq sponsorlu elanları gizlət"
+  },
+  "hiddenLinks": {
+    "message": "Gizlədilən elanlar"
+  },
+  "customSelectors": {
+    "message": "Gizlədilən elementlər (CSS)"
+  },
+  "clear": {
+    "message": "Təmizlə"
+  },
+  "cardDetector": {
+    "message": "Kart"
+  },
+  "cardSelector": {
+    "message": "Elan kartı seçicisi (CSS)"
+  },
+  "reset": {
+    "message": "Sıfırla"
+  },
+  "rescan": {
+    "message": "Səhifəni yenidən yoxla"
+  },
+  "allSettings": {
+    "message": "Bütün ayarlar →"
+  },
+  "noSite": {
+    "message": "Sayt yoxdur"
+  },
+  "emptyList": {
+    "message": "Hələ yoxdur"
+  },
+  "remove": {
+    "message": "Sil"
+  },
+  "badPattern": {
+    "message": "Bu nümunə düzgün deyil."
+  },
+  "badSelector": {
+    "message": "Bu CSS seçiciləri düzgün deyil:"
+  },
+  "badHost": {
+    "message": "tap.az kimi domen daxil et"
+  },
+  "autoDetect": {
+    "message": "Avtomatik"
+  },
+  "confirmClear": {
+    "message": "Bu saytın siyahısı təmizlənsin?"
+  },
+  "reason_link": {
+    "message": "sənin gizlətdiklərin"
+  },
+  "reason_keyword": {
+    "message": "söz"
+  },
+  "reason_only": {
+    "message": "“yalnız göstər”dən kənar"
+  },
+  "reason_sponsored": {
+    "message": "sponsorlu"
+  },
+  "reason_price": {
+    "message": "qiymət"
+  },
+  "optionsTitle": {
+    "message": "SiteFilter ayarları"
+  },
+  "optionsLede": {
+    "message": "Hər şey yalnız bu brauzerdə saxlanılır. Heç yerə göndərilmir."
+  },
+  "general": {
+    "message": "Ümumi"
+  },
+  "displayMode": {
+    "message": "Filtrlənən elanlar"
+  },
+  "displayHide": {
+    "message": "Səhifədən sil"
+  },
+  "displayDim": {
+    "message": "Solğunlaşdır (üzərinə gələndə görünür)"
+  },
+  "everywhere": {
+    "message": "Bütün saytlarda"
+  },
+  "globalKeywords": {
+    "message": "Bunları ehtiva edən elanları gizlət (hər sətrə bir)"
+  },
+  "sponsorLabels": {
+    "message": "Sponsorlu elanı göstərən nişanlar (hər sətrə bir)"
+  },
+  "resetLabels": {
+    "message": "Defolt nişanları bərpa et"
+  },
+  "save": {
+    "message": "Yadda saxla"
+  },
+  "saved": {
+    "message": "Yadda saxlanıldı ✓"
+  },
+  "sitesTitle": {
+    "message": "Saytlar"
+  },
+  "addSite": {
+    "message": "Sayt əlavə et"
+  },
+  "colSite": {
+    "message": "Sayt"
+  },
+  "colOn": {
+    "message": "Aktiv"
+  },
+  "colMode": {
+    "message": "Rejim"
+  },
+  "colWords": {
+    "message": "Söz"
+  },
+  "colLinks": {
+    "message": "Gizli"
+  },
+  "colPrice": {
+    "message": "Qiymət"
+  },
+  "noSites": {
+    "message": "Hələ sayt qaydası yoxdur. Bir sayt aç və alət panelindəki ikonu istifadə et, ya da burada əlavə et."
+  },
+  "edit": {
+    "message": "Redaktə et"
+  },
+  "delete": {
+    "message": "Sil"
+  },
+  "inherit": {
+    "message": "Defoltu istifadə et"
+  },
+  "yes": {
+    "message": "Bəli"
+  },
+  "no": {
+    "message": "Xeyr"
+  },
+  "backup": {
+    "message": "Ehtiyat nüsxə"
+  },
+  "export": {
+    "message": "JSON ixrac et"
+  },
+  "import": {
+    "message": "JSON idxal et"
+  },
+  "resetAll": {
+    "message": "Hər şeyi sıfırla"
+  },
+  "confirmImportMerge": {
+    "message": "OK = mövcud qaydalarla birləşdir, Ləğv et = onları əvəz et."
+  },
+  "importFailed": {
+    "message": "Bu fayl SiteFilter ehtiyat nüsxəsi deyil."
+  },
+  "confirmReset": {
+    "message": "Bütün SiteFilter qaydaları və ayarları silinsin?"
+  },
+  "shortcuts": {
+    "message": "Klaviatura qısayolları"
+  },
+  "shortcutsHint": {
+    "message": "chrome://extensions/shortcuts ünvanında dəyişə bilərsən"
+  },
+  "confirmDelete": {
+    "message": "$HOST$ qaydaları silinsin?",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDone": {
+    "message": "İdxal edildi. Faylda $N$ sayt qaydası var.",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  }
+}

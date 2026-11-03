@@ -1,0 +1,318 @@
+{
+  "extName": {
+    "message": "SiteFilter — hide listings and ads"
+  },
+  "extDesc": {
+    "message": "Hide unwanted listings, sponsored posts and ads on marketplaces and any site: keyword, price and per-listing filters."
+  },
+  "cmdToggle": {
+    "message": "Turn SiteFilter on/off for this site"
+  },
+  "cmdPick": {
+    "message": "Pick an element to hide"
+  },
+  "menuHideLink": {
+    "message": "SiteFilter: hide this listing"
+  },
+  "menuBlockText": {
+    "message": "SiteFilter: hide listings containing “%s”"
+  },
+  "menuPick": {
+    "message": "SiteFilter: pick an element to hide…"
+  },
+  "menuToggleSite": {
+    "message": "SiteFilter: on/off for this site"
+  },
+  "pickerHint": {
+    "message": "Click what you want gone. ↑/↓ widens or narrows the selection."
+  },
+  "cancel": {
+    "message": "Cancel"
+  },
+  "pickHideListing": {
+    "message": "Hide this listing"
+  },
+  "pickHideElement": {
+    "message": "Hide only this element"
+  },
+  "pickHideSimilar": {
+    "message": "Hide every element like this"
+  },
+  "pickTeachCard": {
+    "message": "This is one listing — use it to detect cards"
+  },
+  "pickBack": {
+    "message": "Back"
+  },
+  "globalSwitch": {
+    "message": "SiteFilter on (all sites)"
+  },
+  "unsupported": {
+    "message": "SiteFilter works on regular web pages (http/https). Open a site and click the icon again."
+  },
+  "siteSwitch": {
+    "message": "Filter this site"
+  },
+  "statListings": {
+    "message": "listings hidden"
+  },
+  "statAds": {
+    "message": "ads removed"
+  },
+  "statCards": {
+    "message": "cards scanned"
+  },
+  "peek": {
+    "message": "Show hidden"
+  },
+  "peekOff": {
+    "message": "Hide again"
+  },
+  "pick": {
+    "message": "Pick & hide"
+  },
+  "hideWords": {
+    "message": "Hide listings containing"
+  },
+  "kwPlaceholder": {
+    "message": "e.g. broken, replica, \"rent\""
+  },
+  "add": {
+    "message": "Add"
+  },
+  "syntaxTitle": {
+    "message": "Keyword syntax"
+  },
+  "syntaxBody": {
+    "message": "word — matches anywhere, ignores case and accents (kirik = KIRIK)\n\"word\" — whole word only\niphone & broken — all parts must appear\n/regex/ — JavaScript regular expression\nSeparate several words with commas."
+  },
+  "modeTitle": {
+    "message": "Mode"
+  },
+  "modeBlock": {
+    "message": "Hide matches"
+  },
+  "modeOnly": {
+    "message": "Show only these"
+  },
+  "modeBlockShort": {
+    "message": "Hide"
+  },
+  "modeOnlyShort": {
+    "message": "Only"
+  },
+  "allowPlaceholder": {
+    "message": "show only listings containing…"
+  },
+  "allowWords": {
+    "message": "Show only listings containing"
+  },
+  "priceTitle": {
+    "message": "Price range"
+  },
+  "priceMin": {
+    "message": "Min price"
+  },
+  "priceMax": {
+    "message": "Max price"
+  },
+  "priceHint": {
+    "message": "Listings outside the range are hidden. Listings without a readable price stay visible."
+  },
+  "toggleAds": {
+    "message": "Remove ad slots and banners"
+  },
+  "toggleSponsored": {
+    "message": "Hide sponsored / VIP / premium listings"
+  },
+  "toggleAdsDefault": {
+    "message": "Remove ad slots by default"
+  },
+  "toggleSponsoredDefault": {
+    "message": "Hide sponsored listings by default"
+  },
+  "hiddenLinks": {
+    "message": "Hidden listings"
+  },
+  "customSelectors": {
+    "message": "Hidden elements (CSS)"
+  },
+  "clear": {
+    "message": "Clear"
+  },
+  "cardDetector": {
+    "message": "Card"
+  },
+  "cardSelector": {
+    "message": "Listing card selector (CSS)"
+  },
+  "reset": {
+    "message": "Reset"
+  },
+  "rescan": {
+    "message": "Rescan page"
+  },
+  "allSettings": {
+    "message": "All settings →"
+  },
+  "noSite": {
+    "message": "No site"
+  },
+  "emptyList": {
+    "message": "Nothing yet"
+  },
+  "remove": {
+    "message": "Remove"
+  },
+  "badPattern": {
+    "message": "This pattern is not valid."
+  },
+  "badSelector": {
+    "message": "These CSS selectors are not valid:"
+  },
+  "badHost": {
+    "message": "Enter a domain such as tap.az"
+  },
+  "autoDetect": {
+    "message": "Automatic"
+  },
+  "confirmClear": {
+    "message": "Clear this list for the site?"
+  },
+  "reason_link": {
+    "message": "hidden by you"
+  },
+  "reason_keyword": {
+    "message": "keyword"
+  },
+  "reason_only": {
+    "message": "not in “show only”"
+  },
+  "reason_sponsored": {
+    "message": "sponsored"
+  },
+  "reason_price": {
+    "message": "price"
+  },
+  "optionsTitle": {
+    "message": "SiteFilter settings"
+  },
+  "optionsLede": {
+    "message": "Everything is stored in this browser only. Nothing is sent anywhere."
+  },
+  "general": {
+    "message": "General"
+  },
+  "displayMode": {
+    "message": "Filtered listings"
+  },
+  "displayHide": {
+    "message": "Remove from the page"
+  },
+  "displayDim": {
+    "message": "Fade out (hover to see)"
+  },
+  "everywhere": {
+    "message": "On every site"
+  },
+  "globalKeywords": {
+    "message": "Hide listings containing (one per line)"
+  },
+  "sponsorLabels": {
+    "message": "Badges that mark a sponsored listing (one per line)"
+  },
+  "resetLabels": {
+    "message": "Restore default badges"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "saved": {
+    "message": "Saved ✓"
+  },
+  "sitesTitle": {
+    "message": "Sites"
+  },
+  "addSite": {
+    "message": "Add site"
+  },
+  "colSite": {
+    "message": "Site"
+  },
+  "colOn": {
+    "message": "On"
+  },
+  "colMode": {
+    "message": "Mode"
+  },
+  "colWords": {
+    "message": "Words"
+  },
+  "colLinks": {
+    "message": "Hidden"
+  },
+  "colPrice": {
+    "message": "Price"
+  },
+  "noSites": {
+    "message": "No site rules yet. Open a site and use the toolbar icon, or add one here."
+  },
+  "edit": {
+    "message": "Edit"
+  },
+  "delete": {
+    "message": "Delete"
+  },
+  "inherit": {
+    "message": "Use default"
+  },
+  "yes": {
+    "message": "Yes"
+  },
+  "no": {
+    "message": "No"
+  },
+  "backup": {
+    "message": "Backup"
+  },
+  "export": {
+    "message": "Export JSON"
+  },
+  "import": {
+    "message": "Import JSON"
+  },
+  "resetAll": {
+    "message": "Reset everything"
+  },
+  "confirmImportMerge": {
+    "message": "OK = merge with current rules, Cancel = replace them."
+  },
+  "importFailed": {
+    "message": "That file is not a SiteFilter backup."
+  },
+  "confirmReset": {
+    "message": "Delete all SiteFilter rules and settings?"
+  },
+  "shortcuts": {
+    "message": "Keyboard shortcuts"
+  },
+  "shortcutsHint": {
+    "message": "Change them at chrome://extensions/shortcuts"
+  },
+  "confirmDelete": {
+    "message": "Delete the rules for $HOST$?",
+    "placeholders": {
+      "host": {
+        "content": "$1"
+      }
+    }
+  },
+  "importDone": {
+    "message": "Imported. $N$ site rules in the file.",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  }
+}

@@ -2,8 +2,8 @@
 // Page turns use the Web Animations API on a two-faced leaf (no animation library). Any new request finishes
 // the running turn instantly, so rapid clicks never skip, duplicate or desynchronise pages.
 import { buildLeaves, spreadOf, spreadLeaves, spreadCount, step, atStart, atEnd, clampIndex, statusText, chooseMode } from './core.js';
-import { pageSrc, attribution, LANGUAGES } from './catalogue.js';
-import { h, icon, jacket, prefersReducedMotion, isTyping } from './ui.js';
+import { pageSrc, attribution, seriesLine, LANGUAGES } from './catalogue.js';
+import { h, icon, jacket, langOf, prefersReducedMotion, isTyping } from './ui.js';
 
 const ZOOMS = [1, 1.5, 2, 2.6];
 // Phones open the readable view at 200% (speech bubbles become legible); larger screens at 150%.
@@ -13,6 +13,11 @@ export function openReader(mount, title, start, { onIndex, onClose, onInquiry, o
   const leaves = buildLeaves(title);
   const n = leaves.length;
   const ratio = title.pageSize[0] / title.pageSize[1];
+  // Imported comics may mix page shapes (e.g. a landscape double page in a PDF): each page keeps its own ratio,
+  // fitted uncropped inside the book's page box.
+  const sizeOf = leaf => title.pageSizes?.[leaf.n - 1] || title.pageSize;
+  const ratioOf = k => (leaves[k]?.kind === 'page' ? sizeOf(leaves[k])[0] / sizeOf(leaves[k])[1] : ratio);
+  const kindLabel = title.access === 'free' ? '' : title.preview?.all ? ', redaktor önizləməsi (bütün səhifələr)' : ', önizləmə';
   let i = clampIndex(start, n);
   let mode = 'single', forced = null, turn = null, zoom = 0, lastTap = 0;
 
@@ -42,8 +47,8 @@ export function openReader(mount, title, start, { onIndex, onClose, onInquiry, o
     h('header', { class: 'rd-bar' },
       closeBtn,
       h('div', { class: 'rd-title' },
-        h('strong', { lang: title.language === 'ru' ? 'ru' : 'en', text: title.title }),
-        h('span', { text: `${title.series}, bölüm ${title.episode}${title.access === 'sample' ? ', önizləmə' : ''}` })),
+        h('strong', { lang: langOf(title), text: title.title }),
+        h('span', { text: `${title.preview ? 'Qaralama: ' : ''}${seriesLine(title)}${kindLabel}` })),
       h('div', { class: 'rd-tools' }, modeBtn, zoomBtn, fullBtn, zoomBar)),
     stage, zoomPane,
     h('footer', { class: 'rd-nav' }, prevBtn, h('div', { class: 'rd-where' }, select, status), nextBtn));
@@ -61,13 +66,22 @@ export function openReader(mount, title, start, { onIndex, onClose, onInquiry, o
     const leaf = leaves[k];
     const paper = h('div', { class: `paper paper-${leaf.kind}`, 'data-leaf': k });
     if (leaf.kind === 'page') {
-      const img = h('img', { src: pageSrc(title, leaf.file), alt: `${title.title}, səhifə ${leaf.n}`, width: title.pageSize[0], height: title.pageSize[1], decoding: 'async', draggable: 'false' });
+      const [pw0, ph0] = sizeOf(leaf);
+      const img = h('img', { src: pageSrc(title, leaf.file), alt: `${title.title}, səhifə ${leaf.n}`, width: pw0, height: ph0, decoding: 'async', draggable: 'false' });
       if (k === i) img.setAttribute('fetchpriority', 'high');
-      let tries = 0;
+      let tries = 0, resigned = false;
+      // Remote pages use signed URLs that expire: the first failure re-signs silently (long reading sessions).
+      const reload = async () => {
+        tries += 1;
+        if (title.refresh) { try { await title.refresh(); } catch { /* offline: the error box stays */ } }
+        const src = pageSrc(title, leaf.file);
+        img.src = title.remote ? src : `${src}?r=${tries}`;
+      };
       img.addEventListener('error', () => {
+        if (title.remote && !resigned) { resigned = true; reload(); return; }
         const retry = h('button', { class: 'btn btn-quiet', type: 'button', text: 'Yenidən yüklə' });
         const box = h('div', { class: 'paper-error', role: 'alert' }, h('p', { text: `Səhifə ${leaf.n} yüklənmədi.` }), h('p', { class: 'small', text: 'Oxuduğunuz yer yadda qalıb. Bağlantını yoxlayıb yenidən yükləyin.' }), retry);
-        retry.addEventListener('click', () => { tries += 1; img.src = `${pageSrc(title, leaf.file)}?r=${tries}`; box.replaceWith(img); });
+        retry.addEventListener('click', async () => { retry.disabled = true; resigned = true; await reload(); box.replaceWith(img); });
         img.replaceWith(box);
       });
       paper.append(img);
@@ -76,19 +90,27 @@ export function openReader(mount, title, start, { onIndex, onClose, onInquiry, o
     } else if (leaf.kind === 'colophon') {
       paper.append(h('div', { class: 'leaf-text' },
         h('p', { class: 'leaf-kicker', text: 'Bölümün sonu' }),
-        h('h2', { lang: title.language === 'ru' ? 'ru' : 'en', text: title.title }),
-        h('dl', { class: 'leaf-credits' }, title.credits.flatMap(([role, who]) => [h('dt', { text: role }), h('dd', { text: who })])),
+        h('h2', { lang: langOf(title), text: title.title }),
+        h('dl', { class: 'leaf-credits' }, (title.credits.length ? title.credits : [['Müəllif', title.creator]]).flatMap(([role, who]) => [h('dt', { text: role }), h('dd', { text: who })])),
         h('p', { class: 'small', text: attribution(title) }),
-        h('p', { class: 'small' }, 'Mənbə: ', h('a', { href: title.source.page, rel: 'noopener', target: '_blank', text: 'peppercarrot.com' }), ', lisenziya: ', h('a', { href: title.license.url, rel: 'noopener license', target: '_blank', text: title.license.name }), '.'),
+        title.remote ? null : h('p', { class: 'small' }, 'Mənbə: ', h('a', { href: title.source.page, rel: 'noopener', target: '_blank', text: 'peppercarrot.com' }), ', lisenziya: ', h('a', { href: title.license.url, rel: 'noopener license', target: '_blank', text: title.license.name }), '.'),
         h('button', { class: 'btn btn-quiet', type: 'button', text: 'Əsər səhifəsinə qayıt', onclick: () => onDetail() })));
     } else {
       const rest = title.storyPages - title.previewPages;
+      const paid = title.access === 'paid';
+      const body = title.preview?.all
+        ? `Redaktor önizləməsi: bütün ${title.storyPages} səhifə göstərildi. Ziyarətçilər yalnız ilk ${title.previewPages} səhifəni görəcək.`
+        : paid
+          ? `Siz ${title.storyPages} səhifəlik əsərin ilk ${title.previewPages} səhifəsini oxudunuz. Qalan ${rest} səhifə satışdadır (${title.price} AZN). Saytda ödəniş qəbul edilmir: WhatsApp-da alış sorğusu göndərin, ödəniş və tam versiyanı əldə etmə qaydası orada razılaşdırılır.`
+          : title.remote
+            ? `Siz ${title.storyPages} səhifəlik əsərin ilk ${title.previewPages} səhifəsini oxudunuz. Bu nümunə məhsul hələ satışda deyil və ödəniş qəbul edilmir.`
+            : `Siz ${title.storyPages} səhifəlik bölümün ilk ${title.previewPages} səhifəsini oxudunuz. Qalan ${rest} səhifə Luna-ya yüklənməyib: bu nümunə məhsul hələ satışda deyil və ödəniş qəbul edilmir.`;
       paper.append(h('div', { class: 'leaf-text' },
         h('p', { class: 'leaf-kicker', text: 'Önizləmənin sonu' }),
         h('h2', { text: 'Önizləmə burada bitir' }),
-        h('p', { text: `Siz ${title.storyPages} səhifəlik bölümün ilk ${title.previewPages} səhifəsini oxudunuz. Qalan ${rest} səhifə Luna-ya yüklənməyib: bu nümunə məhsul hələ satışda deyil və ödəniş qəbul edilmir.` }),
-        h('button', { class: 'btn btn-lantern', type: 'button', onclick: () => onInquiry() }, icon('wa'), 'WhatsApp-da maraq bildir'),
-        h('p', { class: 'small' }, 'Bu əsər müəllifin saytında ', h('a', { href: title.source.page, rel: 'noopener', target: '_blank', text: 'CC BY 4.0 ilə pulsuz' }), ' oxuna bilər.'),
+        h('p', { text: body }),
+        h('button', { class: 'btn btn-lantern', type: 'button', onclick: () => onInquiry() }, icon('wa'), paid ? 'WhatsApp-da alış sorğusu' : 'WhatsApp-da maraq bildir'),
+        title.remote ? null : h('p', { class: 'small' }, 'Bu əsər müəllifin saytında ', h('a', { href: title.source.page, rel: 'noopener', target: '_blank', text: 'CC BY 4.0 ilə pulsuz' }), ' oxuna bilər.'),
         h('button', { class: 'btn btn-quiet', type: 'button', text: 'Əsər səhifəsinə qayıt', onclick: () => onDetail() })));
     }
     return paper;
@@ -117,7 +139,7 @@ export function openReader(mount, title, start, { onIndex, onClose, onInquiry, o
   function preload() {
     for (let k = i - 2; k <= i + 3; k++) {
       const leaf = leaves[k];
-      if (leaf?.kind === 'page') { const im = new Image(); im.decoding = 'async'; im.src = pageSrc(title, leaf.file); }
+      if (leaf?.kind === 'page' && pageSrc(title, leaf.file)) { const im = new Image(); im.decoding = 'async'; im.src = pageSrc(title, leaf.file); }
     }
   }
   function commit(to) {
@@ -220,7 +242,7 @@ export function openReader(mount, title, start, { onIndex, onClose, onInquiry, o
     const cw = zoomPane.clientWidth || stage.clientWidth;
     const base = Math.min(cw - 16, 920);
     zoomBody.style.setProperty('--zw', `${Math.round(base * ZOOMS[zoom - 1])}px`);
-    zoomBody.style.setProperty('--zh', `${Math.round(base * ZOOMS[zoom - 1] / ratio)}px`);
+    zoomBody.style.setProperty('--zh', `${Math.round(base * ZOOMS[zoom - 1] / ratioOf(i))}px`);
   }
   function setZoom(level, focusX = 0.5, focusY = 0.3) {
     finishTurn();

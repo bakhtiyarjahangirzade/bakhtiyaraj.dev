@@ -15,7 +15,7 @@
   ],
   "headers": [
     {
-      "source": "/((?!budgettracker).*)",
+      "source": "/((?!budgettracker|Luna).*)",
       "headers": [
         {
           "key": "X-Content-Type-Options",
@@ -28,6 +28,40 @@
         {
           "key": "Content-Security-Policy",
           "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self' https://yxiedrrahclzqukfnqrn.supabase.co wss://yxiedrrahclzqukfnqrn.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        }
+      ]
+    },
+    {
+      "source": "/Luna",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://yxiedrrahclzqukfnqrn.supabase.co; font-src 'self'; media-src 'self'; connect-src 'self' https://yxiedrrahclzqukfnqrn.supabase.co wss://yxiedrrahclzqukfnqrn.supabase.co; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        }
+      ]
+    },
+    {
+      "source": "/Luna/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://yxiedrrahclzqukfnqrn.supabase.co; font-src 'self'; media-src 'self'; connect-src 'self' https://yxiedrrahclzqukfnqrn.supabase.co wss://yxiedrrahclzqukfnqrn.supabase.co; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         }
       ]
     },
