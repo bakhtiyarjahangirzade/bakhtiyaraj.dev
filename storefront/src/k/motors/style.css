@@ -1,0 +1,324 @@
+@import '../fonts/commissioner.css';
+/* AutoLane: a calm technical document. Report paper, ink, one action blue, pass green and advisory amber. */
+body.concept-motors{
+ --paper:#EEF1F3;--white:#fff;--ink:#15222E;--steel:#5B6B78;--line:#D3DAE0;--line2:#E3E8EC;--blue:#1F5FAF;--blue-d:#174A8A;--pass:#2E7A57;--adv:#B7791F;--adv-bg:#FBF3E4;--pass-bg:#E7F2EC;
+ background:var(--paper);color:var(--ink);font:400 16px/1.55 'Commissioner Variable',system-ui,sans-serif;font-variant-numeric:tabular-nums;
+}
+.concept-motors .concept-site{display:block}
+.concept-motors .al-wrap{max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+.concept-motors :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:2px}
+.concept-motors h1,.concept-motors h2,.concept-motors h3{font-weight:600;letter-spacing:-.015em;line-height:1.12}
+.concept-motors svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* header */
+.concept-motors .al-top{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.concept-motors .al-top-in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px}
+.concept-motors .al-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:650;font-size:20px;letter-spacing:-.02em}
+.concept-motors .al-logo-mark{width:34px;height:22px;stroke-width:2.4}
+.concept-motors .al-top nav{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.concept-motors .al-top nav a{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:4px;text-decoration:none;font-size:15px;color:var(--steel)}
+.concept-motors .al-top nav a:hover,.concept-motors .al-top nav a[aria-current]{color:var(--ink);background:var(--paper)}
+.concept-motors .al-nav-count b{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--paper);color:var(--ink);font-size:12px;font-weight:600;display:inline-grid;place-items:center}
+.concept-motors .al-nav-count b:not(:empty):not([data-zero]){background:var(--ink);color:#fff}
+
+/* hero */
+.concept-motors .al-hero{padding:clamp(28px,5vw,64px) 0 clamp(28px,4vw,48px)}
+.concept-motors .al-hero-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(24px,4vw,56px);align-items:start}
+.concept-motors .al-hero h1{font-size:clamp(34px,4.1vw,54px);max-width:15ch}
+.concept-motors .al-lead{margin-top:18px;max-width:52ch;color:var(--steel);font-size:17px}
+.concept-motors .al-search{margin-top:28px;background:var(--white);border:1px solid var(--line);border-radius:6px;padding:20px}
+.concept-motors .al-search-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.concept-motors .al-f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.concept-motors .al-f>span{font-size:13px;color:var(--steel);display:flex;justify-content:space-between;gap:8px}
+.concept-motors .al-f output{color:var(--ink);font-weight:600}
+.concept-motors select,.concept-motors input:not([type=radio]):not([type=checkbox]):not([type=range]){width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:4px;background:var(--white);font-size:15px;color:var(--ink)}
+.concept-motors select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--steel) 50%),linear-gradient(135deg,var(--steel) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:30px}
+.concept-motors select:disabled{color:var(--steel);background-color:var(--paper)}
+.concept-motors [aria-invalid=true]{border-color:#B3261E!important}
+.concept-motors .al-seg{border:0;padding:0;margin:16px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.concept-motors .al-seg legend{float:left;font-size:13px;color:var(--steel);margin-right:8px}
+.concept-motors .al-seg label,.concept-motors .al-terms label,.concept-motors .al-slots label{position:relative}
+.concept-motors .al-seg input,.concept-motors .al-terms input,.concept-motors .al-slots input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.concept-motors .al-seg span,.concept-motors .al-terms span,.concept-motors .al-slots span{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:4px;font-size:14px;background:var(--white)}
+.concept-motors .al-seg input:checked+span,.concept-motors .al-terms input:checked+span,.concept-motors .al-slots input:checked+span{border-color:var(--ink);background:var(--ink);color:#fff}
+.concept-motors .al-seg input:focus-visible+span,.concept-motors .al-terms input:focus-visible+span,.concept-motors .al-slots input:focus-visible+span{outline:2px solid var(--blue);outline-offset:2px}
+.concept-motors .al-search-go{display:flex;align-items:center;gap:16px;margin-top:18px;flex-wrap:wrap}
+.concept-motors .al-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:4px;border:1px solid transparent;font-weight:600;font-size:15px;text-decoration:none;background:none}
+.concept-motors .al-btn svg{width:18px;height:18px}
+.concept-motors .al-btn-main{background:var(--blue);color:#fff}
+.concept-motors .al-btn-main:hover{background:var(--blue-d)}
+.concept-motors .al-btn-quiet{border-color:var(--line);background:var(--white);color:var(--ink)}
+.concept-motors .al-btn-quiet:hover{border-color:var(--ink)}
+.concept-motors .al-btn-quiet[aria-pressed=true]{border-color:var(--ink)}
+.concept-motors .al-btn-quiet[aria-pressed=true] svg{fill:var(--ink)}
+.concept-motors .al-link{background:none;border:0;padding:8px 2px;color:var(--blue);text-decoration:underline;text-underline-offset:3px;font-size:15px}
+.concept-motors .al-hero-fig{position:relative;margin:0;border-radius:6px;overflow:hidden;background:#C9D9EA;aspect-ratio:4/3.3}
+.concept-motors .al-hero-fig>img{width:100%;height:100%;object-fit:cover;object-position:30% 50%}
+.concept-motors .al-hero-tag{position:absolute;right:16px;bottom:16px;width:min(300px,calc(100% - 32px));background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.concept-motors .al-hero-k{font-size:12px;color:var(--steel)}
+.concept-motors .al-hero-tag b{font-size:16px;font-weight:600}
+.concept-motors .al-hero-tag a{margin-top:8px;color:var(--blue);font-weight:600;text-underline-offset:3px}
+
+/* inspection strip */
+.concept-motors .al-strip{margin-top:12px}
+.concept-motors .al-strip-bar{display:flex;gap:2px;height:6px}
+.concept-motors .al-strip-bar span{border-radius:1px;background:var(--pass)}
+.concept-motors .al-strip-bar span:nth-child(1){flex:22}.concept-motors .al-strip-bar span:nth-child(2){flex:18}.concept-motors .al-strip-bar span:nth-child(3){flex:28}.concept-motors .al-strip-bar span:nth-child(4){flex:20}.concept-motors .al-strip-bar span:nth-child(5){flex:16}.concept-motors .al-strip-bar span:nth-child(6){flex:16}
+.concept-motors .al-strip-bar .is-adv{background:var(--adv)}
+.concept-motors .al-strip p{margin-top:6px;font-size:13px;color:var(--steel)}
+.concept-motors .al-strip-big .al-strip-bar{height:10px}
+.concept-motors .al-strip-big{min-width:min(280px,100%)}
+
+/* results */
+.concept-motors .al-results{padding:clamp(28px,4vw,48px) 0;border-top:1px solid var(--line)}
+.concept-motors .al-res-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.concept-motors .al-res-head h2{font-size:clamp(24px,2.4vw,30px)}
+.concept-motors .al-count{color:var(--steel)}
+.concept-motors .al-sort{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--steel)}
+.concept-motors .al-sort select{width:auto;min-width:200px}
+.concept-motors .al-chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+.concept-motors .al-chips:empty{display:none}
+.concept-motors .al-chips button{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 12px;border-radius:17px;border:1px solid var(--ink);background:var(--white);font-size:14px}
+.concept-motors .al-chips i{font-style:normal;font-size:16px;line-height:1}
+.concept-motors .al-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:22px}
+.concept-motors .al-card{background:var(--white);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.concept-motors .al-card-media{display:block;aspect-ratio:4/3;background:var(--line2);overflow:hidden}
+.concept-motors .al-card-media img{width:100%;height:100%;object-fit:cover}
+.concept-motors .al-nophoto{display:grid;place-items:center;height:100%;color:var(--steel)}
+.concept-motors .al-card-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+.concept-motors .al-card h3{font-size:19px}
+.concept-motors .al-card h3 a{text-decoration:none}
+.concept-motors .al-card h3 a:hover{text-decoration:underline;text-underline-offset:3px}
+.concept-motors .al-trim{font-size:14px;color:var(--steel);margin-top:2px}
+.concept-motors .al-specs{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:4px 10px;margin-top:14px;padding:10px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+.concept-motors .al-specs dt{font-size:12px;color:var(--steel)}
+.concept-motors .al-specs dd{margin:0;font-size:14px;font-weight:500;white-space:nowrap}
+.concept-motors .al-card-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px}
+.concept-motors .al-price strong{display:block;font-size:22px;font-weight:650;letter-spacing:-.01em}
+.concept-motors .al-price span{font-size:13px;color:var(--steel)}
+.concept-motors .al-card-actions{display:flex;align-items:center;gap:6px}
+.concept-motors .al-save{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:4px;background:var(--white)}
+.concept-motors .al-save svg{width:20px;height:20px}
+.concept-motors .al-save[aria-pressed=true]{border-color:var(--ink)}
+.concept-motors .al-save[aria-pressed=true] svg{fill:var(--ink)}
+.concept-motors .al-cmp{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:4px;font-size:14px;cursor:pointer}
+.concept-motors .al-cmp input{width:16px;height:16px;accent-color:var(--blue);margin:0}
+.concept-motors .al-cmp:has(input:checked){border-color:var(--blue);color:var(--blue)}
+.concept-motors .al-empty{margin-top:22px;background:var(--white);border:1px dashed var(--steel);border-radius:6px;padding:28px}
+.concept-motors .al-empty h2,.concept-motors .al-empty h3{font-size:21px}
+.concept-motors .al-empty p{margin-top:8px;color:var(--steel);max-width:60ch}
+.concept-motors .al-empty .al-btn{margin-top:18px}
+.concept-motors .al-widen{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+.concept-motors .al-foot-note{margin-top:18px;font-size:13px;color:var(--steel)}
+
+/* inspection explainer */
+.concept-motors .al-insp{padding:clamp(40px,6vw,80px) 0;background:var(--white);border-top:1px solid var(--line)}
+.concept-motors .al-insp-in{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:32px 56px}
+.concept-motors .al-insp h2{font-size:clamp(28px,3vw,38px)}
+.concept-motors .al-insp-copy p{margin-top:14px;color:var(--steel);max-width:46ch}
+.concept-motors .al-ibars{display:flex;flex-direction:column;gap:18px}
+.concept-motors .al-ib{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:baseline}
+.concept-motors .al-ib-bar{grid-column:1/-1;height:10px;background:var(--line2);border-radius:1px;overflow:hidden;display:block}
+.concept-motors .al-ib-bar i{display:block;height:100%;background:var(--pass)}
+.concept-motors .al-ib-bar[data-n="22"] i{width:78.6%}.concept-motors .al-ib-bar[data-n="18"] i{width:64.3%}.concept-motors .al-ib-bar[data-n="28"] i{width:100%}.concept-motors .al-ib-bar[data-n="20"] i{width:71.4%}.concept-motors .al-ib-bar[data-n="16"] i{width:57.1%}
+.concept-motors .al-ib b{font-weight:600;font-size:16px}
+.concept-motors .al-ib em{font-style:normal;color:var(--steel);font-size:14px}
+.concept-motors .al-ibars p{font-size:14px;color:var(--steel);margin-top:2px;max-width:62ch}
+.concept-motors .al-steps{grid-column:1/-1;border-top:1px solid var(--line);padding-top:28px}
+.concept-motors .al-steps h3{font-size:20px}
+.concept-motors .al-steps ol{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:18px;counter-reset:s}
+.concept-motors .al-steps li{counter-increment:s;padding-top:14px;border-top:3px solid var(--ink)}
+.concept-motors .al-steps li::before{content:counter(s);display:block;font-weight:650;font-size:14px;color:var(--steel);margin-bottom:6px}
+.concept-motors .al-steps b{font-weight:600}
+.concept-motors .al-steps p{margin-top:6px;font-size:14px;color:var(--steel)}
+
+.concept-motors .al-fin{padding:clamp(40px,6vw,72px) 0;border-top:1px solid var(--line)}
+.concept-motors .al-fin-in{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:20px 56px}
+.concept-motors .al-fin h2{font-size:clamp(26px,2.8vw,34px)}
+.concept-motors .al-fin p{max-width:62ch;color:var(--steel)}
+.concept-motors .al-fin p+p{margin-top:14px}
+.concept-motors .al-formula{padding:14px 16px;background:var(--white);border-left:3px solid var(--blue);color:var(--ink)!important}
+
+/* views */
+.concept-motors .al-view{padding:20px 0 64px}
+.concept-motors .al-view>*{max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+.concept-motors .al-back{display:inline-flex;align-items:center;gap:6px;min-height:40px;color:var(--blue);font-weight:600;text-decoration:none;font-size:15px}
+.concept-motors .al-back svg{width:16px;height:16px}
+.concept-motors .al-d-head{margin:8px 0 20px}
+.concept-motors .al-d-id{font-size:13px;color:var(--steel)}
+.concept-motors .al-d-head h1{font-size:clamp(30px,3.6vw,46px);margin-top:4px}
+.concept-motors .al-d-sub{color:var(--steel);margin-top:6px;font-size:17px}
+.concept-motors .al-d-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px;align-items:start}
+.concept-motors .al-d-main{display:flex;flex-direction:column;gap:28px;min-width:0}
+.concept-motors .al-d-side{position:sticky;top:84px;display:flex;flex-direction:column;gap:16px}
+.concept-motors .al-gallery{display:flex;flex-direction:column;gap:10px}
+.concept-motors .al-g-main{margin:0;border-radius:6px;overflow:hidden;background:var(--line2);aspect-ratio:3/2}
+.concept-motors .al-g-main img{width:100%;height:100%;object-fit:cover}
+.concept-motors .al-g-thumbs{display:flex;gap:10px}
+.concept-motors .al-g-thumbs button{width:110px;aspect-ratio:3/2;padding:0;border:2px solid transparent;border-radius:4px;overflow:hidden;background:none}
+.concept-motors .al-g-thumbs img{width:100%;height:100%;object-fit:cover}
+.concept-motors .al-g-thumbs button[aria-pressed=true]{border-color:var(--ink)}
+.concept-motors .al-spec,.concept-motors .al-report{background:var(--white);border:1px solid var(--line);border-radius:6px;padding:clamp(18px,2.4vw,28px)}
+.concept-motors .al-spec h2,.concept-motors .al-report h2{font-size:22px}
+.concept-motors .al-spec dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px;margin-top:14px}
+.concept-motors .al-spec dl div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line2);font-size:15px}
+.concept-motors .al-spec dt{color:var(--steel)}
+.concept-motors .al-spec dd{margin:0;font-weight:500;text-align:right}
+.concept-motors .al-rep-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.concept-motors .al-rep-head>div>p{color:var(--steel);font-size:14px;margin-top:4px}
+.concept-motors .al-rep-head .al-strip{margin-top:4px}
+.concept-motors .al-measure{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:24px;align-items:center;margin-top:22px;padding:18px;background:var(--paper);border-radius:4px}
+.concept-motors .al-measure figure{margin:0}
+.concept-motors .al-measure figcaption{font-size:12px;color:var(--steel);margin-top:6px}
+.concept-motors .al-tyres{width:100%;height:auto}
+.concept-motors .al-tyres .al-car{fill:var(--white);stroke:var(--steel);stroke-width:1.5}
+.concept-motors .al-tyres .al-car-glass{fill:var(--line2);stroke:none}
+.concept-motors .al-tyres rect{stroke:none}
+.concept-motors .al-tyres .is-ok rect{fill:var(--ink)}
+.concept-motors .al-tyres .is-adv rect{fill:var(--adv)}
+.concept-motors .al-tyres text{stroke:none;fill:var(--ink);font:600 13px 'Commissioner Variable',sans-serif}
+.concept-motors .al-tyres .is-adv text{fill:var(--adv)}
+.concept-motors .al-tyres .al-tl{font-weight:400;font-size:10.5px;fill:var(--steel)}
+.concept-motors .al-measure dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px}
+.concept-motors .al-measure dt{font-size:13px;color:var(--steel)}
+.concept-motors .al-measure dd{margin:2px 0 0;font-size:20px;font-weight:600}
+.concept-motors .al-systems{margin-top:18px;border-top:1px solid var(--line)}
+.concept-motors .al-sys{border-bottom:1px solid var(--line)}
+.concept-motors .al-sys summary{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:52px;cursor:pointer;list-style:none;font-weight:600}
+.concept-motors .al-sys summary::-webkit-details-marker{display:none}
+.concept-motors .al-sys summary::after{content:'';width:8px;height:8px;border-right:2px solid var(--steel);border-bottom:2px solid var(--steel);transform:rotate(45deg);margin:0 4px 4px 8px;flex:none}
+.concept-motors .al-sys[open] summary::after{transform:rotate(-135deg);margin-bottom:-4px}
+.concept-motors .al-sys-name{flex:1}
+.concept-motors .al-sys-count{font-weight:400;font-size:14px;color:var(--steel)}
+.concept-motors .al-sys ul{padding:0 0 8px}
+.concept-motors .al-sys li{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:start;padding:9px 0;border-top:1px solid var(--line2);font-size:15px}
+.concept-motors .al-sys li b{font-weight:500}
+.concept-motors .al-sys li p{font-size:14px;color:var(--ink);margin-top:3px}
+.concept-motors .al-sys li em{font-style:normal;font-size:13px;color:var(--pass)}
+.concept-motors .al-sys li.is-adv{background:var(--adv-bg);margin:0 -10px;padding:10px;border-radius:3px}
+.concept-motors .al-sys li.is-adv em{color:var(--adv);font-weight:600}
+.concept-motors .al-mark{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--pass-bg);color:var(--pass)}
+.concept-motors .al-mark svg{width:14px;height:14px;stroke-width:2.4}
+.concept-motors .is-adv .al-mark{background:var(--adv);color:#fff}
+.concept-motors .al-sys-more{font-size:13px;color:var(--steel);padding:0 0 14px 34px}
+.concept-motors .al-note{font-size:13px;color:var(--steel);margin-top:14px;max-width:70ch}
+.concept-motors .al-buy,.concept-motors .al-calc,.concept-motors .al-view-req{background:var(--white);border:1px solid var(--line);border-radius:6px;padding:20px}
+.concept-motors .al-buy-price{font-size:32px;font-weight:650;letter-spacing:-.02em}
+.concept-motors .al-buy-note{font-size:14px;color:var(--steel);margin-top:4px}
+.concept-motors .al-buy-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.concept-motors .al-buy-actions .al-btn{flex:1 1 auto;min-height:44px;font-weight:500;padding:0 12px}
+.concept-motors .al-calc h2,.concept-motors .al-view-req h2{font-size:18px;margin-bottom:14px}
+.concept-motors .al-calc,.concept-motors .al-view-req{display:flex;flex-direction:column;gap:14px}
+.concept-motors .al-calc h2,.concept-motors .al-view-req h2{margin:0}
+.concept-motors .al-view-req>p{font-size:14px;color:var(--steel);margin-top:-6px}
+.concept-motors input[type=range]{width:100%;accent-color:var(--blue);min-height:28px}
+.concept-motors .al-terms,.concept-motors .al-slots{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px}
+.concept-motors .al-terms legend,.concept-motors .al-slots legend{font-size:13px;color:var(--steel);margin-bottom:6px;padding:0}
+.concept-motors .al-terms span,.concept-motors .al-slots span{min-height:36px;padding:0 10px}
+.concept-motors .al-suffix{display:flex;align-items:center;gap:8px}
+.concept-motors .al-suffix input{max-width:120px}
+.concept-motors .al-suffix i{font-style:normal;color:var(--steel)}
+.concept-motors .al-f small{font-size:12.5px;color:var(--steel)}
+.concept-motors .al-f small.al-err,.concept-motors .al-err{color:#B3261E;font-size:13px}
+.concept-motors .al-f small.al-err:empty{display:none}
+.concept-motors .al-calc-out{border-top:1px solid var(--line2);padding-top:12px}
+.concept-motors .al-calc-big{display:flex;justify-content:space-between;align-items:baseline}
+.concept-motors .al-calc-big span{color:var(--steel)}
+.concept-motors .al-calc-big strong{font-size:28px;font-weight:650}
+.concept-motors .al-calc-out dl{margin-top:8px}
+.concept-motors .al-calc-out dl div{display:flex;justify-content:space-between;font-size:14px;padding:4px 0}
+.concept-motors .al-calc-out dt{color:var(--steel)}
+.concept-motors .al-calc-out dd{margin:0;font-weight:500}
+.concept-motors .al-calc .al-note{margin:0}
+.concept-motors .al-done{padding:12px 14px;background:var(--pass-bg);color:var(--pass);border-radius:4px;font-size:14px;font-weight:500}
+
+.concept-motors .al-cmp-head{margin:8px 0 18px}
+.concept-motors .al-cmp-head h1,.concept-motors .al-cmpview>h1,.concept-motors .al-savedview>h1{font-size:clamp(28px,3vw,40px);margin:8px 0 6px}
+.concept-motors .al-cmp-head p{color:var(--steel)}
+.concept-motors .al-cmp-scroll{overflow-x:auto;background:var(--white);border:1px solid var(--line);border-radius:6px}
+.concept-motors .al-cmp-table{width:100%;min-width:720px}
+.concept-motors .al-cmp-table th,.concept-motors .al-cmp-table td{padding:12px 16px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:top;font-size:15px}
+.concept-motors .al-cmp-table tbody th{font-weight:400;color:var(--steel);width:180px;position:sticky;left:0;background:var(--white)}
+.concept-motors .al-cmp-table td.is-best{font-weight:650;box-shadow:inset 3px 0 0 var(--pass);background:var(--pass-bg)}
+.concept-motors .al-cmp-car{position:relative;display:flex;flex-direction:column;gap:2px;font-weight:600}
+.concept-motors .al-cmp-car img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:4px;margin-bottom:8px}
+.concept-motors .al-cmp-car a{font-size:17px;text-decoration:none}
+.concept-motors .al-cmp-car span{font-weight:400;font-size:13px;color:var(--steel)}
+.concept-motors .al-x{position:absolute;top:6px;right:6px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.95);display:grid;place-items:center}
+.concept-motors .al-x svg{width:16px;height:16px}
+.concept-motors .al-cmp-adv{display:block;font-size:13px;color:var(--adv);margin-bottom:4px}
+.concept-motors .al-savedview .al-grid{margin-top:16px}
+
+/* compare tray + toast */
+.concept-motors .al-tray{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--white);border-top:1px solid var(--ink)}
+.concept-motors .al-tray-in{display:flex;align-items:center;gap:16px;min-height:72px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+.concept-motors .al-tray ul{display:flex;gap:10px;flex-wrap:wrap}
+.concept-motors .al-tray li{display:flex;align-items:center;gap:8px;padding:4px 4px 4px 4px;border:1px solid var(--line);border-radius:4px;font-size:14px;font-weight:500}
+.concept-motors .al-tray li img{width:56px;height:38px;object-fit:cover;border-radius:2px}
+.concept-motors .al-tray li button{width:32px;height:32px;border:0;background:none;font-size:18px}
+.concept-motors .al-tray p{color:var(--steel);font-size:14px;margin-left:auto}
+.concept-motors.al-has-tray .al-foot{padding-bottom:110px}
+.concept-motors .al-toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;z-index:50;background:var(--ink);color:#fff;padding:12px 18px;border-radius:4px;font-size:14px;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 32px)}
+.concept-motors .al-toast.is-on{opacity:1;transform:translate(-50%,0)}
+.concept-motors.al-has-tray .al-toast{bottom:100px}
+
+.concept-motors .al-foot{background:var(--ink);color:#C9D2DA;padding:48px 0}
+.concept-motors .al-foot-in{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:32px}
+.concept-motors .al-foot .al-logo{color:#fff}
+.concept-motors .al-foot p{font-size:14px;margin-top:12px;max-width:42ch}
+.concept-motors .al-foot h2{font-size:15px;color:#fff;font-weight:600}
+.concept-motors .al-foot ul{margin-top:12px;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.concept-motors .al-foot li{display:flex;flex-direction:column}
+.concept-motors .al-foot li b{color:#fff;font-weight:500}
+.concept-motors .al-foot .k-credits{margin-top:0}
+.concept-motors .al-foot .k-credits+.k-credits{margin-top:10px}
+
+@media (max-width:1080px){
+ .concept-motors .al-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .concept-motors .al-d-grid{grid-template-columns:minmax(0,1fr) 340px}
+}
+@media (max-width:900px){
+ .concept-motors .al-hero-in,.concept-motors .al-insp-in,.concept-motors .al-fin-in,.concept-motors .al-d-grid{grid-template-columns:1fr}
+ .concept-motors .al-hero-fig{order:-1;aspect-ratio:16/10}
+ .concept-motors .al-d-side{position:static}
+ .concept-motors .al-steps ol{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .concept-motors .al-foot-in{grid-template-columns:1fr}
+ .concept-motors .al-top nav a:not(.al-nav-count){display:none}
+}
+@media (max-width:640px){
+ .concept-motors .al-search-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .concept-motors .al-grid{grid-template-columns:1fr}
+ .concept-motors .al-sort{margin-left:0;width:100%}
+ .concept-motors .al-sort select{flex:1;min-width:0}
+ .concept-motors .al-spec dl,.concept-motors .al-measure{grid-template-columns:1fr}
+ .concept-motors .al-measure figure{max-width:260px;margin:0 auto}
+ .concept-motors .al-steps ol{grid-template-columns:1fr}
+ .concept-motors .al-hero-tag{position:static;width:auto;border:0;border-top:1px solid var(--line);border-radius:0}
+ .concept-motors .al-hero-fig{aspect-ratio:auto}
+ .concept-motors .al-hero-fig>img{aspect-ratio:16/10}
+ .concept-motors .al-top nav a{padding:0 8px;font-size:14px}
+ .concept-motors .al-tray li span{display:none}
+ .concept-motors .al-tray p{margin-left:0}
+}
+@media (max-width:380px){.concept-motors .al-search-row{grid-template-columns:1fr}}
+.concept-motors .al-nav-count svg{width:18px;height:18px}
+@media (max-width:900px){
+ .concept-motors .al-d-grid{display:flex;flex-direction:column;gap:20px}
+ .concept-motors .al-d-main,.concept-motors .al-d-side{display:contents}
+ .concept-motors .al-d-grid>*>*{width:100%}
+ .concept-motors .al-gallery{order:1}.concept-motors .al-buy{order:2}.concept-motors .al-spec{order:3}.concept-motors .al-calc{order:4}.concept-motors .al-report{order:5}.concept-motors .al-view-req{order:6}
+}
+@media (max-width:520px){
+ .concept-motors .al-nav-count span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+ .concept-motors .al-top nav{flex-wrap:nowrap}
+}
+.concept-motors [id],.concept-motors .al-empty{scroll-margin-top:84px}
+@media (prefers-reduced-motion:reduce){.concept-motors *{transition:none!important;scroll-behavior:auto!important}}
+.concept-motors .al-insp-photos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.concept-motors .al-insp-photos figure{margin:0}
+.concept-motors .al-insp-photos img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:4px;filter:saturate(.8)}
+.concept-motors .al-insp-photos figcaption{font-size:12.5px;color:var(--steel);margin-top:6px}
+.concept-motors .al-f>.al-suffix{justify-content:flex-start}
+.concept-motors .al-cmp-table{table-layout:fixed}
+.concept-motors .al-cmp-table thead th:first-child,.concept-motors .al-cmp-table tbody th{width:180px}
+.concept-motors .al-cmp-car img{height:150px;width:100%}

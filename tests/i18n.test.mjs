@@ -62,17 +62,9 @@ test('service page copy is translated and quoted extras match the calculator', a
   assert.equal(price('service=video&raw=10','İlkin material'),EXTRA.raw);
 });
 
-test('concept mini-site copy is translated', async () => {
-  const {concepts,conceptUi}=await import('../storefront/src/concepts.js');
+test('concept shell copy is translated', async () => {
+  const {conceptUi}=await import('../storefront/src/concepts.js');
   const need=s=>assert.ok(keys.has(s),`missing translation for "${s}"`);
   conceptUi.forEach(need);need('{name} — konsept nümunəsi | BAKHY');
-  for(const c of Object.values(concepts).filter(x=>!x.custom)){
-    need(c.headline);if(c.cta)need(c.cta);need(c.section);c.nav.forEach(need);
-    for(const [h,d] of c.cards){need(h);need(d)}
-    (c.items||[]).forEach(need);
-    const board=c.board||{};
-    if(board.columns)for(const [h,items] of board.columns){need(h);items.forEach(need)}
-    if(board.days)board.days.forEach(need);
-    if(board.head){board.head.forEach(need);for(const [n,,s] of board.rows){need(n);need(s)}}
-  }
+  // Page copy of each concept lives in src/k/<id>/ as [az, ru, en] leaves, checked by tests/concepts.test.mjs.
 });

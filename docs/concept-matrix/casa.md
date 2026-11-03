@@ -1,0 +1,14 @@
+# Casa Forma (casa) — architecture & interiors studio
+
+- **Previous problem:** generic hero ("Ruhu olan məkanlar"), three feature cards and a numbered list of three made-up project names over an abstract SVG; no project content, no images, no interaction.
+- **Audience / task:** homeowners and developers in Baku choosing a studio. Browse the project archive, read a case study (brief → decision → plan → materials), send a structured enquiry.
+- **Thesis:** "form in monochrome, matter in colour" — an architectural monograph. All project photography is printed black-and-white (normalises mixed CC0 sources into one archive); the material library is the only colour. Sand `#9c7442` is reserved for drawing annotation (dimensions, areas, stage durations).
+- **Palette:** paper `#ecece8`, paper-2 `#e2e2dd`, ink `#151614`, graphite `#5a5d57`, rule `#b8bab3`, sand `#9c7442`, night `#1c1e1b` (enquiry).
+- **Type:** Commissioner variable — light 280–300 display, 380 body, tabular figures for areas and years.
+- **Composition:** visitor-stepped featured project (no autoplay) with a facts table; archive as an index table whose photograph follows the pointer (static thumbnail on touch/mobile) with a plates view in an asymmetric grid; case-study sheet (native dialog) with a schematic plan drawn from room rectangles — the room schedule and the plan areas come from the same numbers; material library; five-stage process with durations (a real sequence, so numbered); studio principles, team (names/roles, no stock faces) and office; dark enquiry brief.
+- **Content:** six fictional projects in Mərdəkan, Bilgəh, Nəsimi, Sumqayıt, Gəncə, İçərişəhər with brief, decision, area, year, duration and plan; four materials with where-used links; process durations; team; enquiry with project type, place, area, existing condition, budget band.
+- **Flow:** filter by type + stage → empty state with reset → index/plates → open case (deep link `#<project>`) → previous/next → enquiry with inline validation (type, area 20–20 000 m², name, +994 phone) → summary "nothing was sent".
+- **Imagery:** 18 CC0 photographs from the WordPress Photo Directory via Openverse, processed by `scripts/concept-assets/process.py` (mono grade for projects); credits in the footer and `docs/concept-asset-credits.md`. Captions state the photos show real buildings that are not these projects.
+- **Verified:** desktop 1440 and mobile 390 in az, ru, en (no overflow, no console errors); hover thumbnail, plates, case dialog + Escape focus return, empty filter, form errors and success. Screenshots: `docs/concept-shots/casa-*.jpg`. Preview: `storefront/public/assets/previews/casa.jpg`.
+- **Open issues:** photo pool is limited (staircase-heavy); the narrative turns this into the studio's theme but more façades/interiors would help.
+- **State:** complete.

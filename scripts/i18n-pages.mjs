@@ -143,17 +143,28 @@ await rm(new URL('service.html',dist));
 
 // ---- concept mini-sites: themed shell from dist/concept.html, body rendered in the target language ----
 const conceptTemplate=await readFile(new URL('concept.html',dist),'utf8');
+// Per-concept bundles (src/k/<id>/app.js) from the Vite manifest: CSS in <head>, module script at the end of <body>.
+const viteManifest=JSON.parse(await readFile(new URL('.vite/manifest.json',dist),'utf8'));
+function conceptBundle(id){
+ const entry=viteManifest[`src/k/${id}/app.js`];
+ if(!entry)return {head:'',body:''};
+ const css=[...(entry.css||[]),...(entry.imports||[]).flatMap(i=>viteManifest[i]?.css||[])];
+ return {head:[...new Set(css)].map(f=>`<link rel="stylesheet" href="/${f}">`).join(''),body:`<script type="module" src="/${entry.file}"></script>`};
+}
 const conceptFiles=[];
 for(const id of conceptIds){
  const file=`concepts/${id}.html`;conceptFiles.push(file);
  for(const lang of LANGS){
-  const T=makeT(lang),meta=conceptMeta(id,T),body=renderConcept(id,T);
-  const out=build(conceptTemplate,lang,`concept:${id}`,file).replaceAll('@@TITLE@@',encodeAttr(meta.title)).replaceAll('@@DESC@@',encodeAttr(meta.desc)).replaceAll('@@EXTRA@@',concepts[id].custom?'concept-showroom':'').replaceAll('@@ID@@',id).replaceAll('@@SERVICE@@',meta.service).replaceAll('@@DESIGN@@',meta.design?`&amp;design=${meta.design}`:'').replace('@@CONTENT@@',()=>body);
+  const T=makeT(lang),meta=conceptMeta(id,T),body=renderConcept(id,T,lang),bundle=conceptBundle(id);
+  // Redesigned concepts bring their own reset + ribbon CSS, so the legacy shared concept bundle is dropped for them.
+  const shell=concepts[id].k?conceptTemplate.replace(/<link rel="(?:stylesheet|modulepreload)"[^>]*>/g,'').replace(/<script type="module"[^>]*><\/script>/g,''):conceptTemplate;
+  const out=build(shell.replace('</head>',()=>bundle.head+'</head>').replace('</body>',()=>bundle.body+'</body>'),lang,`concept:${id}`,file).replaceAll('@@TITLE@@',encodeAttr(meta.title)).replaceAll('@@DESC@@',encodeAttr(meta.desc)).replaceAll('@@EXTRA@@',concepts[id].k?'k-page':concepts[id].custom?'concept-showroom':'').replaceAll('@@ID@@',id).replaceAll('@@SERVICE@@',meta.service).replaceAll('@@DESIGN@@',meta.design?`&amp;design=${meta.design}`:'').replace('@@CONTENT@@',()=>body);
   await mkdir(new URL(`${lang}/concepts/`,dist),{recursive:true});
   await writeFile(new URL(`${lang}/${file}`,dist),out);
  }
 }
 await rm(new URL('concept.html',dist));
+await rm(new URL('.vite/',dist),{recursive:true,force:true});
 
 // ---- sitemap with hreflang alternates ----
 const urls=[...PAGES.map(p=>p[2]),...serviceFiles,...conceptFiles];

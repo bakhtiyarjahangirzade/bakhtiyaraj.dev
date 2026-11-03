@@ -15,4 +15,6 @@ export const projects=[
 ];
 const showroomNames={clinic:'Sunny Kids',wealth:'Growly',gym:'Wolfpack',motors:'AutoLane',give:'Bir Süfrə',stream:'Arena',bazar:'Bazarlıq',avto:'Yolda',lal:'Cibdə',estate:'Ünvan'};
 for(const [id,m] of Object.entries(projectMeta))projects.push({id,name:showroomNames[id],type:m.type,category:m.category[0],desc:m.desc[0],tags:m.tags.map(x=>x[0]),image:'/assets/showroom-'+id+'.jpg',color:'#e8e8e8',shape:'#999'});
-for(const p of projects){if(['casa','olio','aurea','forma','atelier','flow','reserve','stock'].includes(p.id))p.image='/assets/concept-'+p.id+'.svg'};
+// Concept previews are screenshots of the built concept pages (public/assets/previews/<id>.jpg, 1280x800).
+// Velvet's preview is its typographic vitrine concept, not the live domain (see scripts/concept-assets/velvet-vitrine.html).
+for(const p of projects)if(p.type!=='portfolio'||p.id==='velvet'){p.image='/assets/previews/'+p.id+'.jpg';p.preview=true}

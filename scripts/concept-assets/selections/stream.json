@@ -1,0 +1,17 @@
+[
+ {"key":"match","id":"wp-29812","crop":[0,0.08,1,0.58],"widths":[640,1280,1536]},
+ {"key":"studio","id":"wp-227994","widths":[640,1280,1920]},
+ {"key":"pitch","id":"wp-191788","widths":[640,1280,1920]},
+ {"key":"volley","id":"wp-138140","widths":[640,1280,1920]},
+ {"key":"court","id":"wp-108177","widths":[640,1280,1920]},
+ {"key":"street","id":"wp-139455","widths":[640,1280,1920]},
+ {"key":"chess","id":"wp-45223","widths":[640,1280,1920]},
+ {"key":"lesson","id":"wp-62734","widths":[640,1280]},
+ {"key":"stage","id":"wp-4178","widths":[640,1280]},
+ {"key":"candle","id":"wp-27149","widths":[640,1280,2048]},
+ {"key":"recital","id":"wp-1488","widths":[640,1280,1920]},
+ {"key":"track","id":"wp-161768","widths":[640,1280]},
+ {"key":"rail","id":"wp-138011","crop":[0,0.15,1,0.85],"widths":[640,1280,1920]},
+ {"key":"train","id":"wp-28851","widths":[640,1280]},
+ {"key":"night","id":"wp-44270","widths":[640,1280,1920]}
+]

@@ -1,0 +1,38 @@
+/* Shared by every redesigned concept page: a minimal reset and the neutral BAKHY sample ribbon.
+   Concept styles live in k/<id>/style.css and are scoped under body.concept-<id>. */
+@font-face{font-family:'StudioSans';font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-latin-wght-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'StudioSans';font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-latin-ext-wght-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'StudioSans';font-style:normal;font-weight:100 900;font-display:swap;src:url(/assets/fonts/inter-cyrillic-wght-normal.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;min-height:100vh;-webkit-font-smoothing:antialiased}
+img,svg,video{display:block;max-width:100%}
+img{height:auto}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+h1,h2,h3,h4,p,figure,blockquote,dl,dd,ol,ul{margin:0}
+ol,ul{padding:0;list-style:none}
+table{border-collapse:collapse}
+[hidden]{display:none!important}
+.skip{position:absolute;left:12px;top:-60px;z-index:100;padding:10px 14px;background:#090909;color:#fff;border-radius:8px;font:500 14px 'StudioSans',system-ui,sans-serif;text-decoration:none}
+.skip:focus{top:12px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+.concept-ribbon{position:relative;z-index:60;display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:8px clamp(16px,3vw,40px);background:#090909;color:#fff;font:400 12px/1.4 'StudioSans',system-ui,sans-serif}
+.concept-ribbon p{margin:0;flex:1 1 260px;color:#bdbdbd}
+.ribbon-tag{font:600 11px 'StudioSans',system-ui,sans-serif;letter-spacing:.02em;background:#dcff75;color:#111;border-radius:20px;padding:3px 9px}
+.ribbon-actions{display:flex;align-items:center;gap:6px 12px;flex-wrap:wrap}
+.ribbon-actions>a{text-decoration:none}
+.ribbon-actions>a:not(.ribbon-cta){display:inline-flex;align-items:center;min-height:32px;color:#cfcfcf}
+.ribbon-actions>a:not(.ribbon-cta):hover{color:#fff}
+.ribbon-cta{display:inline-flex;align-items:center;min-height:32px;padding:0 14px;border-radius:30px;background:#fff;color:#090909;font-weight:600}
+.ribbon-cta:hover{background:#dcff75}
+.concept-ribbon .lang-switch{display:inline-flex;gap:2px;border:1px solid #3a3a3a;border-radius:30px;padding:2px}
+.concept-ribbon .lang-switch a{display:inline-flex;align-items:center;justify-content:center;min-width:34px;min-height:28px;border-radius:30px;color:#bbb;text-decoration:none;font-weight:500;letter-spacing:.04em}
+.concept-ribbon .lang-switch a:hover{background:#222;color:#fff}
+.concept-ribbon .lang-switch a[aria-current=true]{background:#fff;color:#090909}
+.concept-ribbon a:focus-visible{outline:2px solid #dcff75;outline-offset:2px}
+@media (max-width:640px){.concept-ribbon p{display:none}.concept-ribbon{justify-content:space-between}}
+.k-credits{font-size:12px;line-height:1.5;opacity:.72}
+.k-credits a{text-decoration:underline;text-underline-offset:2px}

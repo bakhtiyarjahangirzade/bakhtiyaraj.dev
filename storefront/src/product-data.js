@@ -1,14 +1,14 @@
 import {projects} from './projects.js';
 import {t} from './i18n.js';
 export const designs=[
-{id:'casa',name:'Casa Forma',category:'Memarlıq & interyer',image:'/assets/concept-casa.svg'},
-{id:'olio',name:'Olio',category:'Restoran & kafe',image:'/assets/concept-olio.svg'},
-{id:'aurea',name:'Aurea',category:'Otel & qonaqpərvərlik',image:'/assets/concept-aurea.svg'},
-{id:'forma',name:'Forma Store',category:'Onlayn mağaza',image:'/assets/concept-forma.svg'},
-{id:'atelier',name:'Atelier No.8',category:'Şəxsi brend',image:'/assets/concept-atelier.svg'}
+{id:'casa',name:'Casa Forma',category:'Memarlıq & interyer',image:'/assets/previews/casa.jpg'},
+{id:'olio',name:'Olio',category:'Restoran & kafe',image:'/assets/previews/olio.jpg'},
+{id:'aurea',name:'Aurea',category:'Otel & qonaqpərvərlik',image:'/assets/previews/aurea.jpg'},
+{id:'forma',name:'Forma Store',category:'Onlayn mağaza',image:'/assets/previews/forma.jpg'},
+{id:'atelier',name:'Atelier No.8',category:'Şəxsi brend',image:'/assets/previews/atelier.jpg'}
 ];
 export const products={
-website:{id:'website',title:'Veb sayt',price:199,group:'Veb xidmətlər',image:'/assets/concept-casa.svg',desc:'Brendinizə uyğun bir sayt. Vizual istiqaməti, səhifələri və sizə lazım olan funksiyaları özünüz seçin.',included:['1 səhifə','Azərbaycan dili','Mobil görünüş','WhatsApp keçidi'],pages:1,options:[
+website:{id:'website',title:'Veb sayt',price:199,group:'Veb xidmətlər',image:'/assets/previews/casa.jpg',desc:'Brendinizə uyğun bir sayt. Vizual istiqaməti, səhifələri və sizə lazım olan funksiyaları özünüz seçin.',included:['1 səhifə','Azərbaycan dili','Mobil görünüş','WhatsApp keçidi'],pages:1,options:[
 {id:'custom',label:'Sıfırdan fərdi dizayn',price:149,help:'Hazır vizual istiqaməti uyğunlaşdırmaq əvəzinə xüsusi görünüş.'},
 {id:'form',label:'Müraciət forması',price:29,help:'Ziyarətçilərin saytdan sorğu göndərməsi.'},
 {id:'cms',label:'Məzmun idarəetmə paneli',price:149,help:'Mətn və şəkilləri sonradan özünüz yeniləyin.'},
@@ -17,7 +17,7 @@ website:{id:'website',title:'Veb sayt',price:199,group:'Veb xidmətlər',image:'
 {id:'booking',label:'Rezervasiya müraciəti',price:199,help:'Xidmət və vaxt seçərək rezervasiya sorğusu.'},
 {id:'payment',label:'Onlayn ödəniş bağlantısı',price:199,help:'Ödəniş provayderinin inteqrasiyası; provayder xərcləri ayrıdır.'}
 ]},
-system:{id:'system',title:'Xüsusi sistem',price:799,group:'Veb xidmətlər',image:'/assets/concept-flow.svg',desc:'İşinizin qaydaları ilə işləyən sistem. Əsas iş axınını seçin, ehtiyacınıza uyğun modulları əlavə edin.',included:['1 əsas iş axını','İdarəetmə paneli','1 administrator rolu','Azərbaycan dili'],workflows:true,options:[
+system:{id:'system',title:'Xüsusi sistem',price:799,group:'Veb xidmətlər',image:'/assets/previews/flow.jpg',desc:'İşinizin qaydaları ilə işləyən sistem. Əsas iş axınını seçin, ehtiyacınıza uyğun modulları əlavə edin.',included:['1 əsas iş axını','İdarəetmə paneli','1 administrator rolu','Azərbaycan dili'],workflows:true,options:[
 {id:'roles',label:'Komanda və istifadəçi rolları',price:99,help:'Əməkdaşlara fərqli giriş və idarəetmə imkanları.'},
 {id:'reports',label:'Hesabatlar',price:99,help:'İşin nəticələrini ümumi hesabatlarda izləyin.'},
 {id:'export',label:'Excel / CSV ixracı',price:49,help:'Məlumatları fayl kimi çıxarın.'},
@@ -25,7 +25,7 @@ system:{id:'system',title:'Xüsusi sistem',price:799,group:'Veb xidmətlər',ima
 {id:'payment',label:'Onlayn ödəniş bağlantısı',price:199,help:'Ödəniş provayderi ilə inteqrasiya.'},
 {id:'integration',label:'Digər proqramla inteqrasiya',price:199,help:'Bir xarici xidmətlə standart məlumat bağlantısı.'}
 ]},
-integrated:{id:'integrated',title:'Veb sayt + sistem',price:1599,featured:true,group:'Veb xidmətlər',image:'/assets/concept-atelier.svg',desc:'Saytınız və işinizi idarə edən sistem bir layihədə. İctimai səhifələr və daxili iş axını bir-birinə bağlı işləyir.',included:['3 sayt səhifəsi','1 əsas iş axını','İdarəetmə paneli','Sayt və sistemin bağlantısı'],pages:3,workflows:true,options:[
+integrated:{id:'integrated',title:'Veb sayt + sistem',price:1599,featured:true,group:'Veb xidmətlər',image:'/assets/previews/atelier.jpg',desc:'Saytınız və işinizi idarə edən sistem bir layihədə. İctimai səhifələr və daxili iş axını bir-birinə bağlı işləyir.',included:['3 sayt səhifəsi','1 əsas iş axını','İdarəetmə paneli','Sayt və sistemin bağlantısı'],pages:3,workflows:true,options:[
 {id:'custom',label:'Sıfırdan fərdi sayt dizaynı',price:149,help:'Brendiniz üçün ayrıca vizual istiqamət.'},
 {id:'cms',label:'Saytın məzmun idarəetməsi',price:149,help:'İctimai səhifələrin mətn və şəkillərini yeniləyin.'},
 {id:'roles',label:'Komanda və istifadəçi rolları',price:99,help:'İdarəetməyə bir neçə istifadəçi rolu əlavə edin.'},
