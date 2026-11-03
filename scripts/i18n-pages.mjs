@@ -169,7 +169,7 @@ await rm(new URL('.vite/',dist),{recursive:true,force:true});
 // ---- sitemap with hreflang alternates ----
 const urls=[...PAGES.map(p=>p[2]),...serviceFiles,...conceptFiles];
 const sitemap=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
- ...urls.flatMap(f=>LANGS.map(l=>`<url><loc>${pageUrl(l,f)}</loc>${LANGS.map(a=>`<xhtml:link rel="alternate" hreflang="${a}" href="${pageUrl(a,f)}"/>`).join('')}<xhtml:link rel="alternate" hreflang="x-default" href="${pageUrl('az',f)}"/></url>`)),'</urlset>',''].join('\n');
+ ...urls.flatMap(f=>LANGS.map(l=>`<url><loc>${pageUrl(l,f)}</loc>${LANGS.map(a=>`<xhtml:link rel="alternate" hreflang="${a}" href="${pageUrl(a,f)}"/>`).join('')}<xhtml:link rel="alternate" hreflang="x-default" href="${pageUrl('az',f)}"/></url>`)),`<url><loc>${ORIGIN}/Luna</loc></url>`,'</urlset>',''].join('\n');
 await writeFile(new URL('sitemap.xml',dist),sitemap);
 
 if(asciiNotes.size)console.log('i18n: kept as-is (ASCII, please confirm):',[...asciiNotes].join(' | '));

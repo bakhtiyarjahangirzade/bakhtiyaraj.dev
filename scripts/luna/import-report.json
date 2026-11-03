@@ -1,0 +1,598 @@
+[
+ {
+  "slug": "pepper-carrot-01",
+  "episode": 1,
+  "lang": "en",
+  "story_pages": 3,
+  "bundled_pages": 3,
+  "files": [
+   {
+    "role": "cover",
+    "url": "https://www.peppercarrot.com/0_sources/ep01_Potion-of-Flight/low-res/en_Pepper-and-Carrot_by-David-Revoy_E01.jpg",
+    "sha256": "4cb56c76a4537d812dbdb18b2a0de464abc67187bcc7941bf4079df0f0f4f446",
+    "out": [
+     "pepper-carrot-01/cover.webp",
+     "pepper-carrot-01/cover-sm.webp"
+    ],
+    "size": [
+     1100,
+     765
+    ]
+   },
+   {
+    "role": "page 1",
+    "url": "https://www.peppercarrot.com/0_sources/ep01_Potion-of-Flight/low-res/en_Pepper-and-Carrot_by-David-Revoy_E01P01.jpg",
+    "sha256": "f1de30872ce216b4ea57f6d99110867ba44396211119ffd20bce6277332f64d3",
+    "out": [
+     "pepper-carrot-01/p01.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 2",
+    "url": "https://www.peppercarrot.com/0_sources/ep01_Potion-of-Flight/low-res/en_Pepper-and-Carrot_by-David-Revoy_E01P02.jpg",
+    "sha256": "7696832a48b3cd75a2c8faef7827e0abe69cce987b28aea6a60865955f0ed803",
+    "out": [
+     "pepper-carrot-01/p02.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 3",
+    "url": "https://www.peppercarrot.com/0_sources/ep01_Potion-of-Flight/low-res/en_Pepper-and-Carrot_by-David-Revoy_E01P03.jpg",
+    "sha256": "2555dff43af17bf07e2c01758c5f3ef0c03d5588c7a9d1e0f08d2d63d5c4b278",
+    "out": [
+     "pepper-carrot-01/p03.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   }
+  ]
+ },
+ {
+  "slug": "pepper-carrot-02",
+  "episode": 2,
+  "lang": "en",
+  "story_pages": 5,
+  "bundled_pages": 5,
+  "files": [
+   {
+    "role": "cover",
+    "url": "https://www.peppercarrot.com/0_sources/ep02_Rainbow-potions/low-res/en_Pepper-and-Carrot_by-David-Revoy_E02.jpg",
+    "sha256": "ab761e60c0feb7545d1a2f85a41bbe430441fbdd53842b116d6d0f32f0697f02",
+    "out": [
+     "pepper-carrot-02/cover.webp",
+     "pepper-carrot-02/cover-sm.webp"
+    ],
+    "size": [
+     1100,
+     765
+    ]
+   },
+   {
+    "role": "page 1",
+    "url": "https://www.peppercarrot.com/0_sources/ep02_Rainbow-potions/low-res/en_Pepper-and-Carrot_by-David-Revoy_E02P01.jpg",
+    "sha256": "9b011d958fdf514c7e8c152760cb8635fefc915f7a47b5b8dfa2628e4d15337c",
+    "out": [
+     "pepper-carrot-02/p01.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 2",
+    "url": "https://www.peppercarrot.com/0_sources/ep02_Rainbow-potions/low-res/en_Pepper-and-Carrot_by-David-Revoy_E02P02.jpg",
+    "sha256": "48da4890d7b1a2cac3a8fde8ba6ba67c8fe295ee8f2cc2dfc03c0c7e97b6f41a",
+    "out": [
+     "pepper-carrot-02/p02.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 3",
+    "url": "https://www.peppercarrot.com/0_sources/ep02_Rainbow-potions/low-res/en_Pepper-and-Carrot_by-David-Revoy_E02P03.jpg",
+    "sha256": "b75ed25f427bb8632c22e57c99636599499f325630e6a13af12ad6e2fe40d1c5",
+    "out": [
+     "pepper-carrot-02/p03.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 4",
+    "url": "https://www.peppercarrot.com/0_sources/ep02_Rainbow-potions/low-res/en_Pepper-and-Carrot_by-David-Revoy_E02P04.jpg",
+    "sha256": "905bb566c3f7523f7fb008475a898030181fd56f03262939a90e51cbcdefe32e",
+    "out": [
+     "pepper-carrot-02/p04.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 5",
+    "url": "https://www.peppercarrot.com/0_sources/ep02_Rainbow-potions/low-res/en_Pepper-and-Carrot_by-David-Revoy_E02P05.jpg",
+    "sha256": "7c8db22f79ac33f55c730adbaefb37a11b1aedcff7c6fbd16252ca879cb8b996",
+    "out": [
+     "pepper-carrot-02/p05.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   }
+  ]
+ },
+ {
+  "slug": "pepper-carrot-03",
+  "episode": 3,
+  "lang": "en",
+  "story_pages": 7,
+  "bundled_pages": 7,
+  "files": [
+   {
+    "role": "cover",
+    "url": "https://www.peppercarrot.com/0_sources/ep03_The-secret-ingredients/low-res/en_Pepper-and-Carrot_by-David-Revoy_E03.jpg",
+    "sha256": "65a98b160cca92822070333197afaccaa9ecfcfd661236f5d77c2995249581fb",
+    "out": [
+     "pepper-carrot-03/cover.webp",
+     "pepper-carrot-03/cover-sm.webp"
+    ],
+    "size": [
+     1100,
+     765
+    ]
+   },
+   {
+    "role": "page 1",
+    "url": "https://www.peppercarrot.com/0_sources/ep03_The-secret-ingredients/low-res/en_Pepper-and-Carrot_by-David-Revoy_E03P01.jpg",
+    "sha256": "9e75470c8065b95ef65f4b4431f21b4db9ffeebb0c1836280bd59c1b32bffbed",
+    "out": [
+     "pepper-carrot-03/p01.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 2",
+    "url": "https://www.peppercarrot.com/0_sources/ep03_The-secret-ingredients/low-res/en_Pepper-and-Carrot_by-David-Revoy_E03P02.jpg",
+    "sha256": "d24b44d0e6cb84f9f91905521ac13c7c4d596c9e02d180d32fd86708ec33e4ee",
+    "out": [
+     "pepper-carrot-03/p02.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 3",
+    "url": "https://www.peppercarrot.com/0_sources/ep03_The-secret-ingredients/low-res/en_Pepper-and-Carrot_by-David-Revoy_E03P03.jpg",
+    "sha256": "c09c64ea47e2b831e811837f78bd436ef948f240621cf1b995fa8a2cf11a98e6",
+    "out": [
+     "pepper-carrot-03/p03.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 4",
+    "url": "https://www.peppercarrot.com/0_sources/ep03_The-secret-ingredients/low-res/en_Pepper-and-Carrot_by-David-Revoy_E03P04.jpg",
+    "sha256": "731c0a31f7e1282590582a610eb2d58de28f324f99f867ebbdd7abf64758a462",
+    "out": [
+     "pepper-carrot-03/p04.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 5",
+    "url": "https://www.peppercarrot.com/0_sources/ep03_The-secret-ingredients/low-res/en_Pepper-and-Carrot_by-David-Revoy_E03P05.jpg",
+    "sha256": "d57d1b0a3ac7d502843a76a334ae7b4bee46a0f7d42b807aba9539318a264788",
+    "out": [
+     "pepper-carrot-03/p05.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 6",
+    "url": "https://www.peppercarrot.com/0_sources/ep03_The-secret-ingredients/low-res/en_Pepper-and-Carrot_by-David-Revoy_E03P06.jpg",
+    "sha256": "afb134171c8abbe81feeb2d45287275dc0332bc42e13609cd3274b4e982be378",
+    "out": [
+     "pepper-carrot-03/p06.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 7",
+    "url": "https://www.peppercarrot.com/0_sources/ep03_The-secret-ingredients/low-res/en_Pepper-and-Carrot_by-David-Revoy_E03P07.jpg",
+    "sha256": "b1f514daa5606bfc4899d7e08ab2b6ba1242bde91697b78d438b1406350bc173",
+    "out": [
+     "pepper-carrot-03/p07.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   }
+  ]
+ },
+ {
+  "slug": "pepper-carrot-05",
+  "episode": 5,
+  "lang": "en",
+  "story_pages": 4,
+  "bundled_pages": 4,
+  "files": [
+   {
+    "role": "cover",
+    "url": "https://www.peppercarrot.com/0_sources/ep05_Special-holiday-episode/low-res/en_Pepper-and-Carrot_by-David-Revoy_E05.jpg",
+    "sha256": "aa58e7709f169e609e4bc7353103c74a66d17e46f0be7eaffa095c34816faec6",
+    "out": [
+     "pepper-carrot-05/cover.webp",
+     "pepper-carrot-05/cover-sm.webp"
+    ],
+    "size": [
+     1100,
+     765
+    ]
+   },
+   {
+    "role": "page 1",
+    "url": "https://www.peppercarrot.com/0_sources/ep05_Special-holiday-episode/low-res/en_Pepper-and-Carrot_by-David-Revoy_E05P01.jpg",
+    "sha256": "24689c89fe16afeea807bef09ed5247518bfd579e064b8b08faace56435fb9b6",
+    "out": [
+     "pepper-carrot-05/p01.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 2",
+    "url": "https://www.peppercarrot.com/0_sources/ep05_Special-holiday-episode/low-res/en_Pepper-and-Carrot_by-David-Revoy_E05P02.jpg",
+    "sha256": "8b0f5e2654f1aeeb5d6dbb740937926b441e9ea6e8e5f5f14fc76507d6e1e25e",
+    "out": [
+     "pepper-carrot-05/p02.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 3",
+    "url": "https://www.peppercarrot.com/0_sources/ep05_Special-holiday-episode/low-res/en_Pepper-and-Carrot_by-David-Revoy_E05P03.jpg",
+    "sha256": "8e0ac628a28b0df6bb6ca427e1bfbf19d4dbfb612c037f39aa7cc2ae9d549dd9",
+    "out": [
+     "pepper-carrot-05/p03.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 4",
+    "url": "https://www.peppercarrot.com/0_sources/ep05_Special-holiday-episode/low-res/en_Pepper-and-Carrot_by-David-Revoy_E05P04.jpg",
+    "sha256": "e56f35a76ed7953ced64c09b9c8dac46fa39501d84846069e619302c95650c5f",
+    "out": [
+     "pepper-carrot-05/p04.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   }
+  ]
+ },
+ {
+  "slug": "pepper-carrot-06-ru",
+  "episode": 6,
+  "lang": "ru",
+  "story_pages": 9,
+  "bundled_pages": 9,
+  "files": [
+   {
+    "role": "cover",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06.jpg",
+    "sha256": "8280bdd833135c6349b95fc3fdbc8b3cf3f3b8938c66a611f9305cdd81353e7b",
+    "out": [
+     "pepper-carrot-06-ru/cover.webp",
+     "pepper-carrot-06-ru/cover-sm.webp"
+    ],
+    "size": [
+     1100,
+     765
+    ]
+   },
+   {
+    "role": "page 1",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P01.jpg",
+    "sha256": "9e7ae68e3461b2cf2572e0de867f5047f2bdf1e27d23090e68f101e3724fef0e",
+    "out": [
+     "pepper-carrot-06-ru/p01.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 2",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P02.jpg",
+    "sha256": "c556bb70fde0527884566024d5898db1fec74b1c1f1221b20f899a7847c5109b",
+    "out": [
+     "pepper-carrot-06-ru/p02.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 3",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P03.jpg",
+    "sha256": "5ba25d6c64048a739ca8474a624035db7d0d7aa5347755362fc0cab98bbd3673",
+    "out": [
+     "pepper-carrot-06-ru/p03.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 4",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P04.jpg",
+    "sha256": "2b341c06445ebd7e4ffba82c05dc561a48a4505e5d9d61a6f2ff21c7bd38c79f",
+    "out": [
+     "pepper-carrot-06-ru/p04.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 5",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P05.jpg",
+    "sha256": "7e5c5ed50b12e6feaee2c5d460e4424b5b0d6966534b0ab7ef60614c67fca6cf",
+    "out": [
+     "pepper-carrot-06-ru/p05.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 6",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P06.jpg",
+    "sha256": "5e3aa85537199aa42bd02641a8eb07add92967a0a3c537be00e74a03d24cb94a",
+    "out": [
+     "pepper-carrot-06-ru/p06.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 7",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P07.jpg",
+    "sha256": "1b0d8a6d9ffe48b27e1ecebcfc3321108f6d06d7d737f3644af1c8be5a5b4aa5",
+    "out": [
+     "pepper-carrot-06-ru/p07.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 8",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P08.jpg",
+    "sha256": "81e7962b8dfc2072154ac152a1f38a122b4e7dbe514f502e38a51efd0b88e11e",
+    "out": [
+     "pepper-carrot-06-ru/p08.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 9",
+    "url": "https://www.peppercarrot.com/0_sources/ep06_The-Potion-Contest/low-res/ru_Pepper-and-Carrot_by-David-Revoy_E06P09.jpg",
+    "sha256": "02aadff5799a31c7e1b0507b8204fd8f1fbcc0252b8ffcf912349f5ebd2c7139",
+    "out": [
+     "pepper-carrot-06-ru/p09.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   }
+  ]
+ },
+ {
+  "slug": "pepper-carrot-08",
+  "episode": 8,
+  "lang": "en",
+  "story_pages": 6,
+  "bundled_pages": 2,
+  "files": [
+   {
+    "role": "cover",
+    "url": "https://www.peppercarrot.com/0_sources/ep08_Pepper-s-Birthday-Party/low-res/en_Pepper-and-Carrot_by-David-Revoy_E08.jpg",
+    "sha256": "a6a5480a47ee372fa31ea7e0b34d4b54a01e187a2cc55df4b3032686ccb90426",
+    "out": [
+     "pepper-carrot-08/cover.webp",
+     "pepper-carrot-08/cover-sm.webp"
+    ],
+    "size": [
+     1100,
+     765
+    ]
+   },
+   {
+    "role": "page 1",
+    "url": "https://www.peppercarrot.com/0_sources/ep08_Pepper-s-Birthday-Party/low-res/en_Pepper-and-Carrot_by-David-Revoy_E08P01.jpg",
+    "sha256": "941909c20671544fe8cd740848d35c810f87ec08ac736299fa9d9ac8d94b6fa5",
+    "out": [
+     "pepper-carrot-08/p01.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 2",
+    "url": "https://www.peppercarrot.com/0_sources/ep08_Pepper-s-Birthday-Party/low-res/en_Pepper-and-Carrot_by-David-Revoy_E08P02.jpg",
+    "sha256": "3b827a2c230240a7497aebfa1c77aed42255ee9da6c651505243b208a4239a4b",
+    "out": [
+     "pepper-carrot-08/p02.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   }
+  ]
+ },
+ {
+  "slug": "pepper-carrot-11",
+  "episode": 11,
+  "lang": "en",
+  "story_pages": 6,
+  "bundled_pages": 2,
+  "files": [
+   {
+    "role": "cover",
+    "url": "https://www.peppercarrot.com/0_sources/ep11_The-Witches-of-Chaosah/low-res/en_Pepper-and-Carrot_by-David-Revoy_E11.jpg",
+    "sha256": "1411423a905f37fc17c1d775ba74d7427c83e2752dafbdd491c7b7811019f22d",
+    "out": [
+     "pepper-carrot-11/cover.webp",
+     "pepper-carrot-11/cover-sm.webp"
+    ],
+    "size": [
+     1100,
+     765
+    ]
+   },
+   {
+    "role": "page 1",
+    "url": "https://www.peppercarrot.com/0_sources/ep11_The-Witches-of-Chaosah/low-res/en_Pepper-and-Carrot_by-David-Revoy_E11P01.jpg",
+    "sha256": "b3a1a181fcf50aaca886902023b8f076403528d94b00335e7062434c6fd21420",
+    "out": [
+     "pepper-carrot-11/p01.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 2",
+    "url": "https://www.peppercarrot.com/0_sources/ep11_The-Witches-of-Chaosah/low-res/en_Pepper-and-Carrot_by-David-Revoy_E11P02.jpg",
+    "sha256": "06e4585d91886bf0bb1011b499efb143fedb68bd1c2b2c893aa518278af45f3b",
+    "out": [
+     "pepper-carrot-11/p02.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   }
+  ]
+ },
+ {
+  "slug": "pepper-carrot-15",
+  "episode": 15,
+  "lang": "en",
+  "story_pages": 8,
+  "bundled_pages": 3,
+  "files": [
+   {
+    "role": "cover",
+    "url": "https://www.peppercarrot.com/0_sources/ep15_The-Crystal-Ball/low-res/en_Pepper-and-Carrot_by-David-Revoy_E15.jpg",
+    "sha256": "afd57dfe501f9516678b8d05870b868eaf9df46d3a56fe1bdce252b7d170bce8",
+    "out": [
+     "pepper-carrot-15/cover.webp",
+     "pepper-carrot-15/cover-sm.webp"
+    ],
+    "size": [
+     1100,
+     765
+    ]
+   },
+   {
+    "role": "page 1",
+    "url": "https://www.peppercarrot.com/0_sources/ep15_The-Crystal-Ball/low-res/en_Pepper-and-Carrot_by-David-Revoy_E15P01.jpg",
+    "sha256": "e0cf578fa2a791c16145f9a4352cb112fd5b80dcbe3189a0ca74b1a5731d41b2",
+    "out": [
+     "pepper-carrot-15/p01.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 2",
+    "url": "https://www.peppercarrot.com/0_sources/ep15_The-Crystal-Ball/low-res/en_Pepper-and-Carrot_by-David-Revoy_E15P02.jpg",
+    "sha256": "5c6dcb34bed79873b7935c07e78b197d0d4c2f6f3709d4acb93b31c271b0b344",
+    "out": [
+     "pepper-carrot-15/p02.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   },
+   {
+    "role": "page 3",
+    "url": "https://www.peppercarrot.com/0_sources/ep15_The-Crystal-Ball/low-res/en_Pepper-and-Carrot_by-David-Revoy_E15P03.jpg",
+    "sha256": "700998abbb8c3bc41c08c72e1fbbc534ef18a529fb26aa73a3422078068f5f68",
+    "out": [
+     "pepper-carrot-15/p03.webp"
+    ],
+    "size": [
+     1200,
+     1660
+    ]
+   }
+  ]
+ }
+]
