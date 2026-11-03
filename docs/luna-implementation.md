@@ -70,7 +70,7 @@ Starter collection: 8 Pepper&Carrot episodes by David Revoy (CC BY 4.0) — 5 fr
 ### Account backend status (checked 3 Nov 2026)
 
 - Auth endpoint reachable from the session; settings report e-mail auth on, sign-ups on, e-mail confirmation required. A sign-in with a non-existent account against production returned "Invalid login credentials", shown as "E-poçt və ya parol yanlışdır."
-- **Owner action needed for synced libraries**: `luna_library` is not present in production (`PGRST205`). Until `supabase/luna.sql` is run in the Supabase SQL editor, signed-in members see "Sinxronizasiya hələ quraşdırılmayıb" and their library/progress stays in the browser. Nothing else changes when it is applied; the app detects the tables automatically.
+- **Production library setup completed during release review, 3 Nov 2026**: `luna_library` and `luna_progress` are installed in `bakhy-dev`, with RLS enabled and eight ownership policies. Non-anonymous-member checks cover every read/write policy, including update and delete. Authenticated members have CRUD grants; the anon role has no grants. Transactional checks on the actual production database verified own-user insert/read, cross-user row isolation and anonymous-session exclusion; all temporary test records were rolled back. The UI detects the tables automatically. This supersedes the initial missing-tables/PGRST205 report.
 - **Recommended owner check**: add `https://www.bakhtiyaraj.dev/Luna` to Authentication → URL configuration → Redirect URLs so confirmation links return to Luna (otherwise Supabase falls back to the Site URL; the account still confirms).
 - Not offered: password reset (delivery and recovery flow not verified for Luna), social login.
 

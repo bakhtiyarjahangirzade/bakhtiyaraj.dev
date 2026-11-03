@@ -34,15 +34,17 @@ create policy luna_library_select on public.luna_library for select to authentic
 create policy luna_library_insert on public.luna_library for insert to authenticated
   with check (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false);
 create policy luna_library_update on public.luna_library for update to authenticated
-  using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+  using (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false)
+  with check (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false);
 create policy luna_library_delete on public.luna_library for delete to authenticated
-  using (user_id = (select auth.uid()));
+  using (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false);
 
 create policy luna_progress_select on public.luna_progress for select to authenticated
   using (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false);
 create policy luna_progress_insert on public.luna_progress for insert to authenticated
   with check (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false);
 create policy luna_progress_update on public.luna_progress for update to authenticated
-  using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+  using (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false)
+  with check (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false);
 create policy luna_progress_delete on public.luna_progress for delete to authenticated
-  using (user_id = (select auth.uid()));
+  using (user_id = (select auth.uid()) and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false);
