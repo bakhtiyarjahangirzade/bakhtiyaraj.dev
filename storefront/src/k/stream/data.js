@@ -1,0 +1,101 @@
+// Arena sample programming. One record per programme; today's running order references programmes by id,
+// so the schedule, the programme dialog, My list and the player always show the same title and times.
+import {L} from '../kit.js';
+
+export const CATS={
+ futbol:L('Futbol','Футбол','Football'),voleybol:L('Voleybol','Волейбол','Volleyball'),basketbol:L('Basketbol','Баскетбол','Basketball'),
+ atletika:L('Atletika','Лёгкая атлетика','Athletics'),sahmat:L('Şahmat','Шахматы','Chess'),musiqi:L('Musiqi','Музыка','Music'),senedli:L('Sənədli','Документальное','Documentary')
+};
+export const CHANNELS=[
+ {id:'a1',name:'Arena 1',note:L('Futbol','Футбол','Football')},
+ {id:'a2',name:'Arena 2',note:L('Zal və meydança','Зал и площадка','Court and track')},
+ {id:'sc',name:'Arena Səhnə',note:L('Konsert və səhnə','Концерты и сцена','Concerts and stage')},
+ {id:'pl',name:'Arena Plus',note:L('Şahmat və sənədli','Шахматы и документальное','Chess and documentary')}
+];
+const S=(az,ru,en,min)=>({name:L(az,ru,en),min});
+export const PROGRAMMES=[
+ {id:'derbi',cat:'futbol',img:'match',kind:'event',
+  title:L('Abşeron FK – Gəncə Atlas','«Абшерон» – «Гянджа Атлас»','Absheron FC v Ganja Atlas'),
+  tag:L('Regional Liqa, 14-cü tur','Региональная лига, 14-й тур','Regional League, round 14'),
+  about:L('Cədvəlin ikinci və dördüncü komandaları arasında oyun. Studiyada iki keçmiş müdafiəçi; şərh Azərbaycan dilində, ikinci audio kanalda stadion səsi.','Матч второй и четвёртой команд таблицы. В студии два бывших защитника; комментарий на азербайджанском, на второй аудиодорожке — звук стадиона.','Second against fourth in the table. Two former defenders in the studio; commentary in Azerbaijani, stadium sound on the second audio track.'),
+  parts:[S('Matçönü studiya','Предматчевая студия','Pre-match studio',30),S('Birinci hissə','Первый тайм','First half',45),S('Fasilə və icmal','Перерыв и обзор','Half-time review',20),S('İkinci hissə','Второй тайм','Second half',50),S('Matçdan sonra','После матча','Post-match',35)]},
+ {id:'tur',cat:'futbol',img:'studio',kind:'series',
+  title:L('Turun icmalı','Обзор тура','Round review'),
+  tag:L('Həftəlik, 50 dəqiqə','Еженедельно, 50 минут','Weekly, 50 minutes'),
+  about:L('Liqanın bütün oyunlarından qollar, təhlükəli anlar və hakim qərarlarının təkrar baxışı. Hər bazar ertəsi yeni buraxılış.','Голы, опасные моменты и повторы судейских решений из всех матчей лиги. Новый выпуск каждый понедельник.','Goals, chances and referee decisions replayed from every league match. A new edition every Monday.'),
+  parts:[S('11-ci tur','11-й тур','Round 11',50),S('12-ci tur','12-й тур','Round 12',50),S('13-cü tur','13-й тур','Round 13',50)]},
+ {id:'meydan',cat:'futbol',img:'pitch',kind:'series',
+  title:L('Həyətdən liqaya','Со двора в лигу','From the yard to the league'),
+  tag:L('Sənədli seriya, 5 bölüm','Документальный сериал, 5 серий','Documentary series, 5 episodes'),
+  about:L('Beş şəhərin futbol məktəbləri: Lənkəran, Şəki, Gəncə, Sumqayıt və Quba. Hər bölüm bir məşqçi və bir mövsüm haqqındadır.','Футбольные школы пяти городов: Ленкорань, Шеки, Гянджа, Сумгаит и Губа. Каждая серия — о тренере и одном сезоне.','Football schools in five towns: Lankaran, Shaki, Ganja, Sumgait and Guba. Each episode follows one coach through one season.'),
+  parts:[S('Lənkəran: yağışlı meydança','Ленкорань: мокрое поле','Lankaran: the wet pitch',42),S('Şəki: dağ yolu ilə səfər','Шеки: выезд по горной дороге','Shaki: the mountain away trip',44),S('Gəncə: süni örtük','Гянджа: искусственный газон','Ganja: the artificial turf',41),S('Sumqayıt: gecə məşqi','Сумгаит: вечерняя тренировка','Sumgait: training after dark',43),S('Quba: ilk peşəkar müqavilə','Губа: первый профессиональный контракт','Guba: the first pro contract',46)]},
+ {id:'voley',cat:'voleybol',img:'volley',kind:'event',
+  title:L('Nardaran kuboku, final','Кубок Нардарана, финал','Nardaran Cup, final'),
+  tag:L('Çimərlik voleybolu, qadınlar','Пляжный волейбол, женщины','Beach volleyball, women'),
+  about:L('Abşeron sahilində üç günlük turnirin final günü. Küləyin sürəti ekranın küncündə göstərilir — çimərlikdə topun yolunu o dəyişir.','Финальный день трёхдневного турнира на апшеронском берегу. Скорость ветра показана в углу экрана — на пляже именно она меняет траекторию мяча.','Final day of a three-day tournament on the Absheron shore. Wind speed is shown in the corner of the screen — on sand, it is what bends the ball.'),
+  parts:[S('Bürünc medal oyunu','Матч за бронзу','Bronze medal match',55),S('Final','Финал','Final',70),S('Mükafatlandırma','Награждение','Medal ceremony',25)]},
+ {id:'basket',cat:'basketbol',img:'court',kind:'event',
+  title:L('Sumqayıt – Şəki Qartalları','«Сумгаит» – «Шекинские орлы»','Sumgait v Shaki Eagles'),
+  tag:L('Basketbol Liqası, 9-cu tur','Баскетбольная лига, 9-й тур','Basketball League, round 9'),
+  about:L('Liqanın ən sürətli hücum oynayan iki komandası. Rübün sonunda statistika paneli: atış faizi, ribaund, itkilər.','Две команды лиги с самой быстрой атакой. В конце каждой четверти — панель статистики: процент попаданий, подборы, потери.','The league’s two fastest-attacking teams. A stats panel after every quarter: shooting, rebounds, turnovers.'),
+  parts:[S('Oyunönü','Перед игрой','Pre-game',15),S('1–2-ci rüb','1–2-я четверть','Quarters 1–2',50),S('Fasilə','Перерыв','Half-time',15),S('3–4-cü rüb','3–4-я четверть','Quarters 3–4',50)]},
+ {id:'kucede',cat:'basketbol',img:'street',kind:'series',
+  title:L('3×3 Həyət','3×3 Двор','3×3 Yard'),
+  tag:L('Seriya, 6 bölüm, 25 dəqiqə','Сериал, 6 серий по 25 минут','Series, 6 episodes, 25 minutes'),
+  about:L('Bakı həyətlərindəki 3×3 turniri: hər bölüm bir meydança və bir həftə sonu.','Турнир 3×3 в бакинских дворах: каждая серия — одна площадка и одни выходные.','A 3×3 tournament in Baku’s courtyards: one court and one weekend per episode.'),
+  parts:[S('Yasamal','Ясамал','Yasamal',25),S('Nəsimi','Насими','Nasimi',25),S('Xətai','Хатаи','Khatai',25),S('Bayıl','Баилово','Bayil',25),S('Əhmədli','Ахмедлы','Ahmadli',25),S('Final: Bulvar','Финал: Бульвар','Final: the Boulevard',30)]},
+ {id:'atletika',cat:'atletika',img:'track',kind:'event',
+  title:L('Gənclər arasında qış çempionatı','Зимний чемпионат среди юниоров','Junior winter championships'),
+  tag:L('Atletika, 2-ci gün','Лёгкая атлетика, 2-й день','Athletics, day 2'),
+  about:L('Qaçış, uzunluğa və hündürlüyə tullanma. Hər yarışdan sonra iştirakçıların şəxsi rekordları ilə müqayisə.','Бег, прыжки в длину и в высоту. После каждого вида — сравнение с личными рекордами участников.','Sprints, long jump and high jump, each compared with the athletes’ personal bests.'),
+  parts:[S('60 m, yarımfinallar','60 м, полуфиналы','60 m semi-finals',40),S('Uzunluğa tullanma','Прыжки в длину','Long jump',70),S('60 m, finallar','60 м, финалы','60 m finals',30),S('Hündürlüyə tullanma','Прыжки в высоту','High jump',40)]},
+ {id:'sahmat',cat:'sahmat',img:'chess',kind:'event',
+  title:L('Bakı açıq turniri, 6-cı tur','Открытый турнир Баку, 6-й тур','Baku Open, round 6'),
+  tag:L('Şahmat, canlı şərh','Шахматы, прямой комментарий','Chess, live commentary'),
+  about:L('Birinci on masanın oyunları və qrossmeyster şərhi. Ekranda mühərrik qiyməti yoxdur — şərhçilər variantları lövhədə göstərir.','Партии первых десяти досок и комментарий гроссмейстера. Оценки движка на экране нет — комментаторы показывают варианты на доске.','The top ten boards with grandmaster commentary. No engine bar on screen — the commentators show lines on the board.'),
+  parts:[S('Açılış şərhi','Комментарий дебютов','Opening commentary',40),S('Ortaoyun','Миттельшпиль','Middlegame',120),S('Vaxt nəzarəti','Контроль времени','Time control',60),S('Turdan sonra analiz','Анализ после тура','Post-round analysis',40)]},
+ {id:'dars',cat:'sahmat',img:'lesson',kind:'series',
+  title:L('Şahmat dərsi','Урок шахмат','Chess lesson'),
+  tag:L('Seriya, 8 dərs, 30 dəqiqə','Сериал, 8 уроков по 30 минут','Series, 8 lessons, 30 minutes'),
+  about:L('Yeni başlayanlar və valideynlər üçün: hər dərsdə bir mövzu və evdə həll etmək üçün üç tapşırıq.','Для начинающих и родителей: в каждом уроке одна тема и три задачи для самостоятельного решения.','For beginners and parents: one topic per lesson and three puzzles to solve at home.'),
+  parts:[S('Fiqurların dəyəri','Ценность фигур','What the pieces are worth',30),S('Mərkəz uğrunda','Борьба за центр','Fighting for the centre',30),S('Rokirovka nə vaxt?','Когда рокироваться?','When to castle',30),S('Sadə matlar','Простые маты','Basic mates',30)]},
+ {id:'stage',cat:'musiqi',img:'stage',kind:'event',
+  title:L('Açıq səhnə: gənc qruplar','Открытая сцена: молодые группы','Open stage: new bands'),
+  tag:L('Konsert, canlı','Концерт, прямой эфир','Concert, live'),
+  about:L('Bakı, Gəncə və Sumqayıtdan dörd gənc qrup, hər biri 30 dəqiqəlik çıxış. Səs studiya miksi ilə verilir.','Четыре молодые группы из Баку, Гянджи и Сумгаита, у каждой 30 минут. Звук — студийное сведение.','Four new bands from Baku, Ganja and Sumgait, 30 minutes each, with a studio sound mix.'),
+  parts:[S('Birinci çıxış','Первое выступление','First set',30),S('İkinci çıxış','Второе выступление','Second set',30),S('Üçüncü çıxış','Третье выступление','Third set',30),S('Dördüncü çıxış','Четвёртое выступление','Fourth set',30),S('Səhnə arxası','За кулисами','Backstage',30)]},
+ {id:'candle',cat:'musiqi',img:'candle',kind:'event',
+  title:L('Şam işığında: Şopen və Hacıbəyli','При свечах: Шопен и Гаджибейли','By candlelight: Chopin and Hajibeyli'),
+  tag:L('Konsert yazısı, 90 dəqiqə','Запись концерта, 90 минут','Concert recording, 90 minutes'),
+  about:L('Fortepiano üçün noktürnlər və Üzeyir Hacıbəylinin romanslarının işləmələri. Keçən ay yazılıb.','Ноктюрны для фортепиано и обработки романсов Узеира Гаджибейли. Записано в прошлом месяце.','Piano nocturnes and arrangements of Uzeyir Hajibeyli’s romances, recorded last month.'),
+  parts:[S('Noktürnlər','Ноктюрны','Nocturnes',40),S('Romanslar','Романсы','Romances',35),S('Bis','На бис','Encore',15)]},
+ {id:'recital',cat:'musiqi',img:'recital',kind:'event',
+  title:L('Kamera musiqisi axşamı','Вечер камерной музыки','Chamber music evening'),
+  tag:L('Filarmoniyadan yazı','Запись из филармонии','Recorded at the Philharmonic'),
+  about:L('Fortepiano triosu: Qara Qarayev, Fikrət Əmirov və Brams. Proqram kitabçası pleyerin altında açılır.','Фортепианное трио: Кара Караев, Фикрет Амиров и Брамс. Программа открывается под плеером.','A piano trio: Gara Garayev, Fikret Amirov and Brahms. The printed programme opens below the player.'),
+  parts:[S('Qarayev, Trio','Караев, Трио','Garayev, Trio',28),S('Əmirov, Muğam-poema (işləmə)','Амиров, Мугам-поэма (обработка)','Amirov, Mugham poem (arr.)',22),S('Brams, Trio № 1','Брамс, Трио № 1','Brahms, Trio No. 1',40)]},
+ {id:'yol',cat:'senedli',img:'rail',kind:'series',
+  title:L('Bakı–Qazax: 450 kilometr','Баку–Газах: 450 километров','Baku–Gazakh: 450 kilometres'),
+  tag:L('Sənədli seriya, 5 bölüm','Документальный сериал, 5 серий','Documentary series, 5 episodes'),
+  about:L('Dəmir yolu boyunca beş stansiya və onların ətrafında yaşayan insanlar. Hər bölüm bir hissədir.','Пять станций вдоль железной дороги и люди вокруг них. Каждая серия — один перегон.','Five stations along the railway and the people around them, one stretch per episode.'),
+  parts:[S('Bakı – Ələt','Баку – Алят','Baku – Alat',48),S('Ələt – Kürdəmir','Алят – Кюрдамир','Alat – Kurdamir',47),S('Kürdəmir – Yevlax','Кюрдамир – Евлах','Kurdamir – Yevlakh',50),S('Yevlax – Gəncə','Евлах – Гянджа','Yevlakh – Ganja',49),S('Gəncə – Qazax','Гянджа – Газах','Ganja – Gazakh',52)]},
+ {id:'qatar',cat:'senedli',img:'train',kind:'event',
+  title:L('Gecə qatarı','Ночной поезд','The night train'),
+  tag:L('Sənədli film, 58 dəqiqə','Документальный фильм, 58 минут','Documentary film, 58 minutes'),
+  about:L('Bakı–Balakən gecə qatarının bələdçiləri ilə bir səfər: 11 saat, 14 dayanacaq.','Одна поездка с проводниками ночного поезда Баку–Балакен: 11 часов, 14 остановок.','One journey with the conductors of the Baku–Balakan night train: 11 hours, 14 stops.'),
+  parts:[S('Film','Фильм','Film',58)]},
+ {id:'gece',cat:'senedli',img:'night',kind:'event',
+  title:L('Meydançanın gecəsi','Ночь стадиона','The stadium at night'),
+  tag:L('Sənədli film, 52 dəqiqə','Документальный фильм, 52 минуты','Documentary film, 52 minutes'),
+  about:L('Matçdan sonra stadionda qalanlar: ot biçənlər, işıqçılar, təmizlik komandası. Səhərə qədər bir növbə.','Те, кто остаётся на стадионе после матча: газонщики, осветители, уборщики. Одна смена до утра.','The people who stay after the match — groundskeepers, lighting crew, cleaners — through one shift until morning.'),
+  parts:[S('Film','Фильм','Film',52)]}
+];
+
+// Today's running order, Baku time. [start "HH:MM", minutes, programme, live?, part index or null, note?]
+const R=(t,min,p,live=false,part=null)=>({t,min,p,live,part});
+export const RUNNING={
+ a1:[R('00:00',360,'tur',false,2),R('06:00',90,'meydan',false,0),R('07:30',90,'meydan',false,1),R('09:00',120,'tur',false,1),R('11:00',120,'meydan',false,2),R('13:00',120,'tur',false,2),R('15:00',90,'meydan',false,3),R('16:30',120,'meydan',false,4),R('18:30',180,'derbi',true),R('21:30',90,'tur',false,2),R('23:00',60,'gece')],
+ a2:[R('00:00',360,'atletika',false,1),R('06:00',120,'kucede',false,0),R('08:00',120,'kucede',false,1),R('10:00',180,'atletika',true),R('13:00',120,'kucede',false,2),R('15:00',150,'voley',true),R('17:30',120,'kucede',false,3),R('19:30',150,'basket',true),R('22:00',120,'voley',false,1)],
+ sc:[R('00:00',420,'candle'),R('07:00',120,'recital'),R('09:00',120,'candle'),R('11:00',180,'recital'),R('14:00',180,'stage',false,4),R('17:00',180,'recital'),R('20:00',150,'stage',true),R('22:30',90,'candle')],
+ pl:[R('00:00',420,'yol',false,0),R('07:00',120,'dars',false,0),R('09:00',120,'yol',false,1),R('11:00',120,'dars',false,1),R('13:00',300,'sahmat',true),R('18:00',120,'yol',false,2),R('20:00',60,'qatar'),R('21:00',120,'sahmat',false,3),R('23:00',60,'gece')]
+};
