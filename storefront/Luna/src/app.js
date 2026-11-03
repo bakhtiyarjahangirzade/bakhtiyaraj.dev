@@ -4,10 +4,13 @@
 //   /Luna?oxu=<slug>&s=<leaf>   oxucu (s = 0 üz qabığı, 1.. səhifələr, sonuncu kreditlər / önizləmənin sonu)
 //   /Luna?bolme=kitabxana       kitabxana
 //   /Luna?bolme=hesab           hesab
+//   /Luna?bolme=redaktor[&id=]  redaktor paneli (yalnız server tərəfindən təsdiqlənmiş redaktorlar; editor.js)
+//   /Luna?onizle=<id>[&hamisi=1]&s=  redaktor üçün qaralamanın oxucuda önizləməsi
 import './luna.css';
-import { titles, bySlug, LANGUAGES, ACCESS, coverSrc, pageSrc, attribution, whatsappUrl } from './catalogue.js';
+import { titles, bySlug, LANGUAGES, ACCESS, coverSrc, pageSrc, attribution, whatsappUrl, whatsappText, seriesLine, addRemote } from './catalogue.js';
 import { buildLeaves, filterTitles, genresOf, progressLabel, clampIndex } from './core.js';
-import { h, icon, artTile, avatar, accessBadge, priceText, toast } from './ui.js';
+import { h, icon, artTile, avatar, accessBadge, priceText, toast, langOf, coverRatio } from './ui.js';
+import { fetchCatalogue, attachSigner, signCovers } from './remote.js';
 import { openReader } from './reader.js';
 import * as store from './store.js';
 import * as acct from './account.js';
@@ -23,10 +26,12 @@ let libraryTab = 'all';
 function route() {
   const p = new URLSearchParams(location.search);
   if (p.has('oxu')) return { view: 'reader', slug: p.get('oxu'), s: p.get('s') };
+  if (p.has('onizle')) return { view: 'preview', id: p.get('onizle'), all: p.get('hamisi') === '1', s: p.get('s') };
   if (p.has('eser')) return { view: 'detail', slug: p.get('eser') };
   const b = p.get('bolme');
   if (b === 'kitabxana') return { view: 'library' };
   if (b === 'hesab') return { view: 'account' };
+  if (b === 'redaktor') return { view: 'editor', id: p.get('id') };
   return { view: 'shop' };
 }
 function go(url, { replace = false } = {}) {
@@ -49,15 +54,18 @@ const urlFor = {
   detail: t => `/Luna?eser=${encodeURIComponent(t.slug)}`,
   read: (t, s) => `/Luna?oxu=${encodeURIComponent(t.slug)}${s ? `&s=${s}` : ''}`,
 };
-const langOf = t => (t.language === 'ru' ? 'ru' : 'en');
 
 function render({ fresh = false } = {}) {
   const r = route();
   updateNav(r.view);
   if (r.view === 'reader') return showReader(r);
+  if (r.view === 'preview') return showPreview(r);
   closeReader();
   document.body.classList.remove('is-reading');
-  const view = r.view === 'detail' ? detailView(r.slug) : r.view === 'library' ? libraryView() : r.view === 'account' ? accountView() : shopView();
+  if (r.view === 'editor') return showEditor(r, fresh);
+  const remoteT = r.view === 'detail' ? bySlug.get(r.slug) : null;
+  if (remoteT?.remote && !remoteT.urlsReady) { prepare(remoteT); }
+  const view = r.view === 'detail' ? (bySlug.get(r.slug) ? detailView(r.slug) : pendingOr(notFound)) : r.view === 'library' ? libraryView() : r.view === 'account' ? accountView() : shopView();
   main.replaceChildren(view);
   document.title = view.dataset.title || 'Luna Comics';
   if (fresh) {
@@ -66,7 +74,7 @@ function render({ fresh = false } = {}) {
   }
 }
 function updateNav(view) {
-  document.querySelectorAll('.mast-nav a').forEach(a => a.toggleAttribute('aria-current', a.dataset.view === view || (view === 'detail' && a.dataset.view === 'shop')));
+  document.querySelectorAll('.mast-nav a').forEach(a => a.toggleAttribute('aria-current', a.dataset.view === view || (view === 'detail' && a.dataset.view === 'shop') || (view === 'editor' && a.dataset.view === 'account')));
   const count = store.savedSlugs().filter(s => bySlug.has(s)).length;
   const c = document.getElementById('lib-count');
   c.hidden = !count; c.textContent = count;
@@ -90,7 +98,7 @@ function readAction(t, cls = 'btn btn-white') {
     const leaf = leaves[prog.i];
     return h('a', { class: cls, href: urlFor.read(t, prog.i), 'data-nav': true }, `Davam et: ${leaf.kind === 'page' ? `səhifə ${leaf.n}` : leaf.label.toLowerCase()}`, arrow);
   }
-  return h('a', { class: cls, href: urlFor.read(t, 0), 'data-nav': true }, t.access === 'sample' ? `Önizləməni oxu (${t.previewPages} səhifə)` : prog?.done ? 'Yenidən oxu' : 'Oxumağa başla', arrow);
+  return h('a', { class: cls, href: urlFor.read(t, 0), 'data-nav': true }, t.access !== 'free' ? `Önizləməni oxu (${t.previewPages} səhifə)` : prog?.done ? 'Yenidən oxu' : 'Oxumağa başla', arrow);
 }
 // "+ Əlavə et" pill. `short` for tiles and cards, full label on the title page.
 function saveButton(t, { short = false, cls = 'btn btn-white' } = {}) {
@@ -117,7 +125,7 @@ function storageNote(short = false) {
   return short ? 'Yalnız bu cihazda saxlanıldı.' : 'Hesabsız kitabxana və oxu yeri yalnız bu brauzerdə saxlanılır. Cihazlar arasında saxlamaq üçün daxil olun.';
 }
 function cover(t, { eager = false, small = true } = {}) {
-  return h('span', { class: 'cover', vars: { '--tone': t.tone } },
+  return h('span', { class: 'cover', vars: { '--tone': t.tone, '--cover-ratio': coverRatio(t) } },
     h('img', { src: coverSrc(t, small), alt: '', width: t.coverSize[0], height: t.coverSize[1], loading: eager ? 'eager' : 'lazy', decoding: 'async' }));
 }
 function titleCard(t) {
@@ -125,11 +133,11 @@ function titleCard(t) {
   const prog = store.getProgress(t.slug, leaves.length);
   const pct = prog ? Math.round((prog.i / (leaves.length - 1)) * 100) : 0;
   return h('li', { class: 'card', vars: { '--tone': t.tone } },
-    h('a', { class: 'card-link', href: urlFor.detail(t), 'data-nav': true, 'aria-label': `${t.title}, ${t.series} bölüm ${t.episode}` }, cover(t)),
+    h('a', { class: 'card-link', href: urlFor.detail(t), 'data-nav': true, 'aria-label': `${t.title}, ${seriesLine(t)}` }, cover(t)),
     h('div', { class: 'card-meta' },
       h('div', { class: 'card-row' }, accessBadge(t), h('span', { class: 'card-lang', text: LANGUAGES[t.language] })),
       h('h3', { lang: langOf(t) }, h('a', { href: urlFor.detail(t), 'data-nav': true, text: t.title, tabindex: '-1' })),
-      h('p', { class: 'card-facts', text: `${t.creator}, bölüm ${t.episode}. ${t.access === 'sample' ? `${t.previewPages} / ${t.storyPages} səhifə önizləmə` : `${t.storyPages} səhifə`}` }),
+      h('p', { class: 'card-facts', text: `${t.creator}${t.episode !== null && t.episode !== undefined ? `, bölüm ${t.episode}` : ''}. ${t.access !== 'free' ? `${t.previewPages} / ${t.storyPages} səhifə önizləmə` : `${t.storyPages} səhifə`}` }),
       prog && prog.i > 0 ? h('p', { class: 'card-progress' }, h('span', { class: 'meter' }, h('span', { vars: { '--p': `${pct}%` } })), h('span', { text: progressLabel(prog, leaves) })) : null),
     saveButton(t, { short: true, cls: 'card-save' }));
 }
@@ -247,13 +255,14 @@ function shopView() {
       menuItem('/Luna?bolme=kitabxana', 'bookmark', 'red', 'Kitabxanam', libCount ? `${libCount} əsər saxlanılıb` : 'Saxladığınız əsərlər'),
       menuItem(cont ? urlFor.read(cont, startP?.i) : '/Luna?bolme=kitabxana', 'clock', 'blue', 'Oxumağa davam et', cont ? cont.title : 'Qaldığınız yerdən açın'),
       menuItem('/Luna?bolme=hesab', 'user', 'violet', a.status === 'signed-in' ? 'Hesabım' : 'Hesab', a.status === 'signed-in' ? a.user.email : 'Daxil olun və ya qeydiyyat'),
-      menuItem('#lisenziyalar', 'shield', 'green', 'Mənbələr və lisenziyalar', 'CC BY 4.0, müəlliflər')));
+      acct.account().editor ? menuItem('/Luna?bolme=redaktor', 'page', 'orange', 'Redaktor paneli', 'Komiks yüklə və dərc et') : menuItem('#lisenziyalar', 'shield', 'green', 'Mənbələr və lisenziyalar', 'CC BY 4.0, müəlliflər')));
 
   return h('div', { class: 'shop', 'data-title': 'Luna Comics: kəşf et' },
     h('header', { class: 'large-title' },
       today ? h('p', { class: 'eyebrow', text: today }) : null,
       h('h1', { text: 'Kəşf et' })),
     h('div', { class: 'bento' }, pick, feature, authors, genreA, tall, searches, genreB, rec, quote, samples, person, menu),
+    newReleases(),
     catalogueSection());
 }
 
@@ -275,9 +284,9 @@ function catalogueSection() {
   const resetAll = () => { Object.assign(filters, { q: '', access: 'all', language: 'all', genre: 'all' }); render(); requestAnimationFrame(() => document.getElementById('cat-q')?.focus()); };
   const controls = h('div', { class: 'cat-controls' },
     h('label', { class: 'searchbox' }, icon('search'), search),
-    segmented('Giriş', 'access', [['all', 'Hamısı'], ['free', ACCESS.free], ['sample', 'Nümunə']], update),
+    segmented('Giriş', 'access', [['all', 'Hamısı'], ['free', ACCESS.free], ...(titles.some(x => x.access === 'paid') ? [['paid', ACCESS.paid]] : []), ['sample', 'Nümunə']], update),
     h('div', { class: 'chip-rows' },
-      segmented('Mətnin dili', 'language', [['all', 'Bütün dillər'], ...Object.entries(LANGUAGES)], update),
+      segmented('Mətnin dili', 'language', [['all', 'Bütün dillər'], ...Object.entries(LANGUAGES).filter(([k]) => titles.some(x => x.language === k))], update),
       segmented('Janr', 'genre', [['all', 'Bütün janrlar'], ...genresOf(titles).map(g => [g, g])], update)));
   controls.querySelectorAll('.chip-rows .segmented').forEach(s => s.classList.add('segmented-chips'));
   function update() {
@@ -291,7 +300,8 @@ function catalogueSection() {
   }
   update();
   return h('section', { class: 'catalogue', id: 'kataloq', 'aria-labelledby': 'kataloq-h' },
-    h('div', { class: 'section-head' }, h('h2', { id: 'kataloq-h', text: 'Bütün kataloq' }), h('p', { text: 'Pulsuz bölümlər tam oxunur. Nümunə məhsulların yalnız önizləmə səhifələri saytdadır.' })),
+    h('div', { class: 'section-head' }, h('h2', { id: 'kataloq-h', text: 'Bütün kataloq' }), h('p', { text: titles.some(x => x.access === 'paid') ? 'Pulsuz əsərlər tam oxunur. Satışdakı əsərlərin və nümunə məhsulların yalnız önizləmə səhifələri açıqdır.' : 'Pulsuz bölümlər tam oxunur. Nümunə məhsulların yalnız önizləmə səhifələri saytdadır.' })),
+    remoteNote(),
     controls, count, grid);
 }
 
@@ -299,47 +309,37 @@ function catalogueSection() {
 function detailView(slug) {
   const t = bySlug.get(slug);
   if (!t) return notFound();
+  const own = !!t.remote;
   const leaves = buildLeaves(t);
   const prog = store.getProgress(t.slug, leaves.length);
   const stats = [
     ['Dil', LANGUAGES[t.language], t.language === 'none' ? 'mətnsiz' : t.language.toUpperCase()],
-    ['Səhifə', String(t.storyPages), t.access === 'sample' ? `${t.previewPages} önizləmə` : 'tam'],
+    ['Səhifə', String(t.storyPages), t.access !== 'free' ? `${t.previewPages} önizləmə` : 'tam'],
     ['Janr', t.genres[0], t.genres[1] || ''],
-    ['İl', String(t.year), 'ilk nəşr'],
-    ['Lisenziya', t.license.name.replace(' 4.0', ''), '4.0'],
+    ['İl', String(t.year), own ? 'nəşr' : 'ilk nəşr'],
+    own ? ['Qiymət', t.access === 'free' ? 'Pulsuz' : `${t.price} AZN`, t.access === 'sample' ? 'illüstrativ' : t.access === 'paid' ? 'WhatsApp sorğusu' : 'tam oxu']
+      : ['Lisenziya', t.license.name.replace(' 4.0', ''), '4.0'],
   ];
-  const sampleBox = t.access === 'sample'
-    ? h('div', { class: 'sample-box' },
+  let sampleBox = null;
+  if (t.access === 'paid') {
+    sampleBox = h('div', { class: 'sample-box sample-paid' },
+      h('div', { class: 'sample-price' }, h('strong', { text: priceText(t) }), h('span', { text: 'tam versiyanın qiyməti' })),
+      h('p', { text: `İlk ${t.previewPages} səhifə pulsuz önizləmədir. Saytda ödəniş qəbul edilmir: tam versiyanı almaq üçün WhatsApp-da sorğu göndərin, ödəniş və çatdırılma qaydası orada razılaşdırılır. Sorğu göndərmək əsəri avtomatik açmır və heç nə “alınmış” sayılmır.` }),
+      h('div', { class: 'detail-actions' }, h('button', { class: 'btn btn-ember', type: 'button', onclick: () => openInquiry(t) }, icon('wa'), 'WhatsApp-da alış sorğusu')));
+  } else if (t.access === 'sample') {
+    sampleBox = h('div', { class: 'sample-box' },
       h('div', { class: 'sample-price' }, h('strong', { text: priceText(t) }), h('span', { text: 'illüstrativ nümunə qiymət' })),
       h('p', { text: 'Bu nümunə məhsuldur: Luna-nın gələcək ödənişli nəşrlərinin necə təqdim olunacağını göstərir. Satış aktiv deyil, ödəniş qəbul edilmir və heç nə “alınmış” sayılmır.' }),
       h('div', { class: 'detail-actions' }, h('button', { class: 'btn btn-ember', type: 'button', onclick: () => openInquiry(t) }, icon('wa'), 'WhatsApp-da maraq bildir')),
-      h('p', { class: 'small' }, 'Əsərin özü müəllifin saytında ', h('a', { href: t.source.page, rel: 'noopener', target: '_blank', text: 'CC BY 4.0 lisenziyası ilə pulsuz' }), ' mövcuddur.'))
-    : null;
-  const more = titles.filter(x => x.slug !== t.slug).slice(0, 4);
-  return h('article', { class: 'detail', 'data-title': `${t.title}: Luna Comics`, vars: { '--tone': t.tone } },
-    h('div', { class: 'detail-hero' },
-      h('img', { class: 'detail-bg', src: coverSrc(t, true), alt: '', 'aria-hidden': 'true' }),
-      h('nav', { class: 'crumbs', 'aria-label': 'Səhifə yolu' }, h('a', { href: '/Luna', 'data-nav': true }, icon('prev'), 'Kəşf et'), h('a', { href: '/Luna#kataloq', 'data-nav': true, text: 'Kataloq' })),
-      h('div', { class: 'detail-grid' },
-        h('figure', { class: 'detail-cover' },
-          h('img', { src: coverSrc(t), alt: `${t.title}: üz qabığı (orijinal, kəsilməmiş)`, width: t.coverSize[0], height: t.coverSize[1], decoding: 'async' })),
-        h('div', { class: 'detail-body' },
-          h('div', { class: 'card-row' }, accessBadge(t), h('span', { class: 'chip chip-dark', text: `${t.series}, bölüm ${t.episode}` })),
-          h('h1', { lang: langOf(t), text: t.title }),
-          t.titleNote ? h('p', { class: 'detail-alt' }, 'İngiliscə adı: ', h('span', { lang: 'en', text: t.titleNote })) : null,
-          h('p', { class: 'detail-creator' }, h('button', { type: 'button', class: 'link-btn', text: t.creator, onclick: () => { go('/Luna'); searchFor(t.creator); } })),
-          h('p', { class: 'detail-synopsis', text: t.synopsis }),
-          h('div', { class: 'detail-actions' }, readAction(t, 'btn btn-white btn-lg'), saveButton(t, { cls: 'btn btn-glass btn-lg' })),
-          prog && prog.i > 0 ? h('p', { class: 'detail-progress', text: `${progressLabel(prog, leaves)}. ${storageNote(true)}` }) : null))),
-    h('dl', { class: 'stats' }, stats.map(([k, v, s]) => h('div', {}, h('dt', { text: k }), h('dd', {}, h('strong', { text: v }), h('span', { text: s }))))),
-    sampleBox,
-    h('section', { class: 'detail-section', 'aria-labelledby': 'pages-h' },
-      h('div', { class: 'section-head' }, h('h2', { id: 'pages-h', text: 'İlk səhifələr' }), h('p', { text: `Dil: ${LANGUAGES[t.language]}. ${t.languageNote}.` })),
-      h('ol', { class: 'page-strip' }, t.pages.map((f, k) => h('li', {},
-        h('a', { href: urlFor.read(t, k + 1), 'data-nav': true, 'aria-label': `Səhifə ${k + 1}-i oxucuda aç` },
-          h('img', { src: pageSrc(t, f), alt: `${t.title}, səhifə ${k + 1}`, width: 1200, height: 1660, loading: 'lazy', decoding: 'async' }),
-          h('span', { class: 'page-no', text: String(k + 1) })))))),
-    h('section', { class: 'detail-section credits', 'aria-labelledby': 'credits-h' },
+      own ? null : h('p', { class: 'small' }, 'Əsərin özü müəllifin saytında ', h('a', { href: t.source.page, rel: 'noopener', target: '_blank', text: 'CC BY 4.0 lisenziyası ilə pulsuz' }), ' mövcuddur.'));
+  }
+  const more = (own ? titles.filter(x => x.slug !== t.slug && (x.creator === t.creator || x.remote)) : titles.filter(x => x.slug !== t.slug && !x.remote)).slice(0, 4);
+  const credits = own
+    ? h('section', { class: 'detail-section credits', 'aria-labelledby': 'credits-h' },
+      h('div', { class: 'section-head' }, h('h2', { id: 'credits-h', text: 'Müəlliflər və hüquqlar' })),
+      h('dl', { class: 'group' }, (t.credits.length ? t.credits : [['Müəllif', t.creator]]).map(([r, w]) => fact(r, w)), t.publishedAt ? fact('Luna-da dərc', new Date(t.publishedAt).toISOString().slice(0, 10)) : null),
+      h('p', { class: 'small', text: t.rights }))
+    : h('section', { class: 'detail-section credits', 'aria-labelledby': 'credits-h' },
       h('div', { class: 'section-head' }, h('h2', { id: 'credits-h', text: 'Müəlliflər, mənbə və lisenziya' })),
       h('dl', { class: 'group' }, t.credits.map(([r, w]) => fact(r, w)), fact('Lisenziya', t.license.name), fact('İlk nəşr', `${t.source.published}, peppercarrot.com`)),
       h('p', { class: 'small', text: attribution(t) }),
@@ -348,10 +348,35 @@ function detailView(slug) {
         h('a', { href: t.source.page, rel: 'noopener', target: '_blank', text: 'Bölümün orijinal səhifəsi' }),
         h('a', { href: t.source.files, rel: 'noopener', target: '_blank', text: 'Mənbə faylları' }),
         h('a', { href: t.license.evidence, rel: 'noopener', target: '_blank', text: 'Müəllifin lisenziya bəyanatı' }),
-        h('a', { href: t.license.url, rel: 'noopener license', target: '_blank', text: t.license.name }))),
-    h('section', { class: 'detail-section', 'aria-labelledby': 'more-h' },
-      h('div', { class: 'section-head' }, h('h2', { id: 'more-h', text: 'Seriyadan daha çox' })),
-      h('ol', { class: 'grid grid-row' }, more.map(titleCard))));
+        h('a', { href: t.license.url, rel: 'noopener license', target: '_blank', text: t.license.name })));
+  const strip = t.pages.slice(0, own ? 8 : t.pages.length);
+  return h('article', { class: 'detail', 'data-title': `${t.title}: Luna Comics`, vars: { '--tone': t.tone } },
+    h('div', { class: 'detail-hero' },
+      h('img', { class: 'detail-bg', src: coverSrc(t, true), alt: '', 'aria-hidden': 'true' }),
+      h('nav', { class: 'crumbs', 'aria-label': 'Səhifə yolu' }, h('a', { href: '/Luna', 'data-nav': true }, icon('prev'), 'Kəşf et'), h('a', { href: '/Luna#kataloq', 'data-nav': true, text: 'Kataloq' })),
+      h('div', { class: 'detail-grid' },
+        h('figure', { class: 'detail-cover' },
+          h('img', { src: coverSrc(t), alt: `${t.title}: üz qabığı (orijinal, kəsilməmiş)`, width: t.coverSize[0], height: t.coverSize[1], decoding: 'async' })),
+        h('div', { class: 'detail-body' },
+          h('div', { class: 'card-row' }, accessBadge(t), seriesLine(t) && seriesLine(t) !== t.creator ? h('span', { class: 'chip chip-dark', text: seriesLine(t) }) : null),
+          h('h1', { lang: langOf(t), text: t.title }),
+          t.titleNote ? h('p', { class: 'detail-alt' }, own ? 'Digər adı: ' : 'İngiliscə adı: ', h('span', { lang: own ? null : 'en', text: t.titleNote })) : null,
+          h('p', { class: 'detail-creator' }, h('button', { type: 'button', class: 'link-btn', text: t.creator, onclick: () => { go('/Luna'); searchFor(t.creator); } })),
+          h('p', { class: 'detail-synopsis', text: t.synopsis }),
+          h('div', { class: 'detail-actions' }, readAction(t, 'btn btn-white btn-lg'), saveButton(t, { cls: 'btn btn-glass btn-lg' })),
+          prog && prog.i > 0 ? h('p', { class: 'detail-progress', text: `${progressLabel(prog, leaves)}. ${storageNote(true)}` }) : null))),
+    h('dl', { class: 'stats' }, stats.map(([k, v, s]) => h('div', {}, h('dt', { text: k }), h('dd', {}, h('strong', { text: v }), h('span', { text: s }))))),
+    sampleBox,
+    h('section', { class: 'detail-section', 'aria-labelledby': 'pages-h' },
+      h('div', { class: 'section-head' }, h('h2', { id: 'pages-h', text: 'İlk səhifələr' }), h('p', { text: `Dil: ${LANGUAGES[t.language]}.${t.languageNote ? ` ${t.languageNote}.` : ''}` })),
+      h('ol', { class: 'page-strip' }, strip.map((f, k) => h('li', {},
+        h('a', { href: urlFor.read(t, k + 1), 'data-nav': true, 'aria-label': `Səhifə ${k + 1}-i oxucuda aç` },
+          h('img', { src: pageSrc(t, f), alt: `${t.title}, səhifə ${k + 1}`, width: t.pageSizes?.[k]?.[0] || 1200, height: t.pageSizes?.[k]?.[1] || 1660, loading: 'lazy', decoding: 'async' }),
+          h('span', { class: 'page-no', text: String(k + 1) })))))),
+    credits,
+    more.length ? h('section', { class: 'detail-section', 'aria-labelledby': 'more-h' },
+      h('div', { class: 'section-head' }, h('h2', { id: 'more-h', text: own ? 'Luna-da daha çox' : 'Seriyadan daha çox' })),
+      h('ol', { class: 'grid grid-row' }, more.map(titleCard))) : null);
 }
 // Element.append() would print null/false as text; skip them.
 const put = (el, ...kids) => el.append(...kids.flat().filter(k => k !== null && k !== undefined && k !== false));
@@ -416,7 +441,8 @@ function accountView() {
     put(view, h('header', { class: 'large-title' }, h('h1', { text: 'Hesabım' })),
       h('dl', { class: 'group' }, fact('E-poçt', a.user.email), fact('Sinxronizasiya', syncText)),
       a.message ? h('p', { class: 'store-note', text: a.message }) : null,
-      h('div', { class: 'detail-actions' }, h('a', { class: 'btn btn-white', href: '/Luna?bolme=kitabxana', 'data-nav': true, text: 'Kitabxanama keç' }), out),
+      a.editor ? h('div', { class: 'store-note store-editor' }, icon('page'), h('span', {}, 'Bu hesab Luna redaktorudur. ', h('a', { href: '/Luna?bolme=redaktor', 'data-nav': true, text: 'Redaktor panelini aç' }), ' — komiks yüklə, önizlə, dərc et.')) : null,
+      h('div', { class: 'detail-actions' }, h('a', { class: 'btn btn-white', href: '/Luna?bolme=kitabxana', 'data-nav': true, text: 'Kitabxanama keç' }), a.editor ? h('a', { class: 'btn btn-violet', href: '/Luna?bolme=redaktor', 'data-nav': true, text: 'Redaktor paneli' }) : null, out),
       h('p', { class: 'small', text: 'Bu ümumi BAKHY hesabıdır: eyni e-poçt və parol BAKHY oyunlarında da işləyir. Parolun bərpası hələ Luna-da təklif olunmur.' }));
     return view;
   }
@@ -491,10 +517,13 @@ function authForms(view, a) {
 function openInquiry(t) {
   lastFocus = document.activeElement;
   const url = whatsappUrl(t);
-  const draft = decodeURIComponent(url.split('text=')[1]);
+  const draft = whatsappText(t);
+  const paid = t.access === 'paid';
   dialog.replaceChildren(h('form', { method: 'dialog', class: 'inquiry-body' },
-    h('h2', { id: 'inquiry-title', text: 'WhatsApp-da maraq bildirin' }),
-    h('p', { text: `“${t.title}” nümunə məhsuldur və satışda deyil. Bu düymə WhatsApp-da +48 571 572 697 nömrəsinə hazır mesaj qaralaması açır. Mesaj siz “Göndər”i basana qədər göndərilmir, ödəniş alınmır və sifariş yaradılmır.` }),
+    h('h2', { id: 'inquiry-title', text: paid ? 'WhatsApp-da alış sorğusu' : 'WhatsApp-da maraq bildirin' }),
+    h('p', { text: paid
+      ? `“${t.title}” tam versiyasının qiyməti ${t.price} AZN-dir. Luna saytda ödəniş qəbul etmir: bu düymə WhatsApp-da +48 571 572 697 nömrəsinə hazır alış sorğusu qaralaması açır. Mesaj siz “Göndər”i basana qədər göndərilmir; ödəniş və tam versiyanı əldə etmə qaydası orada razılaşdırılır. Sorğu göndərmək əsəri avtomatik açmır.`
+      : `“${t.title}” nümunə məhsuldur və satışda deyil. Bu düymə WhatsApp-da +48 571 572 697 nömrəsinə hazır mesaj qaralaması açır. Mesaj siz “Göndər”i basana qədər göndərilmir, ödəniş alınmır və sifariş yaradılmır.` }),
     h('blockquote', { class: 'draft', text: draft }),
     h('div', { class: 'detail-actions' },
       h('a', { class: 'btn btn-ember', href: url, target: '_blank', rel: 'noopener', id: 'wa-open', onclick: () => setTimeout(() => dialog.close(), 50) }, icon('wa'), 'WhatsApp-da qaralamanı aç'),
@@ -506,29 +535,34 @@ dialog.addEventListener('close', () => lastFocus?.focus?.());
 // ---------- Reader ----------
 function showReader(r) {
   const t = bySlug.get(r.slug);
-  if (!t) { closeReader(); main.replaceChildren(notFound()); return; }
+  if (!t) { closeReader(); main.replaceChildren(pendingOr(notFound)); return; }
+  if (t.remote && !t.urlsReady) { closeReader(); main.replaceChildren(loadingView('Səhifələr hazırlanır…')); prepare(t); return; }
+  startReader(t, r);
+}
+function startReader(t, r, { preview = false } = {}) {
   const leaves = buildLeaves(t);
-  const saved = store.getProgress(t.slug, leaves.length);
+  const saved = preview ? null : store.getProgress(t.slug, leaves.length);
   const start = r.s !== null && r.s !== undefined ? clampIndex(r.s, leaves.length) : saved && !saved.done ? saved.i : 0;
-  if (reader && reader.slug === t.slug) { if (reader.ctl.index !== start) reader.ctl.goTo(start); return; }
+  if (reader && reader.slug === t.slug && reader.preview === preview) { if (reader.ctl.index !== start) reader.ctl.goTo(start); return; }
   closeReader();
   document.body.classList.add('is-reading');
-  document.title = `${t.title} oxunur: Luna Comics`;
+  document.title = preview ? `Önizləmə: ${t.title} — Luna redaktor` : `${t.title} oxunur: Luna Comics`;
   lastFocus = document.activeElement;
   const ctl = openReader(readerMount, t, start, {
     onIndex(i, n) {
+      if (preview) { const u = new URL(location.href); u.searchParams.set('s', i); history.replaceState(history.state, '', u.pathname + u.search); return; }
       store.setProgress(t.slug, i, n);
       const url = urlFor.read(t, i);
       if (location.pathname + location.search !== url) history.replaceState(history.state, '', url);
     },
     onClose() {
-      if (history.state?.luna && history.state.from && !history.state.from.includes('oxu=')) history.back();
-      else go(urlFor.detail(t), { replace: true });
+      if (history.state?.luna && history.state.from && !history.state.from.includes('oxu=') && !history.state.from.includes('onizle=')) history.back();
+      else go(preview ? `/Luna?bolme=redaktor&id=${encodeURIComponent(t.id)}` : urlFor.detail(t), { replace: true });
     },
-    onDetail() { go(urlFor.detail(t)); },
+    onDetail() { go(preview ? `/Luna?bolme=redaktor&id=${encodeURIComponent(t.id)}` : urlFor.detail(t)); },
     onInquiry() { openInquiry(t); },
   });
-  reader = { slug: t.slug, ctl };
+  reader = { slug: t.slug, ctl, preview };
 }
 function closeReader() {
   if (!reader) return;
@@ -537,9 +571,105 @@ function closeReader() {
   document.body.classList.remove('is-reading');
 }
 
+// ---------- Published owner comics (Supabase) ----------
+// state: loading | ready | missing (publishing backend not installed yet) | error (offline / service down)
+let remoteState = 'loading';
+async function loadRemote() {
+  remoteState = 'loading';
+  try {
+    const list = await fetchCatalogue();
+    list.forEach(t => attachSigner(t));
+    if (list.length) await signCovers(list).catch(e => console.warn('Luna: cover signing failed', e));
+    addRemote(list);
+    remoteState = 'ready';
+  } catch (e) {
+    remoteState = /PGRST202|42883|PGRST205/.test(e.code) ? 'missing' : 'error';
+    if (remoteState === 'error') console.warn('Luna: published catalogue unavailable', e);
+  }
+  const v = route().view;
+  if (v === 'reader' || v === 'preview' || v === 'editor') { if (!reader) render(); }
+  else { const y = scrollY; render(); scrollTo(0, y); }
+}
+// Signs a remote title's cover and readable pages before its detail page / reader is shown.
+const preparing = new Map();
+function prepare(t) {
+  if (preparing.has(t.slug)) return preparing.get(t.slug);
+  const p = t.ensure().then(() => { t.urlsReady = true; }, e => { t.urlsError = e; console.warn('Luna: page signing failed', e); })
+    .finally(() => { preparing.delete(t.slug); const r = route(); if ((r.slug === t.slug) && !reader) render(); });
+  preparing.set(t.slug, p);
+  return p;
+}
+function loadingView(text) {
+  return h('section', { class: 'empty-page', 'data-title': 'Yüklənir: Luna Comics', 'aria-busy': 'true' }, h('p', { role: 'status', class: 'lead', text }));
+}
+// Unknown slug: wait for the published catalogue before saying "not found"; say honestly if it could not load.
+function pendingOr(fallback) {
+  if (remoteState === 'loading') return loadingView('Kataloq yüklənir…');
+  const view = fallback();
+  if (remoteState === 'error') view.append(h('p', { class: 'small', text: 'Diqqət: Luna-da dərc olunan yeni əsərlərin siyahısı yüklənmədi (bağlantı problemi). Səhifəni yeniləyin.' }), h('button', { class: 'btn btn-glass', type: 'button', text: 'Yenidən yoxla', onclick: () => loadRemote() }));
+  return view;
+}
+function remoteNote() {
+  return remoteState === 'error' ? h('p', { class: 'store-note store-warn', role: 'status' }, icon('shield'), h('span', { text: 'Yeni dərc olunan əsərlərin siyahısı hazırda yüklənmədi. Başlanğıc kolleksiya işləyir; səhifəni bir az sonra yeniləyin.' })) : null;
+}
+function newReleases() {
+  const list = titles.filter(t => t.remote);
+  if (!list.length) return null;
+  return h('section', { class: 'catalogue new-releases', 'aria-labelledby': 'new-h' },
+    h('div', { class: 'section-head' }, h('h2', { id: 'new-h', text: 'Luna-da yeni' }), h('p', { text: 'Luna-nın öz nəşrləri: müəlliflərdən birbaşa.' })),
+    h('ol', { class: 'grid grid-row' }, list.slice(0, 8).map(titleCard)));
+}
+
+// ---------- Editor panel and draft preview (lazy: only editors download the importer) ----------
+let editorMod = null;
+function loadEditor() { return (editorMod ||= import('./editor.js').catch(e => { editorMod = null; throw e; })); }
+function editorCtx() {
+  return { main, go, render, toast, acct, openPreview: (id, all) => go(`/Luna?onizle=${encodeURIComponent(id)}${all ? '&hamisi=1' : ''}`), refreshCatalogue: loadRemote };
+}
+function showEditor(r, fresh) {
+  const a = acct.account();
+  if (a.status === 'idle' || a.status === 'loading' || (a.status === 'signed-in' && a.editor === undefined)) {
+    main.replaceChildren(loadingView('Redaktor hüququ yoxlanılır…')); document.title = 'Redaktor paneli: Luna Comics'; return;
+  }
+  if (a.status !== 'signed-in' || !a.editor) { main.replaceChildren(forbiddenView(a)); document.title = 'Redaktor paneli: Luna Comics'; if (fresh) { scrollTo(0, 0); main.focus({ preventScroll: true }); } return; }
+  if (!editorMod) main.replaceChildren(loadingView('Redaktor paneli açılır…'));
+  loadEditor().then(m => { if (route().view === 'editor') m.renderEditor(editorCtx(), r, { fresh }); })
+    .catch(() => main.replaceChildren(h('section', { class: 'empty-page' }, h('h1', { text: 'Redaktor paneli açılmadı' }), h('p', { text: 'Bağlantını yoxlayıb səhifəni yeniləyin.' }))));
+}
+function forbiddenView(a) {
+  const signedIn = a.status === 'signed-in';
+  return h('section', { class: 'empty-page', 'data-title': 'Redaktor paneli: Luna Comics' },
+    h('h1', { text: 'Redaktor paneli' }),
+    h('p', { text: signedIn
+      ? 'Bu bölmə yalnız Luna redaktorları üçündür. Hesabınız adi oxucu hesabıdır; redaktor hüququ yalnız sayt sahibi tərəfindən serverdə verilir.'
+      : a.status === 'unavailable' ? 'Hesab xidmətinə qoşulmaq alınmadı, ona görə redaktor hüququ yoxlanıla bilmir.' : 'Redaktor paneli üçün Luna redaktoru kimi daxil olun.' }),
+    a.editorError ? h('p', { class: 'small', text: 'Redaktor xidməti hələ quraşdırılmayıb və ya cavab vermir.' }) : null,
+    h('div', { class: 'detail-actions' },
+      signedIn ? h('a', { class: 'btn btn-white', href: '/Luna', 'data-nav': true, text: 'Kəşf et' }) : h('a', { class: 'btn btn-white', href: '/Luna?bolme=hesab', 'data-nav': true, text: 'Daxil ol' }),
+      h('a', { class: 'btn btn-glass', href: '/Luna?bolme=kitabxana', 'data-nav': true, text: 'Kitabxanam' })));
+}
+async function showPreview(r) {
+  const a = acct.account();
+  if (a.status === 'idle' || a.status === 'loading' || (a.status === 'signed-in' && a.editor === undefined)) { closeReader(); main.replaceChildren(loadingView('Önizləmə hazırlanır…')); return; }
+  if (a.status !== 'signed-in' || !a.editor) { closeReader(); main.replaceChildren(forbiddenView(a)); return; }
+  if (reader?.preview && reader.slug === `preview:${r.id}:${r.all}`) return;
+  closeReader();
+  main.replaceChildren(loadingView('Önizləmə hazırlanır…'));
+  try {
+    const m = await loadEditor();
+    const t = await m.previewTitle(editorCtx(), r.id, r.all);
+    if (route().view !== 'preview') return;
+    if (!t) { main.replaceChildren(h('section', { class: 'empty-page' }, h('h1', { text: 'Önizləmə üçün hazır səhifə yoxdur' }), h('a', { class: 'btn btn-white', href: `/Luna?bolme=redaktor&id=${encodeURIComponent(r.id)}`, 'data-nav': true, text: 'Redaktora qayıt' }))); return; }
+    t.slug = `preview:${r.id}:${r.all}`;
+    startReader(t, r, { preview: true });
+  } catch (e) {
+    main.replaceChildren(h('section', { class: 'empty-page' }, h('h1', { text: 'Önizləmə açılmadı' }), h('p', { text: String(e.message || e) })));
+  }
+}
+
 // ---------- Boot ----------
 store.onStoreChange(() => updateNav(route().view));
-let firstAccount = true;
+let firstAccount = true, lastEditorKey = '';
 acct.onAccount(a => {
   updateNav(route().view);
   if (firstAccount) { firstAccount = false; return; }
@@ -547,7 +677,12 @@ acct.onAccount(a => {
   if (a.sync === 'ready' && a.message) toast(a.message);
   const v = route().view;
   if (v === 'account' || v === 'library') render();
+  // Editor views only re-render when the server's answer about the editor role (or the session) changes.
+  const key = `${a.status}:${a.editor}`;
+  if ((v === 'editor' || v === 'preview') && key !== lastEditorKey) render();
+  lastEditorKey = key;
 });
 addEventListener('pagehide', () => store.flush());
 render({ fresh: false });
 acct.init();
+loadRemote();

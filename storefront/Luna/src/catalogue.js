@@ -1,7 +1,9 @@
-// Luna Comics — the one canonical catalogue source.
-// Every title, its page manifest, access rule, illustrative price and credits live here.
-// Assets are served from /Luna/comics/<slug>/ (storefront/public/Luna/comics/<slug>/).
-// To add a comic, follow docs/luna-implementation.md ("Adding a comic"); tests/luna.test.mjs validates this file.
+// Luna Comics — the catalogue.
+// The licensed starter collection (Pepper&Carrot) is defined here and ships with the site under /Luna/comics/<slug>/.
+// The owner's own comics are NOT defined here: they are published from the editor panel and loaded at runtime
+// from Supabase (public.luna_catalogue, see remote.js and docs/luna-publishing-implementation.md), then merged
+// into `titles` by addRemote(). One definition per title: remote slugs can never reuse a starter slug.
+// tests/luna.test.mjs validates the starter entries.
 
 export const ASSET_ROOT = '/Luna/comics';
 export const WHATSAPP_NUMBER = '48571572697';
@@ -22,9 +24,12 @@ export const LANGUAGES = {
   en: 'İngiliscə',
   ru: 'Rusca',
   none: 'Sözsüz',
+  az: 'Azərbaycanca',
+  tr: 'Türkcə',
 };
 export const ACCESS = {
   free: 'Pulsuz',
+  paid: 'Satışda',
   sample: 'Nümunə məhsul',
 };
 
@@ -176,11 +181,27 @@ export const titles = [
   },
 ];
 
+export const starter = [...titles];
 export const bySlug = new Map(titles.map(t => [t.slug, t]));
-export const coverSrc = (t, small = false) => `${ASSET_ROOT}/${t.slug}/${small ? 'cover-sm' : 'cover'}.webp`;
-export const pageSrc = (t, file) => `${ASSET_ROOT}/${t.slug}/${file}`;
-export const attribution = t => `“${t.title}” — ${t.series}, ${t.creator}, www.peppercarrot.com. ${t.license.name}. Luna-da WebP formatına çevrilib; kəsilməyib, dəyişdirilməyib.`;
-export function whatsappUrl(t) {
-  const text = `Salam! Luna Comics-də nümunə məhsul kimi göstərilən “${t.title}” (${t.series}, bölüm ${t.episode}) ilə maraqlanıram. Bu nəşr satışa çıxsa, məni xəbərdar edə bilərsiniz?`;
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+// Replaces the runtime (published) titles. Starter slugs always win, so nothing can shadow a licensed title.
+export function addRemote(list) {
+  for (let k = titles.length - 1; k >= 0; k--) if (titles[k].remote) { bySlug.delete(titles[k].slug); titles.splice(k, 1); }
+  for (const t of list) if (!bySlug.has(t.slug)) { titles.push(t); bySlug.set(t.slug, t); }
 }
+export const coverSrc = (t, small = false) => (t.remote
+  ? t.urls?.get(small ? t.cover?.sm : t.cover?.path) || t.urls?.get(t.cover?.path) || ''
+  : `${ASSET_ROOT}/${t.slug}/${small ? 'cover-sm' : 'cover'}.webp`);
+export const pageSrc = (t, file) => (t.remote ? t.urls?.get(file) || '' : `${ASSET_ROOT}/${t.slug}/${file}`);
+// "Series, bölüm N" for the starter collection; series / episode / creator for owner works as available.
+export function seriesLine(t) {
+  if (t.series && t.episode !== null && t.episode !== undefined) return `${t.series}, bölüm ${t.episode}`;
+  return t.series || t.creator;
+}
+export const attribution = t => (t.remote
+  ? `“${t.title}” — ${t.creator}. ${t.rights}`
+  : `“${t.title}” — ${t.series}, ${t.creator}, www.peppercarrot.com. ${t.license.name}. Luna-da WebP formatına çevrilib; kəsilməyib, dəyişdirilməyib.`);
+export function whatsappText(t) {
+  if (t.access === 'paid') return `Salam! Luna Comics-də “${t.title}” (${t.creator}${t.price ? `, ${t.price} AZN` : ''}) əsərini almaq istəyirəm. Ödəniş və tam versiyanı əldə etmə qaydasını yaza bilərsiniz?`;
+  return `Salam! Luna Comics-də nümunə məhsul kimi göstərilən “${t.title}” (${seriesLine(t)}) ilə maraqlanıram. Bu nəşr satışa çıxsa, məni xəbərdar edə bilərsiniz?`;
+}
+export const whatsappUrl = t => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappText(t))}`;

@@ -2,6 +2,11 @@
 // and dynamic values are set through the CSSOM, which the production CSP (style-src 'self') allows.
 import { coverSrc, ACCESS, LANGUAGES } from './catalogue.js';
 
+// Owner covers can be any ratio; boxes take the cover's own ratio so it is never cropped (starter covers are 1100×765).
+// lang attribute for a title's own text (wordless starter titles have English titles).
+export const langOf = t => (t.language === 'none' ? (t.remote ? 'az' : 'en') : t.language);
+export const coverRatio = t => `${t.coverSize[0]} / ${t.coverSize[1]}`;
+
 export function h(tag, attrs = {}, ...kids) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs || {})) {
@@ -36,14 +41,15 @@ export const icon = name => {
 // The Luna jacket: a cloth board in the title's tone with the original episode artwork in a window.
 // The artwork file is shown whole (object-fit: contain inside its own ratio) — never cropped.
 export function jacket(t, { small = true, eager = false } = {}) {
-  return h('div', { class: 'jacket', vars: { '--tone': t.tone } },
+  const no = t.episode !== null && t.episode !== undefined ? `№ ${t.episode}` : '';
+  return h('div', { class: 'jacket', vars: { '--tone': t.tone, '--cover-ratio': coverRatio(t) } },
     h('div', { class: 'jacket-head' },
-      h('span', { class: 'jacket-series', text: t.series }),
-      h('span', { class: 'jacket-no', text: `№ ${t.episode}` })),
+      h('span', { class: 'jacket-series', text: t.series || t.creator }),
+      no ? h('span', { class: 'jacket-no', text: no }) : null),
     h('div', { class: 'jacket-window' },
       h('img', { src: coverSrc(t, small), alt: '', width: t.coverSize[0], height: t.coverSize[1], loading: eager ? 'eager' : 'lazy', decoding: 'async' })),
     h('div', { class: 'jacket-foot' },
-      h('span', { class: 'jacket-title', lang: t.language === 'ru' ? 'ru' : 'en', text: t.title }),
+      h('span', { class: 'jacket-title', lang: langOf(t), text: t.title }),
       h('span', { class: 'jacket-creator', text: t.creator })),
     h('span', { class: 'jacket-moon', 'aria-hidden': 'true' }));
 }
@@ -51,7 +57,7 @@ export function jacket(t, { small = true, eager = false } = {}) {
 // Bento tile with the cover art as a decorative background (CSS crop). The full, uncropped cover is shown on the
 // title page and in the reader; tiles only frame it.
 export function artTile(t, { cls = '', chip, title = t.title, sub, desc, actions = [], href, eager = false } = {}) {
-  const lang = t.language === 'ru' ? 'ru' : 'en';
+  const lang = langOf(t);
   return h('article', { class: `tile tile-art ${cls}`, vars: { '--tone': t.tone } },
     h('img', { class: 'tile-img', src: coverSrc(t, !cls.includes('tile-tall')), alt: '', loading: eager ? 'eager' : 'lazy', decoding: 'async' }),
     h('span', { class: 'tile-shade', 'aria-hidden': 'true' }),
@@ -67,7 +73,7 @@ export function avatar(name, tone) {
   return h('span', { class: 'avatar', 'aria-hidden': 'true', vars: { '--tone': tone } }, h('span', { text: initials }));
 }
 
-export const accessBadge = t => h('span', { class: `badge badge-${t.access}`, text: t.access === 'sample' ? `${ACCESS.sample}, satışda deyil` : ACCESS.free });
+export const accessBadge = t => h('span', { class: `badge badge-${t.access}`, text: t.access === 'sample' ? `${ACCESS.sample}, satışda deyil` : t.access === 'paid' ? `${ACCESS.paid}, ${t.price} AZN` : ACCESS.free });
 export const langText = t => LANGUAGES[t.language];
 export const priceText = t => (t.price ? `${t.price} AZN` : 'Pulsuz');
 

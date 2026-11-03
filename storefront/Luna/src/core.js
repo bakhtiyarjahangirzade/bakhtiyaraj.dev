@@ -3,11 +3,11 @@
 
 // ---------- Reading order ----------
 // A title is read as "leaves": the Luna jacket (index 0), every bundled story page, then one closing leaf.
-// Free titles close with a colophon (credits); sample titles close at the real preview boundary.
+// Free titles close with a colophon (credits); paid and sample titles close at the real preview boundary.
 export function buildLeaves(title) {
   const leaves = [{ kind: 'cover', label: 'Üz qabığı' }];
   title.pages.forEach((file, i) => leaves.push({ kind: 'page', n: i + 1, file, label: `Səhifə ${i + 1}` }));
-  leaves.push(title.access === 'sample'
+  leaves.push(title.access !== 'free'
     ? { kind: 'preview-end', label: 'Önizləmənin sonu' }
     : { kind: 'colophon', label: 'Kreditlər' });
   return leaves;

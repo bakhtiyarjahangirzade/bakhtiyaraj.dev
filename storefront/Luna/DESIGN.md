@@ -61,3 +61,10 @@ The page-turning book is unchanged: a paper spread with a 3D leaf turn on deskto
 ## Accessibility floor
 
 Visible focus ring (system blue), skip link, persistent labels, `aria-live` status, radio semantics for segmented controls, Escape exits zoom and then the reader, browser pinch-zoom never disabled, `prefers-reduced-motion` honoured, no horizontal scroll at 320 px. White-on-art text sits on a tone-tinted gradient for contrast.
+
+## Owner publishing (3 Nov 2026)
+
+- The editor panel (`/Luna?bolme=redaktor`, `editor.css`) uses the same tokens and materials: grouped dark cards (`--surface`), pill buttons, segmented/radio cards with a violet ring, status pills (grey draft, green published, orange unpublished), orange problem box, dashed drop zone. Two columns on desktop (file + pages | metadata + publish), one column below 1000 px; no horizontal scroll at 320 px.
+- Owner titles appear in a separate "Luna-da yeni" card row between the bento grid and the catalogue, and in the catalogue grid. The approved bento tiles keep the starter collection.
+- Owner covers can have any ratio: cards, jackets and title pages take the cover's own ratio (`--cover-ratio`), never cropping it. Pages of mixed shapes (a landscape double page in a PDF) are fitted uncropped inside the book page.
+- "Satışda, N AZN" uses a violet badge (paid inquiry); "Nümunə məhsul" keeps orange.

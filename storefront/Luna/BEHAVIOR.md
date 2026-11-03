@@ -49,3 +49,18 @@ No personal data or entitlements appear in URLs. Unknown slugs show "Bu əsər t
 ## Account
 
 Shared BAKHY Supabase auth (e-mail + password), Luna session stored under `luna.auth`. Persistent labels, password visibility toggle, client validation (e-mail format, 8+ characters for new passwords, acknowledgement that the BAKHY account also creates a games profile), pending/error/success messages, confirmation-e-mail message after registration (no fake login), sign-out, session-expiry message. Password reset is not offered. If the service cannot be reached the account page says so; free reading continues.
+
+## Owner publishing (see docs/luna-publishing-implementation.md)
+
+| URL | View |
+|---|---|
+| `/Luna?bolme=redaktor` | Editor panel: list of owner comics (editors only; others see a refusal) |
+| `/Luna?bolme=redaktor&id=<uuid>` | Edit one comic: import, pages, metadata, preview/publish, versions |
+| `/Luna?onizle=<uuid>[&hamisi=1]&s=<leaf>` | Draft preview in the reader (editors only; `hamisi=1` shows every page of a paid title) |
+
+- Editor role comes only from the server (`luna_editor_me`); the panel module is not even downloaded for others. Every action is re-checked by Postgres/Storage.
+- Published owner titles load from `luna_catalogue()` after the page renders; unknown slugs wait for it ("Kataloq yüklənir…") before "Bu əsər tapılmadı". If it cannot load, the starter collection keeps working and a note offers a retry.
+- Access kinds: `free` (all pages), `paid` ("Satışda, N AZN": preview pages + WhatsApp purchase-inquiry draft, no payment on the site), `sample` (illustrative price, not on sale). Paid/sample readers end on "Önizləmə burada bitir".
+- Owner pages use 3-hour signed URLs; a page that fails is re-signed once automatically, then shows the existing "Yenidən yüklə" error.
+- Slugs of owner titles never change after the first publication, so libraries/progress stay valid; progress is still normalised if a new version has fewer pages.
+- Unpublished titles disappear from the shop and deep links; saved library entries come back when the title is republished.
