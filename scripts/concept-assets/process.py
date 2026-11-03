@@ -19,16 +19,27 @@ for concept in sys.argv[2:]:
     manifest = {}
     sel = json.load(open(os.path.join(HERE, 'selections', concept + '.json')))
     meta = {}
-    for f in os.listdir(cache):
+    for f in (os.listdir(cache) if os.path.isdir(cache) else []):
         if f.endswith('.json'):
             try: meta.update(json.load(open(os.path.join(cache, f))))
             except ValueError: pass  # another search is writing it
+    # Reproducible without the search cache: previously processed files keep their provenance in assets.json.
+    prev = os.path.join(ROOT, 'storefront', 'src', 'k', concept, 'assets.json')
+    if os.path.exists(prev):
+        for v in json.load(open(prev)).values():
+            meta.setdefault(v['openverse'], {'id': v['openverse'], 'title': v['title'], 'creator': v['creator'], 'license': 'cc0' if v['license'].startswith('CC0') else ('pdm' if v['license'].startswith('Public') else v['license']), 'license_version': None, 'license_url': v.get('licenseUrl'), 'foreign_landing_url': v['page'], 'url': v['original'], 'source': v['source']})
     outdir = os.path.join(ROOT, 'storefront', 'public', 'assets', 'k', concept); os.makedirs(outdir, exist_ok=True)
     produced = set()
     for item in sel:
         m = meta.get(item['id'])
         if not m: raise SystemExit(f'{concept}/{item["key"]}: id {item["id"]} not in cache')
-        im = ImageOps.exif_transpose(Image.open(os.path.join(cache, 'orig', item['id'] + '.jpg'))).convert('RGB')
+        orig = os.path.join(cache, 'orig', item['id'] + '.jpg')
+        if not os.path.exists(orig):
+            import urllib.request
+            os.makedirs(os.path.dirname(orig), exist_ok=True)
+            req = urllib.request.Request(m['url'], headers={'User-Agent': 'BAKHY-concept-assets/1.0 (+https://www.bakhtiyaraj.dev)'})
+            open(orig, 'wb').write(urllib.request.urlopen(req, timeout=90).read())
+        im = ImageOps.exif_transpose(Image.open(orig)).convert('RGB')
         if item.get('crop'):
             x0, y0, x1, y1 = item['crop']; W, H = im.size
             im = im.crop((round(x0 * W), round(y0 * H), round(x1 * W), round(y1 * H)))

@@ -34,6 +34,10 @@ Network: `api.openverse.org` (anonymous: 20 requests/min, **200/day shared by ev
    Colour grading/duotone is better done in CSS (`filter`, blend modes) or by adding `"grade"` handling in your own crop choice than by inventing images.
 5. Never use people's faces as identifiable “doctors”, “clients”, “founders”. No brand logos. No AI-generated images unless a real tool produced them in this session.
 
+Openverse was unreliable (500/504) for much of this session, so `scripts/concept-assets/wpsearch.py <cache> <name> "<query>"` queries the WordPress Photo Directory's own REST API (same CC0 source) and writes the same cache format (ids `wp-<n>`).
+Rebuilding later does not need the cache: `process.py` reads each file's original URL and provenance back from `k/<id>/assets.json` and downloads missing originals. `credits.py` regenerates `docs/concept-asset-credits.md`.
+A few concepts reuse the owner-supplied generated images in `storefront/public/assets/showroom/*.webp` (motors, gym, estate); they are captioned as generated where shown.
+
 ## Fonts
 
 OFL families already vendored (latin, latin-ext for Azerbaijani ə ğ ı ö ş ü ç, and Cyrillic where the family has it) as `storefront/src/k/fonts/<name>.css`: bodoni-moda, comfortaa, commissioner, eb-garamond, exo-2, fira-sans, fira-sans-condensed, geologica, golos-text, ibm-plex-sans, jost, lora, nunito, onest, oswald, pt-sans, rubik, tenor-sans, unbounded, young-serif (no Cyrillic: young-serif, bodoni-moda — give a Cyrillic fallback). Do not use tenor-sans for Azerbaijani text: it draws a dotted ı and a comma-below ş. The CSS family names are e.g. `'Commissioner Variable'`, `'Fira Sans'`. Do not use the studio fonts (Inter/Archivo) as a concept's identity.
