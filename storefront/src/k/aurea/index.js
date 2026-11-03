@@ -109,10 +109,10 @@ const T={
  faqH:L('Soruşulanlar','Вопросы','Questions'),
  addr:L('Aurea, M. F. Axundzadə küçəsi 32, Yuxarı Baş, Şəki (nümunə ünvan)','Aurea, улица М. Ф. Ахундзаде 32, Юхары Баш, Шеки (адрес-пример)','Aurea, 32 M. F. Akhundzade street, Yukhari Bash, Shaki (sample address)'),
  reception:L('Resepsiya hər gün 07:30–23:00. +994 24 555 01 68 (nümunə nömrə)','Ресепшн ежедневно 07:30–23:00. +994 24 555 01 68 (номер-пример)','Reception daily 07:30–23:00. +994 24 555 01 68 (sample number)'),
- alt:{court:L('Arxalı daxili həyət, ortada çəmən və daş hovuz','Внутренний двор с аркадой, газоном и каменным бассейном','Arcaded inner courtyard with lawn and a stone basin'),
+ alt:{court:L('Əhəng suvaqlı sütunlar və taxta tirli eyvan, arxada daxili həyət və taxta yelləncək','Галерея с оштукатуренными известью столбами и деревянными балками, за ней внутренний двор с деревянными качелями','A gallery of lime-plastered pillars and timber beams opening onto the inner yard and a wooden swing'),
   alley:L('Daş hasarlar arasında yoxuşa qalxan daş döşəmə yol','Каменная мостовая, поднимающаяся между каменными оградами','A stone-paved lane climbing between stone walls'),
   valley:L('Buludlu meşəli dağlar arasında dərə','Долина между лесистыми горами под облаками','A valley between forested mountains under cloud'),
-  breakfast:L('Hörmə süfrədə səhər yeməyi və çay','Завтрак и чай на плетёной салфетке','Breakfast and tea on a woven mat'),
+  breakfast:L('Armudu stəkanda çay, nəlbəkidə qənd','Чай в стакане-армуду, на блюдце сахар','Tea in a pear-shaped armudu glass, sugar on the saucer'),
   terraces:L('Yaşıl yamaclarda pilləli tarlalar və kənd','Террасные поля и деревня на зелёных склонах','Terraced fields and a village on green slopes')}
 };
 
