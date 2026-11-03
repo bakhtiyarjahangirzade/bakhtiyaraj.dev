@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Luna Comics: oxu, səhifəni çevir</title>
+<meta name="description" content="Luna Comics: açıq lisenziyalı komikslər üçün kitab mağazası və oxucu. Pulsuz bölümləri qeydiyyatsız oxuyun, səhifələri kağız kimi çevirin, kitabxananızı saxlayın.">
+<meta name="theme-color" content="#0e2426">
+<link rel="canonical" href="https://www.bakhtiyaraj.dev/Luna">
+<meta property="og:title" content="Luna Comics">
+<meta property="og:description" content="Açıq lisenziyalı komikslər: pulsuz oxu, real səhifələr, kağız kimi səhifə çevirmə.">
+<meta property="og:image" content="https://www.bakhtiyaraj.dev/Luna/comics/pepper-carrot-11/cover.webp">
+<meta property="og:url" content="https://www.bakhtiyaraj.dev/Luna">
+<link rel="icon" href="/Luna/luna-mark.svg" type="image/svg+xml">
+<link rel="preload" href="/Luna/fonts/young-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/Luna/fonts/commissioner-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body class="luna">
+<a class="skip" href="#luna-main">Məzmuna keç</a>
+<header class="masthead" id="luna-top">
+  <a class="mark" href="/Luna" data-nav aria-label="Luna Comics, vitrin">
+    <svg class="mark-moon" viewBox="0 0 40 40" aria-hidden="true"><path d="M27.5 5.2A15.5 15.5 0 1 0 34.8 26 12.6 12.6 0 0 1 27.5 5.2Z"/></svg>
+    <span class="mark-word">Luna</span><span class="mark-sub">Comics</span>
+  </a>
+  <nav class="mast-nav" aria-label="Luna">
+    <a href="/Luna#kataloq" data-nav data-view="shop">Kataloq</a>
+    <a href="/Luna?bolme=kitabxana" data-nav data-view="library">Kitabxanam <span class="count" id="lib-count" hidden></span></a>
+    <a href="/Luna?bolme=hesab" data-nav data-view="account" id="account-link">Daxil ol</a>
+  </nav>
+</header>
+<main id="luna-main" tabindex="-1">
+  <noscript><p class="noscript">Luna oxucusu üçün JavaScript lazımdır. Əsərlərin mənbəyi: <a href="https://www.peppercarrot.com">peppercarrot.com</a> (CC BY 4.0).</p></noscript>
+</main>
+<div id="luna-reader"></div>
+<footer class="colophon-foot" id="luna-foot">
+  <div class="foot-cols">
+    <section>
+      <h2>Luna haqqında</h2>
+      <p>Luna — BAKHY studiyasının rəqəmsal komiks kitab mağazasıdır. İlk kolleksiya açıq lisenziyalı <a href="https://www.peppercarrot.com" rel="noopener">Pepper&amp;Carrot</a> bölümlərindən ibarətdir (David Revoy, CC BY 4.0). Səhifələr kəsilmədən, yalnız WebP formatına çevrilərək təqdim olunur.</p>
+    </section>
+    <section>
+      <h2>Ödəniş və satış</h2>
+      <p>“Nümunə məhsul” işarəli əsərlər gələcək ödənişli kataloqun necə görünəcəyini göstərir. Onlar satışda deyil, qiymətlər illüstrativdir və Luna heç bir ödəniş qəbul etmir.</p>
+    </section>
+    <section>
+      <h2>Hesab və məlumat</h2>
+      <p>Pulsuz oxumaq üçün hesab lazım deyil. Hesabsız kitabxana yalnız bu brauzerdə saxlanılır. Hesab ümumi BAKHY hesabıdır (Supabase).</p>
+    </section>
+  </div>
+  <p class="foot-line"><a href="/">BAKHY studiyası</a><a href="/lab/">Pulsuz alətlər və oyunlar</a><span>Şrift: Young Serif, Commissioner (SIL OFL)</span></p>
+</footer>
+<p id="luna-toast" class="toast" role="status" aria-live="polite"></p>
+<dialog id="luna-inquiry" class="inquiry" aria-labelledby="inquiry-title"></dialog>
+<script type="module" src="./src/app.js"></script>
+</body>
+</html>

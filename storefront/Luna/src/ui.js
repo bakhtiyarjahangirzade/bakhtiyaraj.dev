@@ -1,0 +1,61 @@
+// Small DOM helpers. Everything is built with createElement/textContent (never HTML strings built from data),
+// and dynamic values are set through the CSSOM, which the production CSP (style-src 'self') allows.
+import { coverSrc, ACCESS, LANGUAGES } from './catalogue.js';
+
+export function h(tag, attrs = {}, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k === 'text') el.textContent = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'vars') for (const [n, val] of Object.entries(v)) el.style.setProperty(n, val);
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const kid of kids.flat()) if (kid !== null && kid !== undefined && kid !== false) el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  return el;
+}
+export const icon = name => {
+  const paths = {
+    prev: 'M14.5 5 7.5 12l7 7', next: 'M9.5 5l7 7-7 7', close: 'M6 6l12 12M18 6 6 18',
+    zoom: 'M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13Zm4.8 11.3L20 20M10.5 7.5v6M7.5 10.5h6',
+    full: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5', book: 'M12 6c-2-1.3-5-1.8-8-1.5v13c3-.3 6 .2 8 1.5 2-1.3 5-1.8 8-1.5v-13c-3-.3-6 .2-8 1.5Zm0 0v13',
+    page: 'M7 3.5h7l4 4V20.5H7z', plus: 'M12 5v14M5 12h14', minus: 'M5 12h14', check: 'M5 12.5l4.5 4.5L19 7.5',
+    bookmark: 'M7 4h10v16l-5-4-5 4z', wa: 'M12 3.5a8.5 8.5 0 0 0-7.3 12.9L3.5 20.5l4.2-1.1A8.5 8.5 0 1 0 12 3.5Z',
+  };
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('class', 'ic');
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', paths[name]); svg.append(p);
+  return svg;
+};
+
+// The Luna jacket: a cloth board in the title's tone with the original episode artwork in a window.
+// The artwork file is shown whole (object-fit: contain inside its own ratio) — never cropped.
+export function jacket(t, { small = true, eager = false } = {}) {
+  return h('div', { class: 'jacket', vars: { '--tone': t.tone } },
+    h('div', { class: 'jacket-head' },
+      h('span', { class: 'jacket-series', text: t.series }),
+      h('span', { class: 'jacket-no', text: `№ ${t.episode}` })),
+    h('div', { class: 'jacket-window' },
+      h('img', { src: coverSrc(t, small), alt: '', width: t.coverSize[0], height: t.coverSize[1], loading: eager ? 'eager' : 'lazy', decoding: 'async' })),
+    h('div', { class: 'jacket-foot' },
+      h('span', { class: 'jacket-title', lang: t.language === 'ru' ? 'ru' : 'en', text: t.title }),
+      h('span', { class: 'jacket-creator', text: t.creator })),
+    h('span', { class: 'jacket-moon', 'aria-hidden': 'true' }));
+}
+
+export const accessBadge = t => h('span', { class: `badge badge-${t.access}`, text: t.access === 'sample' ? `${ACCESS.sample}, satışda deyil` : ACCESS.free });
+export const langText = t => LANGUAGES[t.language];
+export const priceText = t => (t.price ? `${t.price} AZN` : 'Pulsuz');
+
+let toastTimer = 0;
+export function toast(msg, kind = 'info') {
+  const el = document.getElementById('luna-toast');
+  if (!el) return;
+  el.textContent = msg; el.dataset.kind = kind; el.classList.add('is-on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('is-on'), 4200);
+}
+
+export const prefersReducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+export const isTyping = t => !!t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));

@@ -91,6 +91,14 @@ const glow = (ctx, a = 1) => { ctx.shadowColor = `rgba(255,160,40,${0.7 * a})`; 
 const col = a => `rgba(${AMBER},${a})`;
 
 const screens = {
+  luna(ctx, w, h, t) { // an open book whose right page turns every few seconds
+    glow(ctx, .6); const ph = h * .7, pw = ph * .72, cx = w * .42, y = (h - ph) / 2, k = (t % 3.2) / 1.2, a = Math.min(1, k);
+    ctx.strokeStyle = col(.85); ctx.lineWidth = 1.4; ctx.strokeRect(cx - pw, y, pw, ph); ctx.strokeRect(cx, y, pw, ph);
+    for (let i = 0; i < 4; i++) { ctx.fillStyle = col(.3); ctx.fillRect(cx - pw + 8, y + 10 + i * ph / 4.6, pw - 16, ph / 6); }
+    const fw = pw * Math.cos(Math.PI * a); ctx.fillStyle = col(a < .5 ? .5 : .25); ctx.beginPath(); ctx.moveTo(cx, y); ctx.lineTo(cx + fw, y + (a > 0 && a < 1 ? -6 : 0)); ctx.lineTo(cx + fw, y + ph); ctx.lineTo(cx, y + ph); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.arc(w - 26, 22, 9, 0, 7); ctx.fillStyle = col(1); ctx.fill(); ctx.beginPath(); ctx.arc(w - 22, 19, 8, 0, 7); ctx.fillStyle = 'rgba(20,12,4,1)'; ctx.fill();
+    ctx.font = '500 11px Controls'; ctx.textAlign = 'left'; ctx.fillStyle = col(.7); ctx.fillText('LUNA · FREE', 12, 18);
+  },
   authentic(ctx, w, h, t) {
     glow(ctx, .6); const x0 = 14, lines = 6, lh = (h - 28) / lines, scan = (t * .5) % 1;
     for (let i = 0; i < lines; i++) { const y = 16 + i * lh, len = (w * .5) * (i % 3 === 2 ? .6 : 1), hot = i === 2 || i === 3;
