@@ -16,3 +16,9 @@ No automatic messages, checkout, uploads, account or customer-data storage is ad
 
 ### Studio catalogue route
 Home exposes four selected project previews; `/catalogue.html` owns the complete 12-project filter/search experience. Shared showcase cards open the existing detail dialog. Escape/close restores trigger focus; customization carries the known project reference into product.html. This presentation change does not change pricing or dispatch WhatsApp messages automatically.
+
+### Business upgrade additions (3 November 2026)
+- Every website concept is a configurator design; a site reference preselects its design and a system reference (`systemReferences`) its preview and default workflow. Explicit link parameters still win.
+- `invalidParams()` reports link parameters that were not accepted; the page shows a status notice instead of changing choices silently.
+- A service switcher keeps a known reference. The starting package is always visible; steps are numbered by CSS counters only.
+- The review dialog shows a structured summary built from the same rows as the WhatsApp draft; the draft text is unchanged in form and is never sent automatically.

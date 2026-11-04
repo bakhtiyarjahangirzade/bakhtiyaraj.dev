@@ -1,12 +1,17 @@
 import {projects} from './projects.js';
 import {t} from './i18n.js';
-export const designs=[
+// Visual directions offered in the configurator: the five original presets plus every other website concept,
+// so a buyer arriving from any site concept sees that concept preselected (IDs = concept/project IDs).
+const presetDesigns=[
 {id:'casa',name:'Casa Forma',category:'Memarlıq & interyer',image:'/assets/previews/casa.jpg'},
 {id:'olio',name:'Olio',category:'Restoran & kafe',image:'/assets/previews/olio.jpg'},
 {id:'aurea',name:'Aurea',category:'Otel & qonaqpərvərlik',image:'/assets/previews/aurea.jpg'},
 {id:'forma',name:'Forma Store',category:'Onlayn mağaza',image:'/assets/previews/forma.jpg'},
 {id:'atelier',name:'Atelier No.8',category:'Şəxsi brend',image:'/assets/previews/atelier.jpg'}
 ];
+export const designs=[...presetDesigns,...projects.filter(p=>p.type==='website'&&!p.vitrine&&!presetDesigns.some(d=>d.id===p.id)).map(p=>({id:p.id,name:p.name,category:p.category,image:p.image}))];
+// System demos a buyer can arrive from, with the main workflow they demonstrate.
+export const systemReferences={flow:'crm',reserve:'booking',stock:'orders',wealth:'custom',lal:'custom'};
 export const products={
 website:{id:'website',title:'Veb sayt',price:199,group:'Veb xidmətlər',image:'/assets/previews/casa.jpg',desc:'Brendinizə uyğun bir sayt. Vizual istiqaməti, səhifələri və sizə lazım olan funksiyaları özünüz seçin.',included:['1 səhifə','Azərbaycan dili','Mobil görünüş','WhatsApp keçidi'],pages:1,options:[
 {id:'custom',label:'Sıfırdan fərdi dizayn',price:149,help:'Hazır vizual istiqaməti uyğunlaşdırmaq əvəzinə xüsusi görünüş.'},
@@ -42,6 +47,20 @@ export const workflowNames={crm:'Müştəri uçotu',booking:'Rezervasiya',orders
 export const printTypes={card:{name:'Vizit kart',price:0},flyer:{name:'Flayer',price:10},poster:{name:'Afişa',price:20},brochure:{name:'Broşur',price:30}};
 export const videoLengths={'30':0,'60':9,'90':18,'180':39};
 const clamp=(v,min,max,fallback)=>{const n=Number(v);return Number.isFinite(n)?Math.max(min,Math.min(max,Math.trunc(n))):fallback};
-export function readConfig(params){const id=Object.hasOwn(products,params.get('service'))?params.get('service'):'website',p=products[id];return {id,design:designs.some(d=>d.id===params.get('design'))?params.get('design'):'casa',pages:clamp(params.get('pages')??p.pages??1,p.pages??1,20,p.pages??1),languages:['az',...['en','ru'].filter(l=>(params.get('languages')||'').split(',').includes(l))],workflow:Object.hasOwn(workflowNames,params.get('workflow'))?params.get('workflow'):'crm',modules:clamp(params.get('modules')??0,0,5,0),options:p.options.filter(o=>(params.get('options')||'').split(',').includes(o.id)).map(o=>o.id),printType:Object.hasOwn(printTypes,params.get('printType'))?params.get('printType'):'card',quantity:clamp(params.get('quantity')??1,1,20,1),sheets:clamp(params.get('sheets')??1,1,20,1),length:Object.hasOwn(videoLengths,params.get('length'))?params.get('length'):'30',raw:[5,10,15,20,25,30].includes(Number(params.get('raw')))?Number(params.get('raw')):5,reference:projects.some(p=>p.id===params.get('reference'))?params.get('reference'):''};}
+export function readConfig(params){const id=Object.hasOwn(products,params.get('service'))?params.get('service'):'website',p=products[id],reference=projects.some(p=>p.id===params.get('reference'))?params.get('reference'):'';const refDesign=designs.some(d=>d.id===reference)?reference:'casa',refWorkflow=systemReferences[reference]||'crm';return {id,design:designs.some(d=>d.id===params.get('design'))?params.get('design'):refDesign,pages:clamp(params.get('pages')??p.pages??1,p.pages??1,20,p.pages??1),languages:['az',...['en','ru'].filter(l=>(params.get('languages')||'').split(',').includes(l))],workflow:Object.hasOwn(workflowNames,params.get('workflow'))?params.get('workflow'):refWorkflow,modules:clamp(params.get('modules')??0,0,5,0),options:p.options.filter(o=>(params.get('options')||'').split(',').includes(o.id)).map(o=>o.id),printType:Object.hasOwn(printTypes,params.get('printType'))?params.get('printType'):'card',quantity:clamp(params.get('quantity')??1,1,20,1),sheets:clamp(params.get('sheets')??1,1,20,1),length:Object.hasOwn(videoLengths,params.get('length'))?params.get('length'):'30',raw:[5,10,15,20,25,30].includes(Number(params.get('raw')))?Number(params.get('raw')):5,reference};}
+// Names of link parameters whose given value was not accepted as-is (unknown, out of range or not offered for the service).
+export function invalidParams(params){
+ const c=readConfig(params),norm=configParams(c),bad=[];
+ const list=v=>(v||'').split(',').filter(Boolean);
+ for(const [key,value] of params){
+  if(key==='languages'){if(list(value).some(l=>l!=='az'&&!c.languages.includes(l)))bad.push(key);continue}
+  if(key==='options'){if(list(value).some(o=>!c.options.includes(o)))bad.push(key);continue}
+  if(key==='service'){if(value!==c.id)bad.push(key);continue}
+  if(key==='reference'){if(value!==c.reference)bad.push(key);continue}
+  if(!norm.has(key)){if(!['service','reference'].includes(key))bad.push(key);continue}
+  if(norm.get(key)!==value)bad.push(key);
+ }
+ return [...new Set(bad)];
+}
 export function calculate(c){const p=products[c.id],items=[];const add=(label,price)=>{if(price>0)items.push({label,price})};if(p.pages)add(t('Əlavə səhifələr ({n} × 29 AZN)',{n:c.pages-p.pages}),(c.pages-p.pages)*29);if(p.pages||p.workflows)add(t('Əlavə dillər ({n} × 49 AZN)',{n:c.languages.length-1}),(c.languages.length-1)*49);if(p.workflows)add(t('Əlavə modullar ({n} × 149 AZN)',{n:c.modules}),c.modules*149);if(c.id==='print'){add(t(printTypes[c.printType].name),printTypes[c.printType].price);add(t('Əlavə səhifələr ({n} × 9 AZN)',{n:c.sheets-1}),(c.sheets-1)*9)}if(c.id==='video'){add(t('{n} saniyəlik video',{n:c.length}),videoLengths[c.length]);add(t('İlkin material: {n} dəqiqə',{n:c.raw}),Math.ceil((c.raw-5)/5)*9)}for(const o of p.options)if(c.options.includes(o.id))add(t(o.label),o.price);const unit=p.price+items.reduce((a,b)=>a+b.price,0),quantity=c.id==='video'?c.quantity:1;return {base:p.price,items,unit,quantity,total:unit*quantity};}
 export function configParams(c){const p=products[c.id],q=new URLSearchParams({service:c.id});if(p.pages){q.set('design',c.design);q.set('pages',String(c.pages))}if(p.workflows){q.set('workflow',c.workflow);q.set('modules',String(c.modules))}if(p.pages||p.workflows)q.set('languages',c.languages.join(','));if(c.options.length)q.set('options',c.options.join(','));if(c.id==='print'){q.set('printType',c.printType);q.set('sheets',String(c.sheets))}if(c.id==='video'){q.set('quantity',String(c.quantity));q.set('length',c.length);q.set('raw',String(c.raw))}if(c.reference)q.set('reference',c.reference);return q;}

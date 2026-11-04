@@ -169,6 +169,12 @@ export default {
  </div>
 </dialog>
 
+<section class="wp-reel" aria-label="${t(L('Məşq: illüstrativ fotolar','Тренировки: иллюстративные фото','Training: illustrative photographs'))}">
+ <figure class="wp-shot wp-shot-ring">${ctx.img('gym/ring',L('Ringdə iki boksçu, başlıq və əlcəklərlə, iplərin arxasından','Двое боксёров в шлемах и перчатках на ринге, вид из-за канатов','Two boxers in headguards and gloves in the ring, seen through the ropes'),{sizes:'(min-width: 900px) 50vw, 100vw'})}</figure>
+ <figure class="wp-shot">${ctx.img('gym/ropes',L('Ring ipləri və başlıqlı boksçunun kürəyi','Канаты ринга и спина боксёра в шлеме','Ring ropes and a boxer in a headguard, from behind'),{sizes:'(min-width: 900px) 25vw, 50vw'})}</figure>
+ <figure class="wp-shot">${ctx.img('gym/floor',L('Rezin döşəmədə 10 kq-lıq hantel və idman ayaqqabıları','Гантель 10 кг и кроссовки на резиновом полу','A 10 kg dumbbell and trainers on a rubber floor'),{sizes:'(min-width: 900px) 25vw, 50vw'})}</figure>
+</section>
+
 <section class="wp-prices" id="prices" aria-labelledby="wp-pr-h">
  <h2 id="wp-pr-h">${t(L('Qiymətlər','Цены','Prices'))}</h2>
  <p class="wp-sub">${t(L('Müqavilə və giriş haqqı yoxdur. Ödəniş administratorda nağd və ya kartla. Qiymətlər nümunədir.','Без договора и вступительного взноса. Оплата у администратора наличными или картой. Цены — образец.','No contract and no joining fee. Pay at the desk, cash or card. Prices are samples.'))}</p>
@@ -206,7 +212,8 @@ export default {
 <footer class="wp-foot">
  <p class="wp-mark">WOLFPACK</p>
  <p>${t(L('Bakı, Yasamal rayonu (nümunə ünvan). Telefon: +994 12 000 00 00.','Баку, Ясамальский район (адрес-образец). Телефон: +994 12 000 00 00.','Yasamal district, Baku (sample address). Phone: +994 12 000 00 00.'))}</p>
- <p class="wp-foot-note">${t(L('Konsept nümunəsi: zal, məşqçilər, cədvəl və qiymətlər uydurmadır. Əsas şəkil sahibkar tərəfindən verilmiş, süni intellektlə yaradılmış təsvirdir.','Концепт-образец: зал, тренеры, расписание и цены вымышлены. Главное изображение предоставлено владельцем и создано с помощью ИИ.','Concept sample: the gym, coaches, timetable and prices are fictional. The main image was supplied by the owner and generated with AI.'))}</p>
+ <p class="wp-foot-note">${t(L('Konsept nümunəsi: zal, məşqçilər, cədvəl və qiymətlər uydurmadır. Əsas şəkil sahibkar tərəfindən verilmiş, süni intellektlə yaradılmış təsvirdir; digər fotolar bu zalda çəkilməyib, CC0 stok fotolardır.','Концепт-образец: зал, тренеры, расписание и цены вымышлены. Главное изображение предоставлено владельцем и создано с помощью ИИ; остальные фото сняты не в этом зале, это стоковые фото CC0.','Concept sample: the gym, coaches, timetable and prices are fictional. The main image was supplied by the owner and generated with AI; the other photographs are CC0 stock, not taken at this gym.'))}</p>
+ ${ctx.credits(['gym/ring','gym/ropes','gym/floor'])}
 </footer>
 ${ctx.data({classes,S})}
 </div>`;

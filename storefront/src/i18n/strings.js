@@ -1,6 +1,7 @@
 // Source strings are Azerbaijani. Each row: [az, ru, en]. Placeholders like {n} are filled by t().
 // Leading "← " and trailing " ↗ ↘ ↑ ↓" decorations are stripped before lookup (see scripts/i18n-pages.mjs).
 import {showroomRows} from '../showroom-copy.js';
+import {businessRows} from './business-strings.js';
 const baseRows=[
 // --- document / meta ---
 ["BAKHY — Dizayn. Kod. Xarakter.","BAKHY — Дизайн. Код. Характер.","BAKHY — Design. Code. Character."],
@@ -567,4 +568,4 @@ const baseRows=[
 ["Kifayətdir","Достаточно","Enough"],
 ["Azdır","Мало","Low"],
 ];
-export const rows=[...baseRows,...showroomRows];
+export const rows=[...baseRows,...showroomRows,...businessRows];

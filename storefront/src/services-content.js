@@ -46,3 +46,14 @@ export const serviceContent={
    ['Bir neçə video sifariş edə bilərəm?','Bəli. Video sayını seçirsiniz; qiymət hər videonun tam qiymətinə vurulur.']
   ]}
 };
+// One delivery process for the homepage and every service page (homepage markup is checked against it in tests).
+// [title, what happens, what the client provides, what the client receives]
+export const processSteps=[
+ ['TANIŞLIQ','Biznesinizi, məqsədi, lazım olan səhifə və funksiyaları danışırıq. Konfiquratordakı seçimləriniz başlanğıc nöqtəsidir.','Biznes haqqında qısa məlumat, bəyəndiyiniz nümunələr, loqo və mövcud mətnlər.','Razılaşdırılmış iş həcmi, qiymət və təhvil tarixi.'],
+ ['DİZAYN','Səhifələrin quruluşu və vizual istiqamət hazırlanır, rəyinizlə dəqiqləşir.','Dizayn üzrə rəyiniz, son mətnlər və fotolar.','Əsas ekranların telefon və kompüter üçün dizaynı.'],
+ ['HAZIRLANMA','Sayt və ya sistem proqramlaşdırılır; formalar, dillər və inteqrasiyalar qoşulur.','Lazım olduqda domen və üçüncü tərəf xidmətlərinə giriş.','Yoxlamaq üçün işləyən versiyanın keçidi.'],
+ ['TƏHVİL','Telefon və kompüterdə yoxlanılır, düzəlişlər edilir, sayt domeninizdə yayımlanır.','Son yoxlama və təsdiqiniz.','Yayımlanmış sayt və ya sistem, idarəetmə girişləri və qısa istifadə izahı.']
+];
+export const processNote='Razılaşdırılmış həcm üçün hədəf müddət bir həftədir. Bu, materiallar vaxtında gəldikdə keçərlidir; böyük sistemlər üçün mərhələli plan ayrıca razılaşdırılır.';
+// Real projects shown on each service page (ids from projects.js / cases.js).
+export const serviceCases={website:['savor','promox'],system:['isoclub'],integrated:['isoclub'],print:[],video:[]};
