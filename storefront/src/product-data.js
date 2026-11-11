@@ -1,3 +1,4 @@
+import {PRINT_PRODUCTS} from './print/model.js';
 import {projects} from './projects.js';
 import {t} from './i18n.js';
 export const designs=[
@@ -35,7 +36,7 @@ integrated:{id:'integrated',title:'Veb sayt + sistem',price:1599,featured:true,g
 {id:'payment',label:'Onlayn ödəniş bağlantısı',price:199,help:'Saytdakı ödənişləri sistemə bağlayın.'},
 {id:'integration',label:'Digər proqramla inteqrasiya',price:199,help:'Bir xarici xidmətlə standart məlumat bağlantısı.'}
 ]},
-print:{id:'print',title:'Çap dizaynı',price:19,secondary:true,group:'Digər xidmətlər',desc:'Çapa hazır vizit kart, flayer və digər materiallar. Qiymət dizayn üçündür; çap ayrıca hesablanır.',included:['1 dizayn','1 üz / səhifə','Çapa hazır fayl'],options:[{id:'double',label:'İkinci üz',price:9,help:'İkiüzlü material üçün arxa tərəfin dizaynı.'},{id:'source',label:'Redaktə edilə bilən mənbə faylı',price:19,help:'Dizaynın sonradan redaktə üçün hazırlanması.'}]},
+print:{id:'print',title:'Çap dizaynı',price:Math.min(...PRINT_PRODUCTS.map(p=>p.standard)),secondary:true,group:'Digər xidmətlər',desc:'Çapa hazır vizit kart, flayer və digər materiallar. Qiymət dizayn üçündür; çap ayrıca hesablanır.',included:['1 dizayn','1 üz / səhifə','Çapa hazır fayl'],options:[{id:'double',label:'İkinci üz',price:9,help:'İkiüzlü material üçün arxa tərəfin dizaynı.'},{id:'source',label:'Redaktə edilə bilən mənbə faylı',price:19,help:'Dizaynın sonradan redaktə üçün hazırlanması.'}]},
 video:{id:'video',title:'Video montaj',price:9,secondary:true,group:'Digər xidmətlər',desc:'Məşqçilər üçün Reels, məşq və təqdimat videoları. Sadə montajdan başlayın, istədiyiniz əlavələri seçin.',included:['1 video','30 saniyəyədək','Sadə kəsim və birləşdirmə','5 dəqiqəyədək ilkin material'],options:[{id:'captions',label:'Altyazı',price:9,help:'Videonun danışıq mətninə uyğun altyazı.'},{id:'audio',label:'Səsin təmizlənməsi',price:9,help:'Əsas səs səviyyəsinin və fon səsinin işlənməsi.'},{id:'color',label:'Rəng düzəlişi',price:9,help:'Kadrların rəng və işıq balansı.'},{id:'titles',label:'Animasiya və başlıqlar',price:19,help:'Hərəkət adları, set / təkrar yazıları və sadə qrafika.'}]}
 };
 export const workflowNames={crm:'Müştəri uçotu',booking:'Rezervasiya',orders:'Sifariş idarəetməsi',custom:'Fərdi iş axını'};

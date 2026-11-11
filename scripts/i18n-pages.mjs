@@ -1,3 +1,5 @@
+import {renderShop} from '../storefront/src/print/render.js';
+import {tr as printText} from '../storefront/src/print/copy.js';
 // Post-build step: turns the built Azerbaijani storefront pages into /az/, /ru/ and /en/ copies.
 // Text nodes and selected attributes are looked up in storefront/src/i18n/strings.js; in-site links get a language prefix.
 import {readFile,writeFile,mkdir,rm} from 'node:fs/promises';
@@ -129,17 +131,19 @@ function serviceBody(id,lang){
  return {title:`${title} — BAKHY`,desc:T(p.desc),body};
 }
 const template=await readFile(new URL('service.html',dist),'utf8');
+const printTemplate=await readFile(new URL('print-shop.html',dist),'utf8');
 const serviceFiles=[];
 for(const id of serviceIds){
  const file=`services/${id}.html`;serviceFiles.push(file);
  for(const lang of LANGS){
-  const {title,desc,body}=serviceBody(id,lang);
-  const out=build(template,lang,`service:${id}`,file).replaceAll('@@TITLE@@',encodeAttr(title)).replaceAll('@@DESC@@',encodeAttr(desc)).replace('@@CONTENT@@',()=>body);
+  const {title,desc,body}=id==='print'?{title:printText(lang,'title'),desc:printText(lang,'description'),body:renderShop(lang)}:serviceBody(id,lang);
+  const out=build(id==='print'?printTemplate:template,lang,`service:${id}`,file).replaceAll('@@TITLE@@',encodeAttr(title)).replaceAll('@@DESC@@',encodeAttr(desc)).replace('@@CONTENT@@',()=>body);
   await mkdir(new URL(`${lang}/services/`,dist),{recursive:true});
   await writeFile(new URL(`${lang}/${file}`,dist),out);
  }
 }
 await rm(new URL('service.html',dist));
+await rm(new URL('print-shop.html',dist));
 
 // ---- concept mini-sites: themed shell from dist/concept.html, body rendered in the target language ----
 const conceptTemplate=await readFile(new URL('concept.html',dist),'utf8');
