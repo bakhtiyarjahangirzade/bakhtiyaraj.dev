@@ -48,7 +48,7 @@ function translateTag(tag,lang,where){
 }
 
 function prefixLinks(tag,lang){
- return tag.replace(/\bhref="(\/|\/#[^"]*|\/catalogue\.html[^"]*|\/product\.html[^"]*)"/g,(m,h)=>`href="/${lang}${h}"`);
+ return tag.replace(/\bhref="(\/|\/#[^"]*|\/catalogue\.html[^"]*|\/product\.html[^"]*|\/services\/[a-z]+\.html[^"]*)"/g,(m,h)=>`href="/${lang}${h}"`);
 }
 
 function pageUrl(lang,file){return `${ORIGIN}/${lang}/${file}`}

@@ -3,7 +3,7 @@
 The marketing homepage uses the Dovv-led design in DESIGN.md. Product routes use one shared retail-style layout in product.html and src/product.js. A service card always navigates to a product page; it does not prefill or submit a lead. Portfolio/concept detail actions navigate to that same configurator with a known reference ID.
 
 Canonical owners:
-- Product records, base prices, extra rates, option IDs, normalization and arithmetic: src/product-data.js. Prices approved: 199/799/1599/19/9 AZN; additional rates delegated by the user and recorded in that module.
+- Product records, base prices, extra rates, option IDs, normalization and arithmetic: src/product-data.js. Prices approved: 399/1399/1599/19/9 AZN; additional rates delegated by the user and recorded in that module.
 - Forms/selects: native inputs, checkboxes and selects in src/product.js; native popup appearance is intentionally accepted. Fields have persistent labels, native keyboard behavior, bounded enums and quantities. No required personal details or browser validation bubbles in product flow.
 - Product state: non-personal choices in URL query parameters via replaceState, normalized on entry. Browser back/forward and shared links restore selections. Invalid enums and quantities fall back or clamp. Unknown references/options are discarded. Customer name and notes remain page-memory fields and are never serialized into the page URL.
 - Price: one pure calculate function supplies breakdown, live total, sticky header, review and WhatsApp draft. All five services use the same calculation model. Video quantity multiplies the full per-video price. Discounts, tax rules, payment or recurring billing are not inferred.
