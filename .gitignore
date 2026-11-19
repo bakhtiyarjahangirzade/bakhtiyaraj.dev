@@ -14,3 +14,22 @@ public/downloads/
 public/vendor/
 apps/authentic-desktop/work/
 .cache/
+
+# Android build outputs, signing material and generated bundled web assets
+apk/node_modules/
+apk/www/
+apk/android/.gradle/
+apk/android/build/
+apk/android/app/build/
+apk/android/local.properties
+apk/android/capacitor-cordova-android-plugins/
+*.keystore
+*.jks
+playwright-report/
+test-results/
+work-*.py
+work-audit.json
+.vercel
+.env*
+
+work-*
