@@ -1,12 +1,17 @@
 import '../src/fonts.css';
 import './app.css';
 import {T,CATS,CURRENCIES,AUDIO_LANGS} from './strings.js';
+import {EXTRA} from './messages.js';
+import {BALANCE_NOTE,legacyTotalDates,total,decimal,validDate,dayAdjustment,dayMetrics,fuelRate,monthProjection} from './core.mjs';
+import {readOwnEntries,readOwnTable,entryRow,acknowledgeEntries} from './sync.mjs';
+import {nativeTracker} from './native.js';
+for(const lang of Object.keys(EXTRA)){Object.assign(T[lang],EXTRA[lang]);T[lang].feats=T[lang].feats.filter(f=>!/səsli bildiriş|Spoken notifications|Голосовые уведомления/i.test(f));}
 
 const SB_URL='https://yxiedrrahclzqukfnqrn.supabase.co',SB_KEY='sb_publishable_n0X-RVe8A6z9HviK4qsWAg_FgTTKJq2';
 const APK_URL='/budgettracker/kuryebro.apk';
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const LS={get(k,d){try{const v=localStorage.getItem('bt.'+k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem('bt.'+k,JSON.stringify(v))}catch{}}};
+const LS={get(k,d){try{const v=localStorage.getItem('bt.'+k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem('bt.'+k,JSON.stringify(v))}catch{S.storageError=true}}};
 const pad=n=>String(n).padStart(2,'0');
 const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const today=()=>ymd(new Date());
@@ -16,14 +21,14 @@ const ym=d=>d.slice(0,7);
 const uuid=()=>crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:r&3|8).toString(16)});
 
 const saved=LS.get('settings',{}),guess=()=>{const l=(navigator.language||'az').slice(0,2);return ['az','ru','en'].includes(l)?l:'az'};
-const S={lang:saved.lang||guess(),cur:saved.cur||'AZN',sound:saved.sound!==false,user:null,nick:'',admin:false,demo:false,entries:[],goals:{daily:0,days:6},sessions:[],days:{},fixed:[],fixedPer:'week',bench:undefined,active:null,pending:new Set(),photoQ:new Set(),dirty:{goals:false},lastSync:null,flags:{},tab:'home',filter:'all',overview:null,detail:null,workDetail:null,sheet:null,viewer:null,authMode:'signin',msg:'',syncing:false};
+const S={lang:['az','ru','en'].includes(saved.lang)?saved.lang:guess(),cur:CURRENCIES.includes(saved.cur)?saved.cur:'AZN',sound:saved.sound!==false,user:null,nick:'',admin:false,demo:false,entries:[],goals:{daily:0,days:6},sessions:[],days:{},fixed:[],fixedPer:'week',bench:undefined,active:null,pending:new Set(),photoQ:new Set(),dirty:{goals:false},lastSync:null,flags:{},tab:'home',filter:'all',overview:null,detail:null,workDetail:null,sheet:null,viewer:null,authMode:'signin',msg:'',syncing:false};
 const t=()=>T[S.lang];
 const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'bt.auth'}}):null;
 const saveSettings=()=>LS.set('settings',{lang:S.lang,cur:S.cur,sound:S.sound});
 const money=(n,cur=S.cur)=>{try{return new Intl.NumberFormat({az:'az-AZ',ru:'ru-RU',en:'en-GB'}[S.lang],{style:'currency',currency:cur,maximumFractionDigits:2}).format(n||0)}catch{return (n||0).toFixed(2)+' '+cur}};
 const dateLabel=d=>{try{return new Date(d+'T00:00:00').toLocaleDateString({az:'az-AZ',ru:'ru-RU',en:'en-GB'}[S.lang],{day:'numeric',month:'long',weekday:'short'})}catch{return d}};
 const live=()=>S.entries.filter(e=>!e.deleted_at);
-const sum=(arr,k)=>arr.filter(e=>e.kind===k).reduce((a,e)=>a+e.amount,0);
+const sum=total;
 const inMonth=(e,m)=>e.date.startsWith(m);
 const catName=id=>t().cat[id]||id;
 const fmtDur=s=>`${Math.floor(s/3600)}:${pad(Math.floor(s%3600/60))}`;
@@ -41,44 +46,60 @@ async function compress(file){const bmp=await createImageBitmap(file),k=Math.min
 
 /* ---------- local store ---------- */
 const uid=()=>S.demo?'demo':S.user?.id;
-function persist(){if(S.demo||!S.user)return;LS.set('u.'+uid(),{entries:S.entries,goals:S.goals,sessions:S.sessions.slice(-60),days:S.days,fixed:S.fixed,active:S.active,pending:[...S.pending],photoQ:[...S.photoQ],dirty:S.dirty,lastSync:S.lastSync,flags:S.flags})}
-function restore(){const d=S.demo?{}:LS.get('u.'+uid(),{});S.entries=d.entries||[];S.goals={daily:Number(d.goals&&(d.goals.daily??d.goals.sales))||0,days:Number(d.goals&&d.goals.days)||6};S.sessions=d.sessions||[];S.days=d.days||{};S.fixed=d.fixed||[];S.bench=undefined;S.active=d.active||null;S.pending=new Set(d.pending||[]);S.photoQ=new Set(d.photoQ||[]);S.dirty={goals:!!(d.dirty&&d.dirty.goals)};S.lastSync=d.lastSync||null;S.flags=d.flags||{}}
+function persist(){if(S.demo||!S.user)return;LS.set('u.'+uid(),{nick:S.nick,entries:S.entries,goals:S.goals,sessions:S.sessions.map(session=>session.routeCached&&!session.dirty?{...session,points:undefined}:session),days:S.days,fixed:S.fixed,active:S.active,pending:[...S.pending],photoQ:[...S.photoQ],dirty:S.dirty,lastSync:S.lastSync,flags:S.flags})}
+function restore(){const d=S.demo?{}:LS.get('u.'+uid(),{});S.nick=d.nick||S.user?.user_metadata?.nickname||'';S.entries=d.entries||[];S.goals={daily:Number(d.goals&&(d.goals.daily??d.goals.sales))||0,days:Number(d.goals&&d.goals.days)||6};S.sessions=d.sessions||[];S.days=d.days||{};S.fixed=d.fixed||[];S.bench=undefined;S.active=d.active||null;S.pending=new Set(d.pending||[]);S.photoQ=new Set(d.photoQ||[]);S.dirty={goals:!!(d.dirty&&d.dirty.goals)};S.lastSync=d.lastSync||null;S.flags=d.flags||{}}
 
 /* ---------- sync ---------- */
+let syncRetry=null;
 async function sync(){
- if(S.demo||!S.user||!sb||!navigator.onLine||S.syncing)return;S.syncing=true;
+ if(S.demo||!S.user||!sb||!navigator.onLine||S.syncing)return;
+ const owner=S.user.id;S.syncing=true;S.syncError='';clearTimeout(syncRetry);
+ const check=r=>{if(r.error)throw r.error;return r.data};
  try{
-  for(const id of [...S.photoQ]){const e=S.entries.find(x=>x.id===id),blob=await idb.get(id);if(e&&blob&&e.photo_path){const {error}=await sb.storage.from('bt-receipts').upload(e.photo_path,blob,{contentType:'image/jpeg',upsert:true});if(error)throw error}S.photoQ.delete(id);await idb.del(id).catch(()=>{})}
+  for(const id of [...S.photoQ]){
+   const version=S.photoVersions?.[id],e=S.entries.find(x=>x.id===id),blob=await idb.get(id);
+   if(!e||!blob||!e.photo_path)throw new Error('Missing receipt');
+   check(await sb.storage.from('bt-receipts').upload(e.photo_path,blob,{contentType:'image/jpeg',upsert:true}));
+   // Retain the local receipt for offline viewing and backup; acknowledge only this version.
+   if(S.photoVersions?.[id]===version)S.photoQ.delete(id);
+  }
   const todo=S.entries.filter(e=>S.pending.has(e.id));
   for(let i=0;i<todo.length;i+=100){
-   const rows=todo.slice(i,i+100).map(e=>({id:e.id,kind:e.kind,amount:e.amount,category:e.category,note:e.note,entry_date:e.date,created_at:e.created_at,deleted_at:e.deleted_at||null,photo_path:e.photo_path||null}));
-   const {error}=await sb.from('bt_entries').upsert(rows,{onConflict:'id'});if(error)throw error;rows.forEach(r=>S.pending.delete(r.id));
+   const rows=todo.slice(i,i+100).map(entryRow);
+   check(await sb.from('bt_entries').upsert(rows.map(r=>({...r,user_id:owner})),{onConflict:'id'}));
+   acknowledgeEntries(S.entries,S.pending,rows);
   }
-  for(const s of S.sessions.filter(x=>x.dirty&&x.ended_at)){
-   const {error}=await sb.from('bt_sessions').upsert({id:s.id,started_at:s.started_at,ended_at:s.ended_at,distance_m:s.distance_m,duration_s:s.duration_s});if(error)throw error;
-   if(s.points&&s.points.length){const r=await sb.from('bt_routes').upsert({session_id:s.id,points:s.points});if(r.error)throw r.error}
-   s.dirty=false;
+  for(const session of S.sessions.filter(x=>x.dirty&&x.ended_at)){
+   check(await sb.from('bt_sessions').upsert({id:session.id,user_id:owner,started_at:session.started_at,ended_at:session.ended_at,distance_m:session.distance_m,duration_s:session.duration_s}));
+   if(session.points?.length)check(await sb.from('bt_routes').upsert({session_id:session.id,points:session.points}));
+   session.dirty=false;
   }
   for(const f of S.fixed.filter(x=>x.dirty)){
-   const {error}=await sb.from('bt_fixed').upsert({id:f.id,name:f.name,amount:f.amount,period:f.period,deleted_at:f.deleted_at||null});if(error)throw error;f.dirty=false;
+   const row={id:f.id,user_id:owner,name:f.name,amount:f.amount,period:f.period,deleted_at:f.deleted_at||null};
+   check(await sb.from('bt_fixed').upsert(row));if((f.deleted_at||null)===row.deleted_at)f.dirty=false;
   }
   for(const [day,v] of Object.entries(S.days).filter(([,v])=>v.dirty)){
-   const {error}=await sb.from('bt_days').upsert({user_id:S.user.id,day,km:v.km,hours:v.hours});if(error)throw error;v.dirty=false;
+   const snapshot={user_id:owner,day,km:v.km,hours:v.hours};
+   check(await sb.from('bt_days').upsert(snapshot));if(S.days[day]===v&&v.km===snapshot.km&&v.hours===snapshot.hours)v.dirty=false;
   }
-  if(S.dirty.goals){const {error}=await sb.from('bt_goals').upsert({user_id:S.user.id,daily_target:S.goals.daily,work_days:S.goals.days});if(error)throw error;S.dirty.goals=false}
-  let q=sb.from('bt_entries').select('id,kind,amount,category,note,entry_date,created_at,updated_at,deleted_at,photo_path').order('updated_at',{ascending:true}).limit(1000);
-  if(S.lastSync)q=q.gt('updated_at',S.lastSync);
-  const {data,error}=await q;if(error)throw error;
-  for(const r of data){const e={id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,deleted_at:r.deleted_at,photo_path:r.photo_path};const i=S.entries.findIndex(x=>x.id===e.id);if(i<0)S.entries.push(e);else if(!S.pending.has(e.id))S.entries[i]=e;S.lastSync=r.updated_at}
-  const ss=await sb.from('bt_sessions').select('id,started_at,ended_at,distance_m,duration_s').order('started_at',{ascending:false}).limit(100);
-  if(ss.data)for(const r of ss.data){if(!S.sessions.some(x=>x.id===r.id)&&r.ended_at)S.sessions.push({...r,dirty:false})}
-  const dd=await sb.from('bt_days').select('day,km,hours').order('day',{ascending:false}).limit(120);
-  if(dd.data)for(const r of dd.data){const c=S.days[r.day];if(!c||!c.dirty)S.days[r.day]={km:Number(r.km),hours:Number(r.hours)}}
-  const fx=await sb.from('bt_fixed').select('id,name,amount,period,deleted_at');
-  if(fx.data)for(const r of fx.data){const i=S.fixed.findIndex(x=>x.id===r.id),row={id:r.id,name:r.name,amount:Number(r.amount),period:r.period,deleted_at:r.deleted_at};if(i<0)S.fixed.push(row);else if(!S.fixed[i].dirty)S.fixed[i]=row}
-  if(!S.dirty.goals){const {data:g}=await sb.from('bt_goals').select('daily_target,work_days').maybeSingle();if(g)S.goals={daily:Number(g.daily_target),days:Number(g.work_days)||6}}
-  persist();
- }catch(err){console.warn('sync failed',err)}finally{S.syncing=false;render()}
+  if(S.dirty.goals){const row={user_id:owner,daily_target:S.goals.daily,work_days:S.goals.days};check(await sb.from('bt_goals').upsert(row));if(S.goals.daily===row.daily_target&&S.goals.days===row.work_days)S.dirty.goals=false}
+  const next=await readOwnEntries(sb,owner,S.lastSync,rows=>{
+   if(S.user?.id!==owner)return;
+   for(const r of rows){const e={id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,deleted_at:r.deleted_at,photo_path:r.photo_path};const i=S.entries.findIndex(x=>x.id===e.id);if(i<0)S.entries.push(e);else if(!S.pending.has(e.id))S.entries[i]=e;}
+  });
+  const sessions=await readOwnTable(sb,'bt_sessions','id,started_at,ended_at,distance_m,duration_s',owner,'started_at');
+  for(const row of sessions){if(!S.sessions.some(x=>x.id===row.id)&&row.ended_at)S.sessions.push({...row,dirty:false})}
+  const days=await readOwnTable(sb,'bt_days','day,km,hours',owner,'day');
+  for(const row of days){const local=S.days[row.day];if(!local||!local.dirty)S.days[row.day]={km:Number(row.km),hours:Number(row.hours)}}
+  const fixed=check(await sb.from('bt_fixed').select('id,name,amount,period,deleted_at').eq('user_id',owner));
+  for(const r of fixed){const i=S.fixed.findIndex(x=>x.id===r.id),row={id:r.id,name:r.name,amount:Number(r.amount),period:r.period,deleted_at:r.deleted_at};if(i<0)S.fixed.push(row);else if(!S.fixed[i].dirty)S.fixed[i]=row}
+  if(!S.dirty.goals){const g=check(await sb.from('bt_goals').select('daily_target,work_days').eq('user_id',owner).maybeSingle());if(g)S.goals={daily:Number(g.daily_target),days:Number(g.work_days)||6}}
+  for(const session of S.sessions.filter(s=>s.points?.length&&!s.routeCached)){await idb.put('route:'+session.id,session.points);session.routeCached=true}
+  S.lastSync=next;S.lastSuccess=new Date().toISOString();
+ }catch(error){S.syncError=t().syncError;console.warn('sync failed',error)}finally{
+  S.syncing=false;persist();render(true);
+  if(!S.syncError&&hasPending())syncRetry=setTimeout(sync,500);
+ }
 }
 
 /* ---------- auth ---------- */
@@ -87,24 +108,29 @@ async function enter(user){
  S.user=user;S.demo=false;restore();S.tab='home';S.admin=false;
  try{if(!(await ensureProfile())){render();return}}catch(e){console.warn(e)}
  try{const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data}catch{S.admin=false}
- S.tab=S.admin?'watch':'home';render();say('loginOk');if(S.active)startWatch();sync();
+ S.tab=S.admin?'watch':'home';render();say('loginOk');if(nativeTracker.available())await recoverNative();else if(S.active)startWatch();render();sync();
 }
 async function ensureProfile(){
- const {data}=await sb.from('bt_profiles').select('nickname,currency').eq('user_id',S.user.id).maybeSingle();
+ if(!navigator.onLine){if(S.nick)return true;S.msg=t().netErr;return true}
+ const {data,error}=await sb.from('bt_profiles').select('nickname,currency').eq('user_id',S.user.id).maybeSingle();
+ if(error)throw error;
  if(data){S.nick=data.nickname;if(data.currency&&data.currency!==S.cur){S.cur=data.currency;saveSettings()}return true}
  const nick=S.user.user_metadata?.nickname;
  if(nick&&NICK.test(nick)){const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur});if(!r.error){S.nick=nick;return true}if(r.error.code!=='23505')throw r.error;S.msg=t().nickTaken}
  S.sheet={type:'nick'};return false;
 }
 async function submitAuth(){
- const email=$('#f-email').value.trim(),pw=$('#f-pw').value,signup=S.authMode==='signup';S.msg='';
- if(!email||!pw)return setMsg(t().badLogin);
+ const email=$('#f-email').value.trim(),pw=$('#f-pw')?.value||'',signup=S.authMode==='signup';S.msg='';
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return setMsg(t().needEmail);
+ if(!sb)return setMsg(t().netErr);
+ if(S.authMode==='reset'){const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://www.bakhtiyaraj.dev/budgettracker/?recovery=1'});return setMsg(error?t().netErr:t().resetSent,!error)}
+ if(!pw)return setMsg(t().badLogin);
  if(signup){
   const nick=$('#f-nick').value.trim();
   if(!NICK.test(nick))return setMsg(t().nickRule);
   if(pw.length<8)return setMsg(t().weakPw);
   if(!$('#f-consent').checked)return setMsg(t().consentNeed);
-  const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:{nickname:nick}}});
+  const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:{nickname:nick},emailRedirectTo:'https://www.bakhtiyaraj.dev/budgettracker/'}});
   if(error)return setMsg(error.message.includes('registered')?t().badLogin:error.message);
   if(data.session)return enter(data.session.user);
   S.authMode='signin';return setMsg(t().checkMail,true);
@@ -114,7 +140,7 @@ async function submitAuth(){
  enter(data.user);
 }
 function setMsg(m,ok){S.msg=m;S.msgOk=!!ok;render()}
-async function logout(){stopWatchOnly();if(S.demo){S.demo=false;S.user=null;S.entries=[];S.sessions=[];S.days={};S.fixed=[];S.bench=undefined;S.active=null;S.admin=false;render();return}await sb.auth.signOut();S.user=null;S.nick='';S.admin=false;S.entries=[];S.sessions=[];S.days={};S.fixed=[];S.bench=undefined;S.active=null;S.tab='home';render()}
+async function logout(){if(!S.demo&&(hasPending()||S.active)){setMsg(t().unsyncedLogout);return}stopWatchOnly();if(S.demo){S.demo=false;S.user=null;S.entries=[];S.sessions=[];S.days={};S.fixed=[];S.bench=undefined;S.active=null;S.admin=false;render();return}await sb.auth.signOut();S.user=null;S.nick='';S.admin=false;S.entries=[];S.sessions=[];S.days={};S.fixed=[];S.bench=undefined;S.active=null;S.tab='home';render()}
 
 /* ---------- GPS helpers (also used by the demo) ---------- */
 const R=6371000,rad=x=>x*Math.PI/180;
@@ -157,18 +183,14 @@ async function startWarsaw(){
 /* ---------- entries ---------- */
 async function addEntry({kind,amount,category,note,date,photo,quiet}){
  const e={id:uuid(),kind,amount,category,note,date,created_at:new Date().toISOString(),deleted_at:null};
- if(photo){e.photo_path=`${uid()}/${e.id}.jpg`;if(S.demo)demoPhotos.set(e.id,photo);else{await idb.put(e.id,photo).catch(()=>{});S.photoQ.add(e.id)}}
+ if(photo){e.photo_path=`${uid()}/${e.id}.jpg`;if(S.demo)demoPhotos.set(e.id,photo);else{await idb.put(e.id,photo);S.photoQ.add(e.id);S.photoVersions??={};S.photoVersions[e.id]=uuid()}}
  S.entries.push(e);if(!S.demo)S.pending.add(e.id);
  const sound=quiet?null:alertFor(e);persist();if(sound)say(sound);sync();
 }
 
 /* ---------- day totals: one entry per day, with km and hours, and the per-km / per-hour numbers they give ---------- */
-const n2=v=>Number(String(v??'').replace(',','.'))||0;
-function dayNums(d){
- const en=live().filter(e=>e.date===d),r=S.days[d];let km=r?r.km:0,h=r?r.hours:0;
- if(!km||!h){const ss=S.sessions.filter(q=>q.ended_at&&localDate(q.started_at)===d);if(!km)km=ss.reduce((p,q)=>p+kmOf(q),0);if(!h)h=ss.reduce((p,q)=>p+(q.duration_s||0),0)/3600}
- return{earn:sum(en,'sale'),spent:sum(en,'expense'),km,h};
-}
+const n2=v=>String(v??'').trim()===''?0:decimal(v);
+function dayNums(d){return dayMetrics(S.entries,S.days,S.sessions,d)}
 function ratios(n){const net=n.earn-n.spent;return{net,perKm:n.km>0?n.earn/n.km:null,costKm:n.km>0?n.spent/n.km:null,netKm:n.km>0?net/n.km:null,perHour:n.h>0?n.earn/n.h:null,netHour:n.h>0?net/n.h:null}}
 function range30(){
  const a={net:0,k:{e:0,s:0,v:0},h:{e:0,s:0,v:0}};
@@ -200,8 +222,7 @@ function fixedNote(plan){
  return `<span class="muted">${esc(x.fixedMonthLbl)}: <b>${money(fm)}</b> · ${esc(x.afterFixed)}: <b>${money(after)}</b></span><span class="muted tiny">${esc(x.breakEven)} <b>${money(fw/(S.goals.days||6))}</b></span>`;
 }
 function fillDay(sh){
- const en=live().filter(e=>e.date===sh.date&&e.category==='daily'),r=S.days[sh.date],v=n=>n?String(n):'';
- sh.earn=v(sum(en,'sale'));sh.spent=v(sum(en,'expense'));sh.km=v(r&&r.km);sh.hours=v(r&&r.hours);
+ const n=dayNums(sh.date);sh.earn=String(n.earn);sh.spent=String(n.spent);sh.km=String(n.km);sh.hours=String(n.h);
 }
 function openDay(){S.sheet={type:'day',date:today()};fillDay(S.sheet)}
 function dayPrev(sh){
@@ -217,14 +238,19 @@ function syncDayForm(){
  const ex=$('#day-ex');if(ex)ex.hidden=!live().some(e=>e.date===sh.date&&e.category==='daily');
 }
 function saveDay(){
- syncDayForm();const sh=S.sheet,earn=n2(sh.earn),spent=n2(sh.spent),km=Math.min(4999,n2(sh.km)),h=Math.min(24,n2(sh.hours)),date=sh.date||today();
- if(!(earn>0)||earn>=1e9){say('error');return}
+ syncDayForm();const sh=S.sheet,earn=n2(sh.earn),spent=n2(sh.spent),km=n2(sh.km),h=n2(sh.hours),date=sh.date;
+ let adjustment;
+ try{
+  if(![km,h].every(Number.isFinite)||km<0||km>=5000||h<0||h>24)throw new Error('invalid');
+  adjustment=dayAdjustment(S.entries,date,earn,spent);
+ }catch(error){$('#day-error').textContent=error.message==='below-details'?t().belowDetails:t().invalid;say('error');return}
  const now=new Date().toISOString();
  live().filter(e=>e.date===date&&e.category==='daily').forEach(e=>{e.deleted_at=now;if(!S.demo)S.pending.add(e.id)});
  S.days[date]={km:Math.round(km*10)/10,hours:Math.round(h*10)/10,dirty:!S.demo};
- addEntry({kind:'sale',amount:earn,category:'daily',note:'',date});
- if(spent>0)addEntry({kind:'expense',amount:spent,category:'daily',note:'',date,quiet:true});
- closeSheet();
+ for(const [kind,amount] of [['sale',adjustment.sale],['expense',adjustment.expense]]){
+  if(amount>0){const e={id:uuid(),kind,amount,category:'daily',note:BALANCE_NOTE,date,created_at:now,deleted_at:null};S.entries.push(e);if(!S.demo)S.pending.add(e.id)}
+ }
+ persist();closeSheet();sync();
 }
 function alertFor(e){
  if(e.kind==='sale'&&S.goals.daily>0&&e.date===today()){
@@ -234,7 +260,7 @@ function alertFor(e){
  }
  return e.kind+'Added';
 }
-function removeEntry(id){const e=S.entries.find(x=>x.id===id);if(!e)return;e.deleted_at=new Date().toISOString();if(!S.demo)S.pending.add(id);persist();say('deleted');sync();render()}
+function removeEntry(id){S.undo=id;const e=S.entries.find(x=>x.id===id);if(!e)return;e.deleted_at=new Date().toISOString();if(!S.demo)S.pending.add(id);persist();say('deleted');sync();render()}
 async function openPhoto(id,path){
  let blob=S.demo?demoPhotos.get(id):await idb.get(id).catch(()=>null);
  if(!blob&&path&&sb){const r=await sb.storage.from('bt-receipts').download(path);if(!r.error)blob=r.data}
@@ -243,32 +269,58 @@ async function openPhoto(id,path){
 }
 
 /* ---------- GPS work sessions ---------- */
-let watchId=null,tick=null,wake=null,lastLive=0;
+let watchId=null,tick=null,wake=null,lastLive=0,nativePoll=null,nativeBusy=false;
 async function lockScreen(){try{wake=await navigator.wakeLock?.request('screen')}catch{}}
-function startWatch(){
+async function startWatch(){
+ if(nativeTracker.available()&&!S.demo){
+  if(nativeBusy)return;nativeBusy=true;
+  try{await nativeTracker.start(S.active.id,t().working,S.user.id);clearInterval(nativePoll);nativePoll=setInterval(pollNative,5000);await pollNative();}catch{S.msg=t().trackingError;S.trackingError=true;render()}finally{nativeBusy=false}
+  return;
+ }
  if(!navigator.geolocation||watchId!==null)return;
  watchId=navigator.geolocation.watchPosition(onPos,err=>{if(err.code===1){S.msg=t().gpsDenied;stopWork()}},{enableHighAccuracy:true,maximumAge:5000,timeout:30000});
  tick=setInterval(()=>{const c=$('#clock');if(c&&S.active)c.textContent=fmtDur(Math.round((Date.now()-new Date(S.active.started_at))/1000))},1000);lockScreen();
 }
-function stopWatchOnly(){if(watchId!==null&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);watchId=null;clearInterval(tick);tick=null;try{wake&&wake.release()}catch{}wake=null}
+function stopWatchOnly(){clearInterval(nativePoll);nativePoll=null;if(watchId!==null&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);watchId=null;clearInterval(tick);tick=null;try{wake&&wake.release()}catch{}wake=null}
 function onPos(p){
- const a=S.active;if(!a)return;const c=p.coords;if(c.accuracy>60)return;
+ const a=S.active;if(!a)return;const c=p.coords;if(!Number.isFinite(c.latitude)||!Number.isFinite(c.longitude)||c.accuracy>60)return;
  const pt=[+c.latitude.toFixed(5),+c.longitude.toFixed(5),Math.round(p.timestamp/1000)],last=a.points[a.points.length-1];
- if(last){const d=hav(last,pt);if(d<8)return;if(d>3000&&pt[2]-last[2]<30)return;a.distance_m+=d}
+ if(last){const d=hav(last,pt),dt=pt[2]-last[2];if(dt<=0||d/dt>45)return;if(d<8&&dt<30)return;if(d>=8)a.distance_m+=d}
  a.points.push(pt);persist();const k=$('#live-km');if(k)k.textContent=(a.distance_m/1000).toFixed(2);
  const sp=$('#live-spd'),av=$('#live-avg');if(sp)sp.textContent=c.speed!=null&&c.speed>=0?(c.speed*3.6).toFixed(0):'—';if(av)av.textContent=kmhTxt(moveStats(a.points).kmh);updateLiveMap(a);
  if(!S.demo&&sb&&S.user&&navigator.onLine&&Date.now()-lastLive>30000){lastLive=Date.now();sb.from('bt_live').upsert({user_id:S.user.id,session_id:a.id,lat:pt[0],lng:pt[1],accuracy:Math.round(c.accuracy)}).then(()=>{})}
 }
 function startWork(){
- if(!navigator.geolocation){S.msg=t().noGps;return render()}
+ if(S.active)return;
+ if(!navigator.geolocation&&!nativeTracker.available()){S.msg=t().noGps;return render()}
  S.msg='';S.active={id:uuid(),started_at:new Date().toISOString(),points:[],distance_m:0};persist();startWatch();render();
 }
-function stopWork(){
+async function stopWork(){
+ if(nativeTracker.available()&&!S.demo){try{const snapshot=await nativeTracker.stop();applyNative(snapshot)}catch{S.msg=t().trackingError;render();return}}
  const a=S.active;stopWatchOnly();if(!a){render();return}
- const end=new Date(),dur=Math.max(1,Math.round((end-new Date(a.started_at))/1000)),n=a.points.length,step=Math.max(1,Math.ceil(n/4000));
+ const end=new Date(a.ended_at||Date.now()),dur=Math.max(1,Math.round((end-new Date(a.started_at))/1000)),n=a.points.length,step=Math.max(1,Math.ceil(n/4000));
  S.sessions.push({id:a.id,started_at:a.started_at,ended_at:end.toISOString(),distance_m:Math.round(a.distance_m),duration_s:dur,points:a.points.filter((_,i)=>i%step===0),dirty:!S.demo});
  if(!S.demo&&sb&&S.user)sb.from('bt_live').delete().eq('user_id',S.user.id).then(()=>{});
- S.active=null;persist();sync();render();
+ S.active=null;S.trackingError=false;persist();if(nativeTracker.available()&&!S.demo&&!S.storageError)await nativeTracker.clear();sync();render();
+}
+async function pollNative(){
+ if(document.visibilityState==='hidden')return;
+ try{const snapshot=await nativeTracker.status();applyNative(snapshot);if(S.active&&!snapshot.running){S.trackingError=true;S.msg=t().trackingError;render(true)}else if(snapshot.running&&S.trackingError){S.trackingError=false;if(S.msg===t().trackingError)S.msg='';render(true)}}catch{S.trackingError=true;S.msg=t().trackingError;render(true)}
+}
+function applyNative(snapshot){
+ if(!snapshot.id||snapshot.owner!==S.user?.id)return;
+ const previous=S.active?.points?.at(-1)?.[2];
+ S.active={id:snapshot.id,started_at:new Date(snapshot.started_at).toISOString(),points:snapshot.points||[],distance_m:snapshot.distance_m||0,ended_at:snapshot.ended_at};
+ persist();const clock=$('#clock'),km=$('#live-km');if(clock)clock.textContent=fmtDur(Math.round((Date.now()-snapshot.started_at)/1000));if(km)km.textContent=(S.active.distance_m/1000).toFixed(2);
+ const point=S.active.points.at(-1);if(point&&point[2]!==previous){updateLiveMap(S.active);if(sb&&navigator.onLine&&Date.now()-lastLive>30000){lastLive=Date.now();sb.from('bt_live').upsert({user_id:S.user.id,session_id:S.active.id,lat:point[0],lng:point[1],accuracy:0}).then(()=>{})}}
+}
+async function recoverNative(){
+ if(!nativeTracker.available()||!S.user)return;
+ try{const snapshot=await nativeTracker.status();if(!snapshot.id||snapshot.owner!==S.user.id)return;
+  if(S.sessions.some(s=>s.id===snapshot.id)){if(!S.storageError)await nativeTracker.clear();return}
+  applyNative(snapshot);
+  if(snapshot.ended_at){await stopWork()}else if(snapshot.running){clearInterval(nativePoll);nativePoll=setInterval(pollNative,5000)}else{S.trackingError=true;S.msg=t().trackingError}
+ }catch{S.msg=t().trackingError}
 }
 /* moving speed: segments slower than 1 m/s count as standing still and stay out of the average */
 function moveStats(p){
@@ -309,7 +361,7 @@ function routeSvg(points,w=320,h=220){
 }
 async function openSession(id){
  const s=S.sessions.find(x=>x.id===id);if(!s)return;
- if(!s.points&&!S.demo&&sb){const r=await sb.from('bt_routes').select('points').eq('session_id',id).maybeSingle();s.points=r.data?r.data.points:[]}
+ if(!s.points&&!S.demo){s.points=await idb.get('route:'+id).catch(()=>null);if(!s.points&&sb&&navigator.onLine){const r=await sb.from('bt_routes').select('points').eq('session_id',id).maybeSingle();if(r.error){S.msg=t().netErr;render();return}s.points=r.data?r.data.points:[];await idb.put('route:'+id,s.points);s.routeCached=true;persist()}}
  S.workDetail=s;render();
 }
 
@@ -369,11 +421,7 @@ function findStops(p){
  return out;
 }
 const stopsHtml=(stops)=>{const x=t();return `<h3>${esc(x.stopsTitle)}</h3>${stops.length?`<ul class="rows">${stops.map((st,k)=>`<li class="entry"><div><strong>${k+1}</strong> <small>${new Date(st.t*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</small></div><b>${esc(x.stopLine.replace('{m}',st.min))}</b></li>`).join('')}</ul>`:`<p class="muted">${esc(x.noStops)}</p>`}`};
-function monthPlan(){
- const n=new Date(),dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate(),el=n.getDate(),target=S.goals.daily*S.goals.days*dim/7;
- const earn=sum(live().filter(e=>inMonth(e,ym(today()))),'sale'),left=dim-el,daysLeft=Math.max(1,Math.round(left*S.goals.days/7));
- return {target,earn,forecast:el>0?earn/el*dim:0,need:target>earn&&left>0?(target-earn)/daysLeft:0,total:Math.max(1,Math.round(S.goals.days*dim/7)),units:S.goals.daily>0?earn/S.goals.daily:0};
-}
+function monthPlan(){return monthProjection(live(),S.goals.daily,S.goals.days)}
 function advice(plan){
  const x=t(),m=ym(today()),mon=live().filter(e=>inMonth(e,m)),earn=sum(mon,'sale'),exp=sum(mon,'expense'),by={};
  mon.filter(e=>e.kind==='expense').forEach(e=>by[e.category]=(by[e.category]||0)+e.amount);
@@ -387,8 +435,8 @@ function advice(plan){
  if(by.repair>0&&(!earn||by.repair/earn>=.1))tips.push(fill(x.tipRepair,{a:money(by.repair)}));
  const ws=weekStart(),lw=new Date(ws+'T00:00:00');lw.setDate(lw.getDate()-7);const lws=ymd(lw),thisW=sum(live().filter(e=>e.date>=ws),'expense'),lastW=sum(live().filter(e=>e.date>=lws&&e.date<ws),'expense');
  if(lastW>0&&thisW>lastW*1.2)tips.push(fill(x.tipWeek,{p:Math.round((thisW/lastW-1)*100)}));
- const km=S.sessions.filter(q=>localDate(q.started_at).startsWith(m)).reduce((p,q)=>p+kmOf(q),0);
- if(km>=5&&by.fuel>0)tips.push(fill(x.tipKm,{a:money(by.fuel/km)}));
+ const rate=fuelRate(live(),S.days,S.sessions,m,today());
+ if(rate!=null)tips.push(fill(x.tipKm,{a:money(rate)}));
  if(plan.need>0&&plan.target>0)tips.push(fill(x.tipPace,{a:money(plan.need)}));
  if(!tips.length&&earn>0&&exp/earn<.3)tips.push(fill(x.tipGood,{p:pc(exp)}));
  return tips.slice(0,4);
@@ -432,16 +480,16 @@ const inApp=()=>!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.C
 const AI={mail:'M4 6h16v12H4zM4 7l8 6 8-6',lock:'M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3',user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20c0-4 4-6 8-6s8 2 8 6',eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'};
 const aic=n=>`<svg class="ai" viewBox="0 0 24 24" aria-hidden="true"><path d="${AI[n]}"/></svg>`;
 function authView(){
- const x=t(),signup=S.authMode==='signup',app=inApp();
+ const x=t(),signup=S.authMode==='signup',reset=S.authMode==='reset',app=inApp();
  return `<main class="auth v2"><div class="a-lang">${langBar()}</div>
- <section class="a-hero"><div class="a-art">${bundlesSvg(13.4,27,40)}</div><div class="brand big"><span class="logo">K</span><span>${esc(x.app)}</span></div><h1>${esc(x.tagline)}</h1><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></section>
+ <section class="a-hero"><div class="a-art" aria-hidden="true">${bundlesSvg(13.4,27,40)}</div><div class="brand big"><span class="logo">K</span><span>${esc(x.app)}</span></div><h1>${esc(x.tagline)}</h1><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></section>
  <form class="a-card form" data-act="auth" novalidate>
- <div class="seg wide a-tabs" role="tablist">${['signin','signup'].map(m=>`<button type="button" role="tab" data-act="mode" data-v="${m}" aria-pressed="${S.authMode===m}">${esc(x[m])}</button>`).join('')}</div>
+ <div class="seg wide a-tabs" role="tablist">${['signin','signup'].map(m=>`<button type="button" role="tab" data-act="mode" data-v="${m}" aria-selected="${S.authMode===m}">${esc(x[m])}</button>`).join('')}</div>
  <label class="fld"><span>${esc(x.email)}</span><span class="in">${aic('mail')}<input id="f-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none"></span></label>
- <label class="fld"><span>${esc(x.password)}</span><span class="in">${aic('lock')}<input id="f-pw" type="password" autocomplete="${signup?'new-password':'current-password'}"><button type="button" class="eye" data-act="pw-eye" aria-label="${esc(x.password)}">${aic('eye')}</button></span></label>
+ ${reset?'':`<label class="fld"><span>${esc(x.password)}</span><span class="in">${aic('lock')}<input id="f-pw" type="password" autocomplete="${signup?'new-password':'current-password'}"><button type="button" class="eye" data-act="pw-eye" aria-label="${esc(x.password)}">${aic('eye')}</button></span></label>`}
  ${signup?`<label class="fld"><span>${esc(x.nickname)}</span><span class="in">${aic('user')}<input id="f-nick" autocomplete="username" maxlength="20" autocapitalize="none"></span><small>${esc(x.nickRule)}</small></label><div class="notice slim"><label class="check"><input id="f-consent" type="checkbox"> ${esc(x.consent)}</label>${supMore()}</div>`:''}
  ${S.msg?`<p class="msg${S.msgOk?' ok':''}" role="alert">${esc(S.msg)}</p>`:''}
- <button class="btn primary a-go" type="submit">${esc(signup?x.signup:x.signin)}</button>
+ <button class="btn primary a-go" type="submit">${esc(reset?x.sendReset:signup?x.signup:x.signin)}</button>${!signup&&!reset?`<button type="button" class="link" data-act="mode" data-v="reset">${esc(x.forgot)}</button>`:''}
  <div class="a-links"><button class="link" type="button" data-act="demo">${esc(x.demo)}</button>${app?'':`<button class="link" type="button" data-act="apk">${esc(x.apkBtn)}</button>`}</div></form>
  ${app?'':`<dialog id="apk"><div class="dlg"><h2>${esc(x.apkTitle)}</h2><ul class="feats">${x.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="notice slim"><label class="check"><input id="apk-ok" type="checkbox"> ${esc(x.consent)}</label>${supMore()}</div><p class="msg" id="apk-soon" hidden>${esc(x.apkSoon)}</p><div class="row"><a id="apk-go" class="btn primary" href="${APK_URL}" download aria-disabled="true">${esc(x.apkGo)}</a><button class="btn ghost" data-act="apk-close" type="button">${esc(x.close)}</button></div></div></dialog>`}</main>`;
 }
@@ -450,10 +498,10 @@ function langBar(){return `<div class="seg" role="group" aria-label="Language">$
 
 function appView(){
  const x=t(),tabs=S.admin?['watch','insights','settings']:['home','list','add','work','settings'];
- if(!tabs.includes(S.tab))S.tab=tabs[0];
- const body={home:homeView,list:listView,settings:settingsView,watch:watchView,insights:insightsView,work:workView,add:homeView}[S.tab]();
- return `${S.demo?`<div class="demo-bar">${esc(S.sim?x.simBanner:x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">K</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header><main class="view">${body}</main>
- <nav class="tabs" aria-label="Navigation">${tabs.map(k=>`<button data-act="tab" data-v="${k}" class="${k==='add'?'plus':''}" aria-current="${S.tab===k&&k!=='add'}" aria-label="${esc(x[k])}">${icon(k)}<span>${esc(x[k])}</span></button>`).join('')}</nav></div>${S.sheet?sheetView():''}${S.viewer?`<div class="sheet-bg" data-act="viewer-close"><div class="viewer"><img src="${S.viewer}" alt=""><button class="btn ghost" data-act="viewer-close">${esc(x.close)}</button></div></div>`:''}`;
+ if(!tabs.includes(S.tab)&&S.tab!=='reports')S.tab=tabs[0];
+ const body={reports:reportsView,home:homeView,list:listView,settings:settingsView,watch:watchView,insights:insightsView,work:workView,add:homeView}[S.tab]();
+ return `${S.demo?`<div class="demo-bar">${esc(S.sim?x.simBanner:x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">K</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header>${statusView()}<main class="view">${body}</main>${S.undo?`<div class="undo" role="status">${esc(x.deleted)} <button class="link" data-act="undo">${esc(x.undo)}</button></div>`:''}
+ <nav class="tabs" aria-label="Navigation">${tabs.map(k=>`<button data-act="tab" data-v="${k}" class="${k==='add'?'plus':''}" aria-current="${(S.tab===k||(S.tab==='reports'&&k==='home'))&&k!=='add'}" aria-label="${esc(x[k])}">${icon(k)}<span>${esc(x[k])}</span></button>`).join('')}</nav></div>${S.sheet?sheetView():''}${S.viewer?`<div class="sheet-bg" data-act="viewer-close"><div class="viewer"><img src="${S.viewer}" alt=""><button class="btn ghost" data-act="viewer-close">${esc(x.close)}</button></div></div>`:''}`;
 }
 function homeView(){
  const x=t(),d=today(),m=ym(d),day=live().filter(e=>e.date===d),mon=live().filter(e=>inMonth(e,m)),wk=live().filter(e=>e.date>=weekStart());
@@ -461,16 +509,18 @@ function homeView(){
  const weekEarn=sum(wk,'sale'),byCat={};day.filter(e=>e.kind==='expense').forEach(e=>byCat[e.category]=(byCat[e.category]||0)+e.amount);
  const recent=live().sort((a,b)=>b.date.localeCompare(a.date)||b.created_at.localeCompare(a.created_at)).slice(0,5);
  const C=2*Math.PI*40,len=C*pct/100,plan=monthPlan(),tips=advice(plan),mpct=plan.target>0?Math.min(100,Math.round(plan.earn/plan.target*100)):0;
- return `<section class="card bales"><div class="bales-wrap"><div class="bales-art">${goal>0?bundlesSvg(plan.units,plan.total,pct):''}</div><div class="bales-text"><small>${esc(x.monthBales.replace('{n}',plan.total))}</small>${goal>0?`<strong class="big">${money(plan.earn)}</strong><span class="muted">${esc(x.of)} ${money(plan.target)} · ${mpct}%</span><span class="muted">${esc(x.forecast)}: <b>${money(plan.forecast)}</b></span>${fixedNote(plan)}<span class="muted tiny">${esc(x.baleHint)} ${esc(x.coinHint)}</span>`:`<span class="muted">${esc(x.noBales)}</span>`}</div></div></section>
+ return `<section class="card balance today-summary"><small>${esc(x.today)} · ${esc(x.pocket)}</small><strong class="big">${money(earn-spent)}</strong><p class="muted">${esc(x.netHint)}</p><div class="quick-actions"><button class="btn primary" data-act="new-entry">${esc(x.add)}</button><button class="btn ghost" data-act="tab" data-v="work">${esc(S.active?x.working:x.startWork)}</button></div></section>
  <section class="card goal"><small>${esc(x.today)} · ${esc(x.dailyGoal)}</small><div class="goal-row"><div class="goal-ring"><svg class="ring goalring" viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="40"/><circle class="seg c1" cx="50" cy="50" r="40" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}"/></svg><span class="pct">${pct}%</span></div><div class="goal-text"><strong class="big">${money(earn)}</strong><span class="muted">${goal>0?`${esc(x.of)} ${money(goal)}`:esc(x.noGoal)}</span>${goal>0?`<span class="${done?'pos':'muted'}">${done?esc(x.reached):`${esc(x.remaining)}: ${money(left)}`}</span>`:''}</div></div><div class="two"><span class="pos">▲ ${esc(x.earned)} ${money(earn)}</span><span class="neg">▼ ${esc(x.spent)} ${money(spent)}</span><span>${esc(x.net)} <b>${money(earn-spent)}</b></span></div></section>
- ${statsCard()}
+ <button class="btn ghost report-link" data-act="tab" data-v="reports">${esc(x.reports)}</button>
  <section class="card"><h3>${esc(x.todayExpenses)}</h3><div class="tiles">${CATS.expense.map(c=>`<button class="tile${byCat[c]?' has':''}" data-act="quick" data-v="${c}"><span>${esc(catName(c))}</span><b>${byCat[c]?money(byCat[c]):'+'}</b></button>`).join('')}</div><small class="muted">${esc(x.tapCat)}</small></section>
 
- <section class="card"><h3>${esc(x.monthTitle)}</h3><div class="two"><span class="pos">${esc(x.earned)} <b>${money(sum(mon,'sale'))}</b></span><span class="neg">${esc(x.spent)} <b>${money(sum(mon,'expense'))}</b></span></div></section>
- <section class="card"><h3>${esc(x.adviceTitle)}</h3>${tips.length?`<ul class="tips">${tips.map(q=>`<li>${esc(q)}</li>`).join('')}</ul>`:`<p class="muted">${esc(x.adviceNone)}</p>`}<small class="muted">${esc(x.adviceNote)}</small></section>
  <section class="card"><h3>${esc(x.recent)}</h3>${recent.length?`<ul class="rows">${recent.map(e=>rowHtml(e,true)).join('')}</ul>`:`<p class="muted">${esc(x.empty)}</p>`}</section>`;
 }
-function rowHtml(e,del=false,cur=S.cur){const x=t();return `<li class="entry ${e.kind}"><div><strong>${esc(catName(e.category)||x.kind[e.kind])}</strong><small>${esc(e.note||x.kind[e.kind])} · ${esc(e.date)}</small></div><b>${e.kind==='expense'?'−':'+'}${money(e.amount,cur)}</b>${e.photo_path?`<button class="x" data-act="photo" data-id="${e.id}" data-path="${esc(e.photo_path)}" aria-label="${esc(x.viewPhoto)}">📎</button>`:''}${del?`<button class="x" data-act="del" data-id="${e.id}" aria-label="${esc(x.del)}">×</button>`:''}</li>`}
+function reportsView(){
+ const x=t(),legacy=legacyTotalDates(live()),plan=monthPlan(),goal=S.goals.daily,pct=goal>0?Math.min(100,Math.round(dayNums(today()).earn/goal*100)):0,mpct=plan.target>0?Math.min(100,Math.round(plan.earn/plan.target*100)):0,tips=advice(plan);
+ return `<button class="link" data-act="tab" data-v="home">${esc(x.home)}</button><h2 class="h">${esc(x.reports)}</h2>${legacy.length?`<section class="card"><h3>${esc(x.legacyTitle)}</h3><p class="muted">${esc(x.legacyHint)}</p>${legacy.map(date=>`<button class="link" data-act="review-day" data-v="${date}">${esc(dateLabel(date))}</button>`).join('')}</section>`:''}<section class="card"><h3>${esc(x.kind.income)} · ${esc(x.month)}</h3><strong class="big2">${money(sum(live().filter(e=>inMonth(e,ym(today()))),'income'))}</strong></section><section class="card bales"><div class="bales-wrap"><div class="bales-art">${goal>0?bundlesSvg(plan.units,plan.total,pct):''}</div><div class="bales-text"><small>${esc(x.monthBales.replace('{n}',plan.total))}</small>${goal>0?`<strong class="big">${money(plan.earn)}</strong><span class="muted">${esc(x.of)} ${money(plan.target)} · ${mpct}%</span><span class="muted">${esc(x.forecast)}: <b>${money(plan.forecast)}</b></span>${fixedNote(plan)}<span class="muted tiny">${esc(x.baleHint)} ${esc(x.coinHint)}</span>`:`<span class="muted">${esc(x.noBales)}</span>`}</div></div></section>${statsCard()}<section class="card"><h3>${esc(x.adviceTitle)}</h3>${tips.length?`<ul class="tips">${tips.map(q=>`<li>${esc(q)}</li>`).join('')}</ul>`:`<p class="muted">${esc(x.adviceNone)}</p>`}<small class="muted">${esc(x.adviceNote)}</small><p class="muted">${esc(x.dayMetricsNote)}</p></section>`;
+}
+function rowHtml(e,del=false,cur=S.cur){const x=t();return `<li class="entry ${e.kind}"><div><strong>${esc(e.category==='daily'?x.dayBalance:catName(e.category)||x.kind[e.kind])}</strong><small>${esc(e.category==='daily'?x.kind[e.kind]:e.note||x.kind[e.kind])} · ${esc(e.date)}</small></div><b>${e.kind==='expense'?'−':'+'}${money(e.amount,cur)}</b>${e.photo_path?`<button class="x" data-act="photo" data-id="${e.id}" data-path="${esc(e.photo_path)}" aria-label="${esc(x.viewPhoto)}">📎</button>`:''}${del?`<button class="x edit" data-act="edit" data-id="${e.id}" aria-label="${esc(x.edit)}">✎</button><button class="x" data-act="del" data-id="${e.id}" aria-label="${esc(x.del)}">×</button>`:''}</li>`}
 function listView(){
  const x=t(),f=S.filter,items=live().filter(e=>f==='all'||e.kind===f).sort((a,b)=>b.date.localeCompare(a.date)||b.created_at.localeCompare(a.created_at));
  const groups={};items.forEach(e=>(groups[e.date]=groups[e.date]||[]).push(e));
@@ -481,7 +531,7 @@ function workView(){
  const all=sessionsAll(),d=today(),ws=weekStart(),dayS=all.filter(s=>localDate(s.started_at)===d),weekS=all.filter(s=>localDate(s.started_at)>=ws);
  const tot=arr=>({sec:arr.reduce((p,s)=>p+(s.duration_s||0),0),km:arr.reduce((p,s)=>p+((a&&s.id===a.id)?a.distance_m:s.distance_m)/1000,0)});
  const td=tot(dayS),tw=tot(weekS);
- const main=a?`<section class="card work-live"><small>${esc(x.working)}</small><div class="clock" id="clock">${fmtDur(Math.round((Date.now()-new Date(a.started_at))/1000))}</div><div class="two"><span><b id="live-km">${(a.distance_m/1000).toFixed(2)}</b> ${esc(x.km)}</span><span>${esc(x.nowSpeed)} <b id="live-spd">—</b> ${esc(x.kmh)}</span><span>${esc(x.avgShort)} <b id="live-avg">${kmhTxt(moveStats(a.points).kmh)}</b> ${esc(x.kmh)}</span></div>${mapBox(a.points,[],'live-map')}<small class="muted">${esc(x.keepOpen)}</small><button class="btn danger" data-act="work-stop">${esc(x.stopWork)}</button></section>`
+ const main=a?`<section class="card work-live"><small>${esc(x.working)}</small><div class="clock" id="clock">${fmtDur(Math.round((Date.now()-new Date(a.started_at))/1000))}</div><div class="two"><span><b id="live-km">${(a.distance_m/1000).toFixed(2)}</b> ${esc(x.km)}</span><span>${esc(x.nowSpeed)} <b id="live-spd">—</b> ${esc(x.kmh)}</span><span>${esc(x.avgShort)} <b id="live-avg">${kmhTxt(moveStats(a.points).kmh)}</b> ${esc(x.kmh)}</span></div>${mapBox(a.points,[],'live-map')}<small class="muted">${esc(nativeTracker.available()&&!S.demo?x.nativeTracking:x.keepOpen)}</small>${S.trackingError?`<p class="msg">${esc(x.trackingError)}</p><button class="btn ghost" data-act="resume">${esc(x.resume)}</button>`:''}<button class="btn danger" data-act="work-stop">${esc(x.stopWork)}</button></section>`
   :`<section class="card work-start"><button class="btn primary big-btn" data-act="work-start">${esc(x.startWork)}</button>${S.msg?`<p class="msg">${esc(S.msg)}</p>`:''}</section>`;
  const done=all.filter(s=>s.ended_at);
  return `${main}${periodCard(done)}
@@ -497,8 +547,8 @@ function settingsView(){
  <form class="card form" data-act="fixed"><h3>${esc(x.fixedTitle)}</h3><p class="muted">${esc(x.fixedHelp)}</p>${fixedLive().length?`<ul class="rows">${fixedLive().map(f=>`<li class="entry"><div><strong>${esc(f.name)}</strong><small>${esc(f.period==='week'?x.perWeek:x.perMonth)}</small></div><b>${money(f.amount)}</b><button type="button" class="x" data-act="fixed-del" data-id="${f.id}" aria-label="${esc(x.del)}">×</button></li>`).join('')}</ul>`:`<p class="muted">${esc(x.fixedNone)}</p>`}<label>${esc(x.fixedName)}<input id="fx-name" maxlength="60" autocomplete="off"></label><label>${esc(x.amount)}<input id="fx-amt" inputmode="decimal" autocomplete="off"></label><div class="seg wide">${['week','month'].map(k=>`<button type="button" data-act="fixed-per" data-v="${k}" aria-pressed="${S.fixedPer===k}">${esc(k==='week'?x.perWeek:x.perMonth)}</button>`).join('')}</div><button class="btn primary" type="submit">${esc(x.fixedAdd)}</button></form>`}
  <section class="card form"><h3>${esc(x.account)}</h3>${S.admin?`<p class="muted">${esc(x.auditNote)}</p>`:''}<p>${esc(S.nick)}${S.user?.email?` · <span class="muted">${esc(S.user.email)}</span>`:''}</p><div class="notice slim">${supMore()}</div>
  <h3>${esc(x.language)}</h3>${langBar()}<h3>${esc(x.currency)}</h3><div class="seg wide">${CURRENCIES.map(c=>`<button data-act="cur" data-v="${c}" aria-pressed="${S.cur===c}">${c}</button>`).join('')}</div>
- <label class="check"><input id="s-sound" type="checkbox" data-act="sound" ${S.sound?'checked':''}> ${esc(x.sound)}</label>
- <button class="btn ghost" data-act="export">${esc(x.export)}</button>${S.demo?'':`<button class="btn ghost" data-act="sync">${esc(x.syncNow)}</button>`}<button class="btn danger" data-act="logout">${esc(x.logout)}</button></section>`;
+ ${AUDIO_LANGS.includes(S.lang)?`<label class="check"><input id="s-sound" type="checkbox" data-act="sound" ${S.sound?'checked':''}> ${esc(x.sound)}</label>`:''}
+ <button class="btn ghost" data-act="backup">${esc(x.backup)}</button><button class="btn ghost" data-act="export">${esc(x.export)}</button>${S.demo?'':`<button class="btn ghost" data-act="sync">${esc(x.syncNow)}</button>`}<button class="btn danger" data-act="logout">${esc(x.logout)}</button></section>`;
 }
 function watchView(){
  const x=t();if(!S.admin)return `<p class="muted center">${esc(x.noAdmin)}</p>`;
@@ -530,16 +580,16 @@ function sheetView(){
  const x=t(),sh=S.sheet;
  if(sh.type==='nick')return `<div class="sheet-bg"><form class="sheet" data-act="nick"><h3>${esc(x.askNick)}</h3><label><input id="n-nick" maxlength="20" autocomplete="username"><small>${esc(x.nickRule)}</small></label>${S.msg?`<p class="msg">${esc(S.msg)}</p>`:''}<button class="btn primary" type="submit">${esc(x.save)}</button></form></div>`;
  if(sh.type==='gps')return `<div class="sheet-bg" data-act="sheet-bg"><div class="sheet"><h3>${esc(x.gpsTitle)}</h3><div class="notice"><p>${esc(x.gpsText)}</p></div><div class="row"><button class="btn ghost" data-act="sheet-close">${esc(x.cancel)}</button><button class="btn primary" data-act="gps-allow">${esc(x.gpsAllow)}</button></div></div></div>`;
- if(sh.type==='day')return `<div class="sheet-bg" data-act="sheet-bg"><form class="sheet" id="day-form" data-act="day" novalidate><h3>${esc(x.dayTitle)}</h3><p class="muted">${esc(x.dayHint)}</p>
+ if(sh.type==='day')return `<div class="sheet-bg" data-act="sheet-bg"><form class="sheet" role="dialog" aria-modal="true" aria-label="${esc(x.dayTitle)}" id="day-form" data-act="day" novalidate><h3>${esc(x.dayTitle)}</h3><p class="muted">${esc(x.dayHint)}</p>${legacyTotalDates(live()).includes(sh.date)?`<p class="notice">${esc(x.legacyHint)}</p>`:''}
  <label>${esc(x.dayEarned)}<input id="d-earn" inputmode="decimal" autocomplete="off" value="${esc(sh.earn)}"></label>
  <div class="row"><label>${esc(x.dayKm)}<input id="d-km" inputmode="decimal" autocomplete="off" value="${esc(sh.km)}"></label><label>${esc(x.dayHours)}<input id="d-h" inputmode="decimal" autocomplete="off" value="${esc(sh.hours)}"></label></div>
  <label>${esc(x.daySpent)}<input id="d-spent" inputmode="decimal" autocomplete="off" value="${esc(sh.spent)}"></label>
  <label>${esc(x.date)}<input id="d-date" type="date" value="${esc(sh.date)}"></label>
- <div id="day-prev">${dayPrev(sh)}</div><p class="muted" id="day-ex"${live().some(e=>e.date===sh.date&&e.category==='daily')?'':' hidden'}>${esc(x.dayReplace)}</p>
+ <p id="day-error" class="msg" role="alert"></p><div id="day-prev">${dayPrev(sh)}</div><p class="muted" id="day-ex"${live().some(e=>e.date===sh.date&&e.category==='daily')?'':' hidden'}>${esc(x.dayReplace)}</p>
  <div class="row"><button type="button" class="btn ghost" data-act="sheet-close">${esc(x.cancel)}</button><button class="btn primary" type="submit">${esc(x.save)}</button></div>
  <button type="button" class="link" data-act="to-single">${esc(x.singleEntry)}</button></form></div>`;
  const kind=sh.kind,cats=CATS[kind];
- return `<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true"><button type="button" class="link" data-act="to-day">${esc(x.dayTitle)} →</button><div class="seg wide">${['sale','expense','income'].map(k=>`<button data-act="kind" data-v="${k}" aria-pressed="${kind===k}">${esc(x.kind[k])}</button>`).join('')}</div><div class="amount" id="amt" aria-live="polite">${esc(sh.amount||'0')}</div>
+ return `<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(sh.id?x.edit:x.add)}"><button type="button" class="link" data-act="to-day">${esc(x.dayTitle)} →</button><div class="seg wide">${['sale','expense','income'].map(k=>`<button data-act="kind" data-v="${k}" aria-pressed="${kind===k}">${esc(x.kind[k])}</button>`).join('')}</div><input class="amount" id="amt" aria-label="${esc(x.amount)}" inputmode="decimal" autocomplete="off" value="${esc(sh.amount)}" placeholder="0"><p id="entry-error" class="msg" role="alert"></p>
  <div class="chips">${cats.map(c=>`<button data-act="cat" data-v="${c}" aria-pressed="${sh.category===c}">${esc(catName(c))}</button>`).join('')}</div>
  <div class="keys">${['1','2','3','4','5','6','7','8','9','.','0','⌫'].map(k=>`<button data-act="key" data-v="${k}">${k}</button>`).join('')}</div>
  ${sh.permCam?`<div class="notice"><strong>${esc(x.camTitle)}</strong><p>${esc(x.camText)}</p><button class="btn primary" data-act="cam-allow">${esc(x.camAllow)}</button></div>`:`<div class="row photo-row"><button class="btn ghost" data-act="photo-pick" data-v="cam">📷 ${esc(x.takePhoto)}</button><button class="btn ghost" data-act="photo-pick" data-v="gal">🖼 ${esc(x.pickPhoto)}</button></div>${sh.photoUrl?`<div class="thumb"><img src="${sh.photoUrl}" alt="${esc(x.receipt)}"><button class="x" data-act="photo-rm" aria-label="${esc(x.removePhoto)}">×</button></div>`:''}`}
@@ -566,22 +616,25 @@ async function openStaff(id){
 }
 
 /* ---------- render + events ---------- */
-function render(){
+function render(preserve=false){
  if(S.sheet&&S.sheet.type==='day'&&$('#day-form'))return;
- const root=$('#app'),open=$('#apk')?.open;
+ const root=$('#app'),open=$('#apk')?.open,fields=preserve?[...root.querySelectorAll('input[id]')].map(i=>({id:i.id,value:i.value,checked:i.checked})):[],focused=preserve?document.activeElement?.id:null;
+ if(preserve&&S.sheet?.type==='add')keepSheet();
  document.documentElement.lang=S.lang;document.title=t().app;
- root.innerHTML=!S.user&&!S.demo?authView():appView();
+ root.innerHTML=S.recovering?recoveryView():!S.user&&!S.demo?authView():appView();
+ for(const field of fields){const input=document.getElementById(field.id);if(input){input.value=field.value;input.checked=field.checked}}if(focused)document.getElementById(focused)?.focus({preventScroll:true});
+ const modal=$('.sheet');if(modal){modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label',t().add);if(!preserve)modal.querySelector('input,button')?.focus({preventScroll:true})}
  liveM=null;document.querySelectorAll('[data-map]').forEach(drawMap);
  if(open&&$('#apk'))$('#apk').showModal();
 }
 function csv(){
  const q=v=>{let s=String(v??'');if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};
- const rows=[['date','kind','category','amount','note'],...live().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.kind,catName(e.category),e.amount,e.note])];
+ const rows=[['date','kind','category','amount','note'],...live().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.kind,catName(e.category),e.amount,e.category==='daily'&&e.note===BALANCE_NOTE?t().dayBalance:e.note])];
  const blob=new Blob(['﻿'+rows.map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
  a.href=URL.createObjectURL(blob);a.download='bakhy-budget.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 function openSheet(kind='sale',category=CATS.sale[0]){S.sheet={type:'add',kind,amount:'',category,date:today()}}
-function setAmount(){const a=$('#amt');if(a)a.textContent=S.sheet.amount||'0'}
+function setAmount(){const a=$('#amt');if(a)a.value=S.sheet.amount||''}
 function keepSheet(){const n=$('#s-note'),d=$('#s-date');if(S.sheet&&n)S.sheet.note=n.value;if(S.sheet&&d&&d.value)S.sheet.date=d.value}
 function closeSheet(){if(S.sheet&&S.sheet.photoUrl)URL.revokeObjectURL(S.sheet.photoUrl);S.sheet=null;render()}
 async function openApk(){
@@ -593,19 +646,20 @@ async function openApk(){
 document.addEventListener('submit',async e=>{
  const f=e.target.closest('[data-act]');if(!f)return;e.preventDefault();
  const act=f.dataset.act;
- if(act==='auth')return submitAuth();
+ if(act==='auth'){if(S.authBusy)return;S.authBusy=true;const button=f.querySelector('[type=submit]');if(button)button.disabled=true;try{return await submitAuth()}catch{return setMsg(t().netErr)}finally{S.authBusy=false;if(button)button.disabled=false}}
+ if(act==='password'){const password=$('#new-pw').value;if(password.length<8){$('#reset-error').textContent=t().weakPw;return}const {error}=await sb.auth.updateUser({password});if(error){$('#reset-error').textContent=t().netErr;return}S.recovering=false;await sb.auth.signOut();S.user=null;setMsg(t().passwordSaved,true);return}
  if(act==='day')return saveDay();
  if(act==='fixed'){const name=$('#fx-name').value.trim().slice(0,60),amount=n2($('#fx-amt').value);if(!name||!(amount>0)||amount>=1e9){say('error');return}S.fixed.push({id:uuid(),name,amount,period:S.fixedPer,deleted_at:null,dirty:!S.demo});persist();sync();render();return}
- if(act==='goals'){const v=Math.max(0,Number(String($('#g-daily').value).replace(',','.'))||0);S.goals.daily=v;S.dirty.goals=true;persist();S.msg=t().goalSaved;render();S.msg='';sync();return}
+ if(act==='goals'){const v=n2($('#g-daily').value);if(!Number.isFinite(v)||v<0||v>=1e9){S.msg=t().invalid;render(true);return}S.goals.daily=v;S.dirty.goals=true;persist();S.msg=t().goalSaved;render();S.msg='';sync();return}
  if(act==='nick'){const nick=$('#n-nick').value.trim();if(!NICK.test(nick)){S.msg=t().nickRule;return render()}const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur});if(r.error){S.msg=r.error.code==='23505'?t().nickTaken:t().netErr;return render()}S.nick=nick;S.sheet=null;S.msg='';const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data;render();say('welcome');sync()}
 });
-document.addEventListener('input',e=>{if(e.target.closest('#day-form'))syncDayForm()});
+document.addEventListener('input',e=>{if(e.target.closest('#day-form'))syncDayForm();if(e.target.id==='amt'&&S.sheet)S.sheet.amount=e.target.value});
 document.addEventListener('change',async e=>{
  if(e.target.id==='d-date')return syncDayForm();
  const i=e.target;if(i.id!=='in-cam'&&i.id!=='in-gal')return;const file=i.files&&i.files[0];if(!file||!S.sheet)return;
  keepSheet();try{const blob=await compress(file);if(S.sheet.photoUrl)URL.revokeObjectURL(S.sheet.photoUrl);S.sheet.photo=blob;S.sheet.photoUrl=URL.createObjectURL(blob)}catch{alert(t().photoErr)}render();
 });
-document.addEventListener('click',e=>{
+document.addEventListener('click',async e=>{
  const b=e.target.closest('[data-act]');if(!b||b.tagName==='FORM')return;const a=b.dataset.act,v=b.dataset.v;
  if(a==='lang'){S.lang=v;saveSettings();render()}
  else if(a==='mode'){const em=$('#f-email')?.value||'';S.authMode=v||(S.authMode==='signup'?'signin':'signup');S.msg='';render();if(em)$('#f-email').value=em}
@@ -620,13 +674,19 @@ document.addEventListener('click',e=>{
  else if(a==='to-day'){keepSheet();openDay();render()}
  else if(a==='quick'){openSheet('expense',v);render()}
  else if(a==='filter'){S.filter=v;render()}
- else if(a==='cur'){if(v!==S.cur&&live().length&&!confirm(t().currencyNote))return;S.cur=v;saveSettings();if(S.user&&sb)sb.from('bt_profiles').update({currency:v}).eq('user_id',S.user.id).then(()=>{});render()}
- else if(a==='days'){const i=$('#g-daily');if(i)S.goals.daily=Math.max(0,Number(i.value.replace(',','.'))||0);S.goals.days=Number(v);S.dirty.goals=true;persist();sync();render()}
+ else if(a==='cur'){if(v!==S.cur&&(S.entries.length||S.fixed.length||S.goals.daily>0)){setMsg(t().currencyLocked);return;}S.cur=v;saveSettings();if(S.user&&sb)sb.from('bt_profiles').update({currency:v}).eq('user_id',S.user.id).then(()=>{});render()}
+ else if(a==='days'){const i=$('#g-daily');if(i){const value=n2(i.value);if(!Number.isFinite(value)||value<0||value>=1e9){S.msg=t().invalid;render(true);return}S.goals.daily=value;}S.goals.days=Number(v);S.dirty.goals=true;persist();sync();render()}
  else if(a==='sound'){S.sound=b.checked;saveSettings()}
  else if(a==='export')csv();
  else if(a==='sync')sync();
  else if(a==='logout')logout();
- else if(a==='del'){if(confirm(t().confirmDel))removeEntry(b.dataset.id)}
+ else if(a==='del')removeEntry(b.dataset.id);
+ else if(a==='undo'){const row=S.entries.find(r=>r.id===S.undo);if(row){row.deleted_at=null;if(!S.demo)S.pending.add(row.id);persist();sync()}S.undo=null;render()}
+ else if(a==='edit'){const row=live().find(r=>r.id===b.dataset.id);if(row){S.sheet={type:'add',...row,amount:String(row.amount)};render()}}
+ else if(a==='review-day'){S.sheet={type:'day',date:v};fillDay(S.sheet);render()}
+ else if(a==='new-entry'){openSheet();render()}
+ else if(a==='backup')backup();
+ else if(a==='resume')startWatch();
  else if(a==='photo')openPhoto(b.dataset.id,b.dataset.path);
  else if(a==='viewer-close'){if(e.target===b||b.tagName==='BUTTON'){URL.revokeObjectURL(S.viewer);S.viewer=null;render()}}
  else if(a==='staff')openStaff(b.dataset.id);
@@ -645,21 +705,59 @@ document.addEventListener('click',e=>{
  else if(a==='photo-rm'){keepSheet();URL.revokeObjectURL(S.sheet.photoUrl);S.sheet.photo=null;S.sheet.photoUrl=null;render()}
  else if(a==='sheet-close')closeSheet();
  else if(a==='sheet-bg'){if(e.target===b)closeSheet()}
- else if(a==='sheet-save'){keepSheet();const amount=Number(S.sheet.amount);if(!(amount>0)){say('error');return}addEntry({kind:S.sheet.kind,amount,category:S.sheet.category,note:(S.sheet.note||'').trim().slice(0,200),date:S.sheet.date||today(),photo:S.sheet.photo});closeSheet()}
+ else if(a==='sheet-save'){
+  if(S.saving)return;keepSheet();const sh=S.sheet,amount=decimal(sh.amount);
+  if(!(amount>0)||amount>=1e9||!validDate(sh.date)){ $('#entry-error').textContent=t().invalid;say('error');return }
+  S.saving=true;b.disabled=true;
+  try{
+   if(sh.id){const row=S.entries.find(r=>r.id===sh.id);if(!row)throw new Error('missing');
+    if(sh.photo){if(S.demo)demoPhotos.set(row.id,sh.photo);else{await idb.put(row.id,sh.photo);S.photoQ.add(row.id);S.photoVersions??={};S.photoVersions[row.id]=uuid()}row.photo_path=`${uid()}/${row.id}.jpg`}
+    Object.assign(row,{kind:sh.kind,amount,category:sh.category,note:(sh.note||'').trim().slice(0,200),date:sh.date});if(!S.demo)S.pending.add(row.id);persist();sync();
+   }else await addEntry({kind:sh.kind,amount,category:sh.category,note:(sh.note||'').trim().slice(0,200),date:sh.date,photo:sh.photo});
+   closeSheet();
+  }catch{if($('#entry-error'))$('#entry-error').textContent=t().localError}finally{S.saving=false;b.disabled=false}
+ }
 });
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.active&&!wake)lockScreen()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.active){if(nativeTracker.available()&&!S.demo)pollNative();else if(!wake)lockScreen()}});
 window.addEventListener('online',()=>{sync();render()});window.addEventListener('offline',render);
 
 /* ---------- boot ---------- */
 async function boot(){
  render();
- if('serviceWorker' in navigator)navigator.serviceWorker.register('/budgettracker/sw.js',{scope:'/budgettracker/'}).catch(()=>{});
+ if(import.meta.env.PROD&&!inApp()&&'serviceWorker' in navigator)navigator.serviceWorker.register('/budgettracker/sw.js',{scope:'/budgettracker/'}).catch(()=>{});
  const q=new URLSearchParams(location.search);
  if(q.get('demo')==='warsaw')return startWarsaw();
  if(q.has('demo'))return startDemo(q.get('demo')==='admin');
  if(!sb)return;
- const {data}=await sb.auth.getSession();
- if(data.session)enter(data.session.user);
- sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT'&&!S.demo){S.user=null;render()}});
+ const cached=!navigator.onLine?LS.get('auth',null):null;
+ const {data}=cached?.user?.id?{data:{session:cached}}:await sb.auth.getSession();
+ if(data.session){if(q.get('recovery')==='1'){S.recovering=true;render()}else enter(data.session.user);}
+ sb.auth.onAuthStateChange(ev=>{if(ev==='PASSWORD_RECOVERY'){S.recovering=true;S.user=null;render()}if(ev==='SIGNED_OUT'&&!S.demo){S.user=null;render()}});
 }
 boot();
+
+function hasPending(){return S.pending.size>0||S.photoQ.size>0||S.dirty.goals||S.sessions.some(s=>s.dirty)||S.fixed.some(f=>f.dirty)||Object.values(S.days).some(d=>d.dirty)}
+function statusView(){const x=t();return `<div class="sync-status" role="status">${esc(S.storageError?x.localError:S.msg||S.syncError||(!navigator.onLine?x.offline:S.syncing?x.syncing:hasPending()?x.pending:S.lastSync?x.synced:''))}</div>`}
+async function backup(){
+ if(S.backingUp)return;S.backingUp=true;
+ try{
+  const entries=structuredClone(S.entries),sessions=structuredClone(S.sessions),days=structuredClone(S.days),goals={...S.goals},fixed=structuredClone(S.fixed),active=structuredClone(S.active),created_at=new Date().toISOString(),photos=[];
+  for(const session of sessions){if(!session.points)session.points=await idb.get('route:'+session.id);if(!session.points){if(!sb||!navigator.onLine)throw new Error('Route not cached');const r=await sb.from('bt_routes').select('points').eq('session_id',session.id).maybeSingle();if(r.error)throw r.error;session.points=r.data?.points||[]}}
+  for(const entry of entries.filter(e=>!e.deleted_at&&e.photo_path)){
+   let blob=S.demo?demoPhotos.get(entry.id):await idb.get(entry.id);
+   if(!blob&&sb&&navigator.onLine){const r=await sb.storage.from('bt-receipts').download(entry.photo_path);if(r.error)throw r.error;blob=r.data}
+   if(!blob)throw new Error('Missing receipt');
+   const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)});
+   photos.push({id:entry.id,data});
+  }
+  const data={format:'kuryebro',version:1,currency:S.cur,created_at,entries,days,goals,fixed,sessions,active,photos};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`kuryebro-${today()}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ }catch{S.msg=t().backupError;render()}finally{S.backingUp=false}
+}
+function recoveryView(){const x=t();return `<main class="auth"><form class="card form" data-act="password"><h1>${esc(x.updatePassword)}</h1><label>${esc(x.newPassword)}<input id="new-pw" type="password" autocomplete="new-password" minlength="8" required></label><p id="reset-error" class="msg" role="alert"></p><button class="btn primary">${esc(x.save)}</button></form></main>`}
+// Keyboard users can dismiss sheets and cannot tab into the obscured page.
+document.addEventListener('keydown',e=>{
+ if(!S.sheet)return;
+ if(e.key==='Escape'&&S.sheet.type!=='nick'){e.preventDefault();closeSheet();return}
+ if(e.key==='Tab'){const sheet=$('.sheet'),all=[...sheet.querySelectorAll('button,input,a[href]')].filter(el=>!el.disabled&&el.getClientRects().length),first=all[0],last=all.at(-1);if(e.shiftKey&&(document.activeElement===first||!sheet.contains(document.activeElement))){e.preventDefault();last?.focus()}else if(!e.shiftKey&&(document.activeElement===last||!sheet.contains(document.activeElement))){e.preventDefault();first?.focus()}}
+});

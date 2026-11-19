@@ -3,9 +3,11 @@
   "appName": "KuryeBro",
   "webDir": "www",
   "server": {
-    "url": "https://www.bakhtiyaraj.dev/budgettracker/",
-    "cleartext": false,
-    "allowNavigation": ["www.bakhtiyaraj.dev", "bakhtiyaraj.dev", "yxiedrrahclzqukfnqrn.supabase.co"]
+    "androidScheme": "https",
+    "hostname": "localhost"
   },
-  "android": { "allowMixedContent": false }
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  }
 }
