@@ -33,3 +33,7 @@ work-audit.json
 .env*
 
 work-*
+
+*.p12
+*.pfx
+*.dpapi

@@ -31,7 +31,7 @@ final class ShiftStore {
             String line;while((line=reader.readLine())!=null){try{points.put(new JSONArray(line));}catch(Exception ignored){/* Ignore an incomplete final line after a power loss. */}}
         }
         JSONObject result=new JSONObject().put("id",prefs.getString("id",null)).put("started_at",prefs.getLong("started_at",0))
-            .put("owner",prefs.getString("owner",null)).put("distance_m",prefs.getFloat("distance_m",0)).put("points",points).put("running",ShiftService.running);
+            .put("time_zone",prefs.getString("time_zone",java.util.TimeZone.getDefault().getID())).put("owner",prefs.getString("owner",null)).put("distance_m",prefs.getFloat("distance_m",0)).put("points",points).put("running",ShiftService.running);
         if(prefs.contains("ended_at"))result.put("ended_at",prefs.getLong("ended_at",0));
         return result;
     } }

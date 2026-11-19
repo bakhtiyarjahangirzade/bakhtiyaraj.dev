@@ -1,0 +1,31 @@
+name: KuryeBro checks
+on:
+  push:
+    branches: [main, 'codex/**']
+    paths: ['storefront/budgettracker/**', 'storefront/public/budgettracker/**', 'supabase/budgettracker*.sql', 'supabase/functions/budget-account/**', 'tests/budget*', 'tests/browser/budget*', 'scripts/prepare-budget.mjs', 'scripts/budget-release.mjs', 'package*.json', '.github/workflows/kuryebro.yml']
+  pull_request:
+    paths: ['storefront/budgettracker/**', 'storefront/public/budgettracker/**', 'supabase/budgettracker*.sql', 'supabase/functions/budget-account/**', 'tests/budget*', 'tests/browser/budget*', 'scripts/prepare-budget.mjs', 'scripts/budget-release.mjs', 'package*.json', '.github/workflows/kuryebro.yml']
+permissions:
+  contents: read
+concurrency:
+  group: kuryebro-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  web-and-database:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:web
+      - run: npx playwright install --with-deps chrome
+      - run: npm run test:budget:browser
+        env:
+          CI: 'true'

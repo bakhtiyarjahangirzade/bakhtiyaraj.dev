@@ -60,14 +60,31 @@ public class ShiftIntegrationTest {
         while(System.currentTimeMillis()<deadline){if("\"function\"".equals(js("typeof window.Capacitor?.Plugins?.ShiftTracker?.start")))break;Thread.sleep(100);}
         assertEquals("\"function\"",js("typeof window.Capacitor.Plugins.ShiftTracker.start"));
         String id=UUID.randomUUID().toString(),owner=UUID.randomUUID().toString();
-        js("window.__nativeResult=null;window.Capacitor.Plugins.ShiftTracker.start({id:'"+id+"',owner:'"+owner+"'}).then(()=>window.__nativeResult='ok').catch(e=>window.__nativeResult=String(e))");
+        js("window.__nativeResult=null;window.Capacitor.Plugins.ShiftTracker.start({id:'"+id+"',owner:'"+owner+"',timeZone:'Europe/Berlin'}).then(()=>window.__nativeResult='ok').catch(e=>window.__nativeResult=String(e))");
         deadline=System.currentTimeMillis()+10000;
         while(System.currentTimeMillis()<deadline){if("\"ok\"".equals(js("window.__nativeResult")))break;Thread.sleep(100);}
         assertEquals("\"ok\"",js("window.__nativeResult"));
         assertEquals(owner,store.snapshot().getString("owner"));
+        assertEquals("Europe/Berlin",new ShiftStore(context).snapshot().getString("time_zone"));
         js("window.__nativeResult=null;window.Capacitor.Plugins.ShiftTracker.stop().then(()=>window.__nativeResult='ok')");
         deadline=System.currentTimeMillis()+5000;while(System.currentTimeMillis()<deadline){if(store.snapshot().has("ended_at"))break;Thread.sleep(100);}
         assertTrue(store.snapshot().has("ended_at"));
+    }
+    @Test public void versionBridgeAndSystemBackWorkOnCurrentAndroid() throws Exception {
+        long deadline=System.currentTimeMillis()+15000;
+        while(System.currentTimeMillis()<deadline){if("\"function\"".equals(js("typeof window.Capacitor?.Plugins?.AppLifecycle?.info")))break;Thread.sleep(100);}
+        js("window.__version=null;window.Capacitor.Plugins.AppLifecycle.info().then(info=>window.__version=info.versionCode)");
+        deadline=System.currentTimeMillis()+5000;
+        while(System.currentTimeMillis()<deadline){if("4".equals(js("window.__version")))break;Thread.sleep(100);}
+        assertEquals("4",js("window.__version"));
+        assertEquals(36,context.getApplicationInfo().targetSdkVersion);
+        js("window.__backHandled=false;window.kuryebroBack=()=>{window.__backHandled=true;return true}");
+        shell("input keyevent BACK");
+        deadline=System.currentTimeMillis()+5000;
+        while(System.currentTimeMillis()<deadline){if("true".equals(js("window.__backHandled")))break;Thread.sleep(100);}
+        assertEquals("true",js("window.__backHandled"));
+        android.view.View content=activity.findViewById(android.R.id.content);
+        assertTrue("System bar inset is applied",content.getPaddingTop()>0);
     }
     @Test public void migratesHostedStorageWithoutNetwork() throws Exception {
         CountDownLatch seeded=new CountDownLatch(1);

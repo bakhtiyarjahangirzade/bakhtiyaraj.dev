@@ -19,6 +19,7 @@
     "node": ">=22"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.16",
     "@neutralinojs/neu": "^11.8.0",
     "@playwright/test": "^1.65.1",
     "@supabase/supabase-js": "^2.119.1",

@@ -3,15 +3,18 @@ import './app.css';
 import {T,CATS,CURRENCIES,AUDIO_LANGS} from './strings.js';
 import {EXTRA} from './messages.js';
 import {currentRouteSpeed,BALANCE_NOTE,legacyTotalDates,total,decimal,validDate,dayAdjustment,dayMetrics,fuelRate,monthProjection} from './core.mjs';
-import {readOwnEntries,readOwnTable,entryRow,acknowledgeEntries} from './sync.mjs';
-import {nativeTracker} from './native.js';
+import {readOwnEntries,readOwnTable,entryRow,acknowledgeEntries,dailyEntryId} from './sync.mjs';
+import {parseBackup,planRestore,MAX_BACKUP_BYTES} from './backup.mjs';
+import {sessionsInRange,dayAt} from './calendar.mjs';
+import {updateInfo,RELEASES_URL} from './updates.mjs';
+import {nativeTracker,nativeApp} from './native.js';
 for(const lang of Object.keys(EXTRA)){Object.assign(T[lang],EXTRA[lang]);T[lang].feats=T[lang].feats.filter(f=>!/səsli bildiriş|Spoken notifications|Голосовые уведомления/i.test(f));}
 
 const SB_URL='https://yxiedrrahclzqukfnqrn.supabase.co',SB_KEY='sb_publishable_n0X-RVe8A6z9HviK4qsWAg_FgTTKJq2';
 const APK_URL='/budgettracker/kuryebro.apk';
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const LS={get(k,d){try{const v=localStorage.getItem('bt.'+k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem('bt.'+k,JSON.stringify(v))}catch{S.storageError=true}}};
+const LS={get(k,d){try{const v=localStorage.getItem('bt.'+k);return v==null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem('bt.'+k,JSON.stringify(v));return true}catch{S.storageError=true;return false}}};
 const pad=n=>String(n).padStart(2,'0');
 const ymd=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const today=()=>ymd(new Date());
@@ -23,7 +26,7 @@ const uuid=()=>crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xx
 const saved=LS.get('settings',{}),guess=()=>{const l=(navigator.language||'az').slice(0,2);return ['az','ru','en'].includes(l)?l:'az'};
 const S={lang:['az','ru','en'].includes(saved.lang)?saved.lang:guess(),cur:CURRENCIES.includes(saved.cur)?saved.cur:'AZN',sound:saved.sound!==false,user:null,nick:'',admin:false,demo:false,entries:[],goals:{daily:0,days:6},sessions:[],days:{},fixed:[],fixedPer:'week',bench:undefined,active:null,pending:new Set(),photoQ:new Set(),dirty:{goals:false},lastSync:null,flags:{},tab:'home',filter:'all',overview:null,detail:null,workDetail:null,sheet:null,viewer:null,authMode:'signin',msg:'',syncing:false};
 const t=()=>T[S.lang];
-const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'bt.auth'}}):null;
+const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'bt.auth'},global:{fetch:(input,init)=>{const headers=new Headers(init?.headers);if(S.epoch&&/\/(?:rest|storage)\/v1\//.test(String(input)))headers.set('x-bt-epoch',S.epoch);return fetch(input,{...init,headers})}}}):null;
 const saveSettings=()=>LS.set('settings',{lang:S.lang,cur:S.cur,sound:S.sound});
 const money=(n,cur=S.cur)=>{try{return new Intl.NumberFormat({az:'az-AZ',ru:'ru-RU',en:'en-GB'}[S.lang],{style:'currency',currency:cur,maximumFractionDigits:2}).format(n||0)}catch{return (n||0).toFixed(2)+' '+cur}};
 const dateLabel=d=>{try{return new Date(d+'T00:00:00').toLocaleDateString({az:'az-AZ',ru:'ru-RU',en:'en-GB'}[S.lang],{day:'numeric',month:'long',weekday:'short'})}catch{return d}};
@@ -41,37 +44,39 @@ function say(name){if(!S.sound||!AUDIO_LANGS.includes(S.lang))return;try{new Aud
 const demoPhotos=new Map();
 const idb=(()=>{let p;const open=()=>p||(p=new Promise((res,rej)=>{const r=indexedDB.open('bt-photos',1);r.onupgradeneeded=()=>r.result.createObjectStore('p');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
  const tx=async(m,f)=>{const db=await open();return new Promise((res,rej)=>{const x=db.transaction('p',m),q=f(x.objectStore('p'));x.oncomplete=()=>res(q.result);x.onerror=()=>rej(x.error)})};
- return{put:(k,v)=>tx('readwrite',s=>s.put(v,k)),get:k=>tx('readonly',s=>s.get(k)),del:k=>tx('readwrite',s=>s.delete(k))}})();
+ return{put:(k,v)=>tx('readwrite',s=>s.put(v,k)),get:k=>tx('readonly',s=>s.get(k)),del:k=>tx('readwrite',s=>s.delete(k)),putMany:async rows=>{const db=await open();return new Promise((resolve,reject)=>{const transaction=db.transaction('p','readwrite');transaction.oncomplete=resolve;transaction.onerror=()=>reject(transaction.error);transaction.onabort=()=>reject(transaction.error);for(const [key,value] of rows)transaction.objectStore('p').put(value,key)})}}})();
 async function compress(file){const bmp=await createImageBitmap(file),k=Math.min(1,1280/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',.8))}
 
 /* ---------- local store ---------- */
 const uid=()=>S.demo?'demo':S.user?.id;
-function persist(){if(S.demo||!S.user)return;LS.set('u.'+uid(),{nick:S.nick,entries:S.entries,goals:S.goals,sessions:S.sessions.map(session=>session.routeCached&&!session.dirty?{...session,points:undefined}:session),days:S.days,fixed:S.fixed,active:S.active,pending:[...S.pending],photoQ:[...S.photoQ],dirty:S.dirty,lastSync:S.lastSync,flags:S.flags})}
-function restore(){const d=S.demo?{}:LS.get('u.'+uid(),{});S.nick=d.nick||S.user?.user_metadata?.nickname||'';S.entries=d.entries||[];S.goals={daily:Number(d.goals&&(d.goals.daily??d.goals.sales))||0,days:Number(d.goals&&d.goals.days)||6};S.sessions=d.sessions||[];S.days=d.days||{};S.fixed=d.fixed||[];S.bench=undefined;S.active=d.active||null;S.pending=new Set(d.pending||[]);S.photoQ=new Set(d.photoQ||[]);S.dirty={goals:!!(d.dirty&&d.dirty.goals)};S.lastSync=d.lastSync||null;S.flags=d.flags||{}}
+function persist(){if(S.demo)return true;if(!S.user)return false;const ok=LS.set('u.'+uid(),{epoch:S.epoch||null,nick:S.nick,entries:S.entries,goals:S.goals,sessions:S.sessions.map(session=>session.routeCached&&!session.dirty?{...session,points:undefined}:session),days:S.days,fixed:S.fixed,active:S.active,pending:[...S.pending],photoQ:[...S.photoQ],dirty:S.dirty,lastSync:S.lastSync,flags:S.flags});S.storageError=!ok;return ok}
+function restore(){const d=S.demo?{}:LS.get('u.'+uid(),{});S.epoch=d.epoch||null;S.nick=d.nick||S.user?.user_metadata?.nickname||'';S.entries=d.entries||[];S.goals={daily:Number(d.goals&&(d.goals.daily??d.goals.sales))||0,days:Number(d.goals&&d.goals.days)||6};S.sessions=d.sessions||[];S.days=d.days||{};S.fixed=d.fixed||[];S.bench=undefined;S.active=d.active||null;S.pending=new Set(d.pending||[]);S.photoQ=new Set(d.photoQ||[]);S.dirty={goals:!!(d.dirty&&d.dirty.goals)};S.lastSync=d.lastSync||null;S.flags=d.flags||{}}
 
 /* ---------- sync ---------- */
 let syncRetry=null;
 async function sync(){
- if(S.demo||!S.user||!sb||!navigator.onLine||S.syncing)return;
+ if(S.demo||!S.user||!sb||!navigator.onLine||S.syncing||S.restoring||S.deleting)return;
  const owner=S.user.id;S.syncing=true;S.syncError='';clearTimeout(syncRetry);
  const check=r=>{if(r.error)throw r.error;return r.data};
  try{
+  await checkLifecycle();
   for(const id of [...S.photoQ]){
    const version=S.photoVersions?.[id],e=S.entries.find(x=>x.id===id),blob=await idb.get(id);
    if(!e||!blob||!e.photo_path)throw new Error('Missing receipt');
-   check(await sb.storage.from('bt-receipts').upload(e.photo_path,blob,{contentType:'image/jpeg',upsert:true}));
+   if(!/-[0-9a-f-]{36}\.jpg$/i.test(e.photo_path)){e.photo_path=`${owner}/${id}-${uuid()}.jpg`;S.pending.add(id);persist();}
+   check(await sb.storage.from('bt-receipts').upload(e.photo_path,blob,{contentType:blob.type||'image/jpeg',upsert:true}));
    // Retain the local receipt for offline viewing and backup; acknowledge only this version.
    if(S.photoVersions?.[id]===version)S.photoQ.delete(id);
   }
-  const todo=S.entries.filter(e=>S.pending.has(e.id));
+  const todo=S.entries.filter(e=>S.pending.has(e.id)&&!e.hasConflict);
   for(let i=0;i<todo.length;i+=100){
    const rows=todo.slice(i,i+100).map(entryRow);
-   check(await sb.from('bt_entries').upsert(rows.map(r=>({...r,user_id:owner})),{onConflict:'id'}));
-   acknowledgeEntries(S.entries,S.pending,rows);
+   const result=check(await sb.rpc('bt_save_entries',{items:rows.map(r=>({...r,expected_updated_at:S.entries.find(e=>e.id===r.id)?.server_updated_at||null}))}));
+   for(const item of result){const local=S.entries.find(e=>e.id===item.id);if(!local)continue;if(item.conflict){local.conflict=item.row;local.hasConflict=true;}else{local.server_updated_at=item.row.updated_at;local.hasConflict=false;delete local.conflict;acknowledgeEntries(S.entries,S.pending,rows.filter(r=>r.id===item.id));}}
   }
   for(const session of S.sessions.filter(x=>x.dirty&&x.ended_at)){
-   check(await sb.from('bt_sessions').upsert({id:session.id,user_id:owner,started_at:session.started_at,ended_at:session.ended_at,distance_m:session.distance_m,duration_s:session.duration_s}));
-   if(session.points?.length)check(await sb.from('bt_routes').upsert({session_id:session.id,points:session.points}));
+   check(await sb.from('bt_sessions').upsert({id:session.id,user_id:owner,started_at:session.started_at,ended_at:session.ended_at,distance_m:session.distance_m,duration_s:session.duration_s,time_zone:session.time_zone||Intl.DateTimeFormat().resolvedOptions().timeZone}));
+   if(session.points?.length){const step=Math.max(1,Math.ceil(session.points.length/2000));check(await sb.from('bt_routes').upsert({session_id:session.id,points:session.points.filter((_,i)=>i%step===0)}));}
    session.dirty=false;
   }
   for(const f of S.fixed.filter(x=>x.dirty)){
@@ -85,9 +90,9 @@ async function sync(){
   if(S.dirty.goals){const row={user_id:owner,daily_target:S.goals.daily,work_days:S.goals.days};check(await sb.from('bt_goals').upsert(row));if(S.goals.daily===row.daily_target&&S.goals.days===row.work_days)S.dirty.goals=false}
   const next=await readOwnEntries(sb,owner,S.lastSync,rows=>{
    if(S.user?.id!==owner)return;
-   for(const r of rows){const e={id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,deleted_at:r.deleted_at,photo_path:r.photo_path};const i=S.entries.findIndex(x=>x.id===e.id);if(i<0)S.entries.push(e);else if(!S.pending.has(e.id))S.entries[i]=e;}
+   for(const r of rows){const e={id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,deleted_at:r.deleted_at,photo_path:r.photo_path,server_updated_at:r.updated_at};const i=S.entries.findIndex(x=>x.id===e.id);if(i<0)S.entries.push(e);else if(!S.pending.has(e.id))S.entries[i]=e;}
   });
-  const sessions=await readOwnTable(sb,'bt_sessions','id,started_at,ended_at,distance_m,duration_s',owner,'started_at');
+  const sessions=await readOwnTable(sb,'bt_sessions','id,started_at,ended_at,distance_m,duration_s,time_zone',owner,'started_at');
   for(const row of sessions){if(!S.sessions.some(x=>x.id===row.id)&&row.ended_at)S.sessions.push({...row,dirty:false})}
   const days=await readOwnTable(sb,'bt_days','day,km,hours',owner,'day');
   for(const row of days){const local=S.days[row.day];if(!local||!local.dirty)S.days[row.day]={km:Number(row.km),hours:Number(row.hours)}}
@@ -98,7 +103,7 @@ async function sync(){
   S.lastSync=next;S.lastSuccess=new Date().toISOString();
  }catch(error){S.syncError=t().syncError;console.warn('sync failed',error)}finally{
   S.syncing=false;persist();render(true);
-  if(!S.syncError&&hasPending())syncRetry=setTimeout(sync,500);
+  if(!S.syncError&&hasPending()&&!S.entries.some(e=>e.hasConflict))syncRetry=setTimeout(sync,500);
  }
 }
 
@@ -106,6 +111,7 @@ async function sync(){
 const NICK=/^[A-Za-z0-9_.-]{3,20}$/;
 async function enter(user){
  S.user=user;S.demo=false;restore();S.tab='home';S.admin=false;
+ if(navigator.onLine){try{await checkLifecycle()}catch{S.syncError=t().syncError;render();return}}
  try{if(!(await ensureProfile())){render();return}}catch(e){console.warn(e)}
  try{const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data}catch{S.admin=false}
  S.tab=S.admin?'watch':'home';render();say('loginOk');if(nativeTracker.available())await recoverNative();else if(S.active)startWatch();render();sync();
@@ -114,9 +120,9 @@ async function ensureProfile(){
  if(!navigator.onLine){if(S.nick)return true;S.msg=t().netErr;return true}
  const {data,error}=await sb.from('bt_profiles').select('nickname,currency').eq('user_id',S.user.id).maybeSingle();
  if(error)throw error;
- if(data){S.nick=data.nickname;if(data.currency&&data.currency!==S.cur){S.cur=data.currency;saveSettings()}return true}
+ if(data){await sb.from('bt_profiles').update({time_zone:Intl.DateTimeFormat().resolvedOptions().timeZone}).eq('user_id',S.user.id);S.nick=data.nickname;if(data.currency&&data.currency!==S.cur){S.cur=data.currency;saveSettings()}return true}
  const nick=S.user.user_metadata?.nickname;
- if(nick&&NICK.test(nick)){const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur});if(!r.error){S.nick=nick;return true}if(r.error.code!=='23505')throw r.error;S.msg=t().nickTaken}
+ if(nick&&NICK.test(nick)){const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur,time_zone:Intl.DateTimeFormat().resolvedOptions().timeZone});if(!r.error){S.nick=nick;return true}if(r.error.code!=='23505')throw r.error;S.msg=t().nickTaken}
  S.sheet={type:'nick'};return false;
 }
 async function submitAuth(){
@@ -183,7 +189,7 @@ async function startWarsaw(){
 /* ---------- entries ---------- */
 async function addEntry({kind,amount,category,note,date,photo,quiet}){
  const e={id:uuid(),kind,amount,category,note,date,created_at:new Date().toISOString(),deleted_at:null};
- if(photo){e.photo_path=`${uid()}/${e.id}.jpg`;if(S.demo)demoPhotos.set(e.id,photo);else{await idb.put(e.id,photo);S.photoQ.add(e.id);S.photoVersions??={};S.photoVersions[e.id]=uuid()}}
+ if(photo){e.photo_path=`${uid()}/${e.id}-${uuid()}.jpg`;if(S.demo)demoPhotos.set(e.id,photo);else{await idb.put(e.id,photo);S.photoQ.add(e.id);S.photoVersions??={};S.photoVersions[e.id]=uuid()}}
  S.entries.push(e);if(!S.demo)S.pending.add(e.id);
  const sound=quiet?null:alertFor(e);persist();if(sound)say(sound);sync();
 }
@@ -237,21 +243,25 @@ function syncDayForm(){
  $('#day-prev').innerHTML=dayPrev(sh);
  const ex=$('#day-ex');if(ex)ex.hidden=!live().some(e=>e.date===sh.date&&e.category==='daily');
 }
-function saveDay(){
+async function saveDay(){
+ if(S.saving||S.restoring||S.deleting)return;
  syncDayForm();const sh=S.sheet,earn=n2(sh.earn),spent=n2(sh.spent),km=n2(sh.km),h=n2(sh.hours),date=sh.date;
- let adjustment;
+ S.saving=true;
  try{
   if(![km,h].every(Number.isFinite)||km<0||km>=5000||h<0||h>24)throw new Error('invalid');
-  adjustment=dayAdjustment(S.entries,date,earn,spent);
- }catch(error){$('#day-error').textContent=error.message==='below-details'?t().belowDetails:t().invalid;say('error');return}
- const now=new Date().toISOString();
- live().filter(e=>e.date===date&&e.category==='daily').forEach(e=>{e.deleted_at=now;if(!S.demo)S.pending.add(e.id)});
- S.days[date]={km:Math.round(km*10)/10,hours:Math.round(h*10)/10,dirty:!S.demo};
- for(const [kind,amount] of [['sale',adjustment.sale],['expense',adjustment.expense]]){
-  if(amount>0){const e={id:uuid(),kind,amount,category:'daily',note:BALANCE_NOTE,date,created_at:now,deleted_at:null};S.entries.push(e);if(!S.demo)S.pending.add(e.id)}
- }
- persist();closeSheet();sync();
+  const ids=await Promise.all(['sale','expense'].map(kind=>dailyEntryId(uid(),date,kind)));
+  const adjustment=dayAdjustment(S.entries,date,earn,spent),now=new Date().toISOString();
+  for(const [index,kind] of ['sale','expense'].entries()){
+   const amount=adjustment[kind],rows=S.entries.filter(e=>e.date===date&&e.kind===kind&&e.category==='daily'),existing=rows.find(e=>e.note===BALANCE_NOTE&&!e.deleted_at)||rows.find(e=>e.id===ids[index]);
+   for(const old of rows.filter(e=>e!==existing&&!e.deleted_at)){old.deleted_at=now;if(!S.demo)S.pending.add(old.id)}
+   if(existing){existing.amount=amount||existing.amount;existing.deleted_at=amount>0?null:now;existing.note=BALANCE_NOTE;if(!S.demo)S.pending.add(existing.id);}
+   else if(amount>0){const e={id:ids[index],kind,amount,category:'daily',note:BALANCE_NOTE,date,created_at:now,deleted_at:null};S.entries.push(e);if(!S.demo)S.pending.add(e.id)}
+  }
+  S.days[date]={km:Math.round(km*10)/10,hours:Math.round(h*10)/10,dirty:!S.demo};persist();closeSheet();
+ }catch(error){if($('#day-error'))$('#day-error').textContent=error.message==='below-details'?t().belowDetails:t().invalid;}
+ finally{S.saving=false;sync();}
 }
+
 function alertFor(e){
  if(e.kind==='sale'&&S.goals.daily>0&&e.date===today()){
   const s=sum(live().filter(x=>x.date===e.date),'sale'),a=`gd.${e.date}`,b=`gh.${e.date}`;
@@ -274,7 +284,7 @@ async function lockScreen(){try{wake=await navigator.wakeLock?.request('screen')
 async function startWatch(){
  if(nativeTracker.available()&&!S.demo){
   if(nativeBusy)return;nativeBusy=true;
-  try{await nativeTracker.start(S.active.id,t().working,S.user.id);clearInterval(nativePoll);nativePoll=setInterval(pollNative,5000);await pollNative();}catch{S.msg=t().trackingError;S.trackingError=true;render()}finally{nativeBusy=false}
+  try{await nativeTracker.start(S.active.id,t().working,S.user.id,S.active.time_zone);clearInterval(nativePoll);nativePoll=setInterval(pollNative,5000);await pollNative();}catch{S.msg=t().trackingError;S.trackingError=true;render()}finally{nativeBusy=false}
   return;
  }
  if(!navigator.geolocation||watchId!==null)return;
@@ -293,13 +303,13 @@ function onPos(p){
 function startWork(){
  if(S.active)return;
  if(!navigator.geolocation&&!nativeTracker.available()){S.msg=t().noGps;return render()}
- S.msg='';S.active={id:uuid(),started_at:new Date().toISOString(),points:[],distance_m:0};persist();startWatch();render();
+ S.msg='';S.active={id:uuid(),started_at:new Date().toISOString(),time_zone:Intl.DateTimeFormat().resolvedOptions().timeZone,points:[],distance_m:0};persist();startWatch();render();
 }
 async function stopWork(){
  if(nativeTracker.available()&&!S.demo){try{const snapshot=await nativeTracker.stop();applyNative(snapshot)}catch{S.msg=t().trackingError;render();return}}
  const a=S.active;stopWatchOnly();if(!a){render();return}
- const end=new Date(a.ended_at||Date.now()),dur=Math.max(1,Math.round((end-new Date(a.started_at))/1000)),n=a.points.length,step=Math.max(1,Math.ceil(n/4000));
- S.sessions.push({id:a.id,started_at:a.started_at,ended_at:end.toISOString(),distance_m:Math.round(a.distance_m),duration_s:dur,points:a.points.filter((_,i)=>i%step===0),dirty:!S.demo});
+ const end=new Date(a.ended_at||Date.now()),dur=Math.max(1,Math.round((end-new Date(a.started_at))/1000)),n=a.points.length,step=Math.max(1,Math.ceil(n/2000));
+ S.sessions.push({id:a.id,time_zone:a.time_zone,started_at:a.started_at,ended_at:end.toISOString(),distance_m:Math.round(a.distance_m),duration_s:dur,points:a.points.filter((_,i)=>i%step===0),dirty:!S.demo});
  if(!S.demo&&sb&&S.user)sb.from('bt_live').delete().eq('user_id',S.user.id).then(()=>{});
  S.active=null;S.trackingError=false;persist();if(nativeTracker.available()&&!S.demo&&!S.storageError)await nativeTracker.clear();sync();render();
 }
@@ -310,7 +320,7 @@ async function pollNative(){
 function applyNative(snapshot){
  if(!snapshot.id||snapshot.owner!==S.user?.id)return;
  const previous=S.active?.points?.at(-1)?.[2];
- S.active={id:snapshot.id,started_at:new Date(snapshot.started_at).toISOString(),points:snapshot.points||[],distance_m:snapshot.distance_m||0,ended_at:snapshot.ended_at};
+ S.active={id:snapshot.id,time_zone:snapshot.time_zone||S.active?.time_zone||Intl.DateTimeFormat().resolvedOptions().timeZone,started_at:new Date(snapshot.started_at).toISOString(),points:snapshot.points||[],distance_m:snapshot.distance_m||0,ended_at:snapshot.ended_at};
  const speed=$('#live-spd'),average=$('#live-avg');if(speed)speed.textContent=kmhTxt(currentRouteSpeed(S.active.points));if(average)average.textContent=kmhTxt(moveStats(S.active.points).kmh);
  persist();const clock=$('#clock'),km=$('#live-km');if(clock)clock.textContent=fmtDur(Math.round((Date.now()-snapshot.started_at)/1000));if(km)km.textContent=(S.active.distance_m/1000).toFixed(2);
  const point=S.active.points.at(-1);if(point&&point[2]!==previous){updateLiveMap(S.active);if(sb&&navigator.onLine&&Date.now()-lastLive>30000){lastLive=Date.now();sb.from('bt_live').upsert({user_id:S.user.id,session_id:S.active.id,lat:point[0],lng:point[1],accuracy:0}).then(()=>{})}}
@@ -339,11 +349,11 @@ function sumSess(arr){
  return{km,sec,mv,kmh:mv>=30?km/(mv/3600):null};
 }
 function periodCard(done){
- const x=t(),ws=weekStart(),m=ym(today()),blocks=[[x.today,done.filter(s=>localDate(s.started_at)===today())],[x.thisWeek,done.filter(s=>localDate(s.started_at)>=ws)],[x.month,done.filter(s=>localDate(s.started_at).startsWith(m))]];
- return `<section class="card"><h3>${esc(x.historyStats)}</h3><div class="pgrid">${blocks.map(([l,a])=>{const q=sumSess(a);return `<div><small>${esc(l)}</small><b>${q.km.toFixed(1)} ${esc(x.km)}</b><span>${fmtDur(q.sec)} ${esc(x.hours)}</span><span>${kmhTxt(q.kmh)} ${esc(x.kmh)}</span></div>`}).join('')}</div><small class="muted">${esc(x.speedNote)}</small></section>`;
+ const x=t(),d=today(),blocks=[[x.today,sessionsInRange(done,d,d)],[x.thisWeek,sessionsInRange(done,weekStart(),d)],[x.month,sessionsInRange(done,ym(d)+'-01',d)]];
+ return `<section class="card"><h3>${esc(x.historyStats)}</h3><div class="pgrid">${blocks.map(([l,q])=>{return `<div><small>${esc(l)}</small><b>${q.km.toFixed(1)} ${esc(x.km)}</b><span>${fmtDur(q.sec)} ${esc(x.hours)}</span><span>${kmhTxt(q.kmh)} ${esc(x.kmh)}</span></div>`}).join('')}</div><small class="muted">${esc(x.speedNote)}</small></section>`;
 }
 function historyCard(done){
- const x=t(),g={};done.forEach(s=>{const d=localDate(s.started_at);(g[d]=g[d]||[]).push(s)});
+ const x=t(),g={};done.forEach(s=>{const d=dayAt(Date.parse(s.started_at),s.time_zone);(g[d]=g[d]||[]).push(s)});
  const days=Object.keys(g).sort().reverse().slice(0,30);
  return `<section class="card"><h3>${esc(x.routesTitle)}</h3>${days.length?days.map(d=>{const q=sumSess(g[d]);return `<div class="dayhead"><strong>${esc(dateLabel(d))}</strong><small>${q.km.toFixed(1)} ${esc(x.km)} · ${fmtDur(q.sec)} ${esc(x.hours)} · ${kmhTxt(q.kmh)} ${esc(x.kmh)}</small></div><ul class="rows">${g[d].map(s=>{const z=sessStat(s);return `<li class="entry"><button class="sess" data-act="session" data-id="${s.id}"><span class="mini">${routeSvg(s.points,120,80)}</span><div><strong>${new Date(s.started_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</strong><small>${fmtDur(s.duration_s)} ${esc(x.hours)} · ${kmhTxt(z.kmh)} ${esc(x.kmh)}</small></div><b>${z.km.toFixed(1)} ${esc(x.km)}</b></button></li>`}).join('')}</ul>`}).join(''):`<p class="muted">${esc(x.noSessions)}</p>`}</section>`;
 }
@@ -501,7 +511,7 @@ function appView(){
  const x=t(),tabs=S.admin?['watch','insights','settings']:['home','list','add','work','settings'];
  if(!tabs.includes(S.tab)&&S.tab!=='reports')S.tab=tabs[0];
  const body={reports:reportsView,home:homeView,list:listView,settings:settingsView,watch:watchView,insights:insightsView,work:workView,add:homeView}[S.tab]();
- return `${S.demo?`<div class="demo-bar">${esc(S.sim?x.simBanner:x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">K</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header>${statusView()}<main class="view">${body}</main>${S.undo?`<div class="undo" role="status">${esc(x.deleted)} <button class="link" data-act="undo">${esc(x.undo)}</button></div>`:''}
+ return `${S.demo?`<div class="demo-bar">${esc(S.sim?x.simBanner:x.demoBanner)} <button class="link" data-act="logout">${esc(x.exitDemo)}</button></div>`:''}<div class="shell"><header class="top"><span class="brand small"><span class="logo">K</span>${esc(x.app)}</span><span class="who">${esc(S.nick)}${!navigator.onLine?` · ${esc(x.offline)}`:S.pending.size?` · ${esc(x.pending)}: ${S.pending.size}`:''}</span></header>${statusView()}${S.update?.available?updateView():''}<main class="view">${body}</main>${S.undo?`<div class="undo" role="status">${esc(x.deleted)} <button class="link" data-act="undo">${esc(x.undo)}</button></div>`:''}
  <nav class="tabs" aria-label="Navigation">${tabs.map(k=>`<button data-act="tab" data-v="${k}" class="${k==='add'?'plus':''}" aria-current="${(S.tab===k||(S.tab==='reports'&&k==='home'))&&k!=='add'}" aria-label="${esc(x[k])}">${icon(k)}<span>${esc(x[k])}</span></button>`).join('')}</nav></div>${S.sheet?sheetView():''}${S.viewer?`<div class="sheet-bg" data-act="viewer-close"><div class="viewer"><img src="${S.viewer}" alt=""><button class="btn ghost" data-act="viewer-close">${esc(x.close)}</button></div></div>`:''}`;
 }
 function homeView(){
@@ -549,7 +559,7 @@ function settingsView(){
  <section class="card form"><h3>${esc(x.account)}</h3>${S.admin?`<p class="muted">${esc(x.auditNote)}</p>`:''}<p>${esc(S.nick)}${S.user?.email?` · <span class="muted">${esc(S.user.email)}</span>`:''}</p><div class="notice slim">${supMore()}</div>
  <h3>${esc(x.language)}</h3>${langBar()}<h3>${esc(x.currency)}</h3><div class="seg wide">${CURRENCIES.map(c=>`<button data-act="cur" data-v="${c}" aria-pressed="${S.cur===c}">${c}</button>`).join('')}</div>
  ${AUDIO_LANGS.includes(S.lang)?`<label class="check"><input id="s-sound" type="checkbox" data-act="sound" ${S.sound?'checked':''}> ${esc(x.sound)}</label>`:''}
- <button class="btn ghost" data-act="backup">${esc(x.backup)}</button><button class="btn ghost" data-act="export">${esc(x.export)}</button>${S.demo?'':`<button class="btn ghost" data-act="sync">${esc(x.syncNow)}</button>`}<button class="btn danger" data-act="logout">${esc(x.logout)}</button></section>`;
+ <button class="btn ghost" data-act="backup">${esc(x.backup)}</button><button class="btn ghost" data-act="restore-pick">${esc(x.restore)}</button><input id="restore-file" type="file" accept="application/json,.json" hidden><button class="btn ghost" data-act="export">${esc(x.export)}</button>${S.demo?'':`<button class="btn ghost" data-act="sync">${esc(x.syncNow)}</button>`}<button class="btn danger" data-act="logout">${esc(x.logout)}</button></section>${updateView()}${S.demo?'':`<section class="card"><h3>${esc(x.accountData)}</h3><p class="muted">${esc(x.accountHelp)}</p><p><a href="https://www.bakhtiyaraj.dev/budgettracker/privacy.html" target="_blank" rel="noopener">${esc(x.privacy)}</a></p><button class="btn danger" data-act="account-open">${esc(x.deleteData)}</button></section>`}`;
 }
 function watchView(){
  const x=t();if(!S.admin)return `<p class="muted center">${esc(x.noAdmin)}</p>`;
@@ -579,6 +589,8 @@ function detailView(){
 }
 function sheetView(){
  const x=t(),sh=S.sheet;
+ if(sh.type==='account')return accountView(sh);
+ if(sh.type==='restore')return restoreView(sh);
  if(sh.type==='nick')return `<div class="sheet-bg"><form class="sheet" data-act="nick"><h3>${esc(x.askNick)}</h3><label><input id="n-nick" maxlength="20" autocomplete="username"><small>${esc(x.nickRule)}</small></label>${S.msg?`<p class="msg">${esc(S.msg)}</p>`:''}<button class="btn primary" type="submit">${esc(x.save)}</button></form></div>`;
  if(sh.type==='gps')return `<div class="sheet-bg" data-act="sheet-bg"><div class="sheet"><h3>${esc(x.gpsTitle)}</h3><div class="notice"><p>${esc(x.gpsText)}</p></div><div class="row"><button class="btn ghost" data-act="sheet-close">${esc(x.cancel)}</button><button class="btn primary" data-act="gps-allow">${esc(x.gpsAllow)}</button></div></div></div>`;
  if(sh.type==='day')return `<div class="sheet-bg" data-act="sheet-bg"><form class="sheet" role="dialog" aria-modal="true" aria-label="${esc(x.dayTitle)}" id="day-form" data-act="day" novalidate><h3>${esc(x.dayTitle)}</h3><p class="muted">${esc(x.dayHint)}</p>${legacyTotalDates(live()).includes(sh.date)?`<p class="notice">${esc(x.legacyHint)}</p>`:''}
@@ -611,7 +623,7 @@ async function openAdminSession(id){
 async function openStaff(id){
  const row=(S.overview||[]).find(r=>(r.user_id||r.nickname)===id);if(!row)return;
  if(S.demo){S.detail={nickname:row.nickname,currency:row.currency,entries:[],days:Object.entries(S.days).map(([day,v])=>({day,km:v.km,hours:v.hours})),sessions:S.sessions.map(q=>({...q})),live:row.live_at?{lat:40.4093,lng:49.8671,t:Date.now()}:null};render();return}
- const [en,se,lv,dy]=await Promise.all([sb.from('bt_entries').select('id,kind,amount,category,note,entry_date,created_at,photo_path').eq('user_id',row.user_id).is('deleted_at',null).order('entry_date',{ascending:false}).limit(300),sb.from('bt_sessions').select('id,started_at,ended_at,distance_m,duration_s').eq('user_id',row.user_id).order('started_at',{ascending:false}).limit(30),sb.from('bt_live').select('lat,lng,updated_at').eq('user_id',row.user_id).maybeSingle(),sb.from('bt_days').select('day,km,hours').eq('user_id',row.user_id).order('day',{ascending:false}).limit(30)]);
+ const [en,se,lv,dy]=await Promise.all([sb.from('bt_entries').select('id,kind,amount,category,note,entry_date,created_at,photo_path').eq('user_id',row.user_id).is('deleted_at',null).order('entry_date',{ascending:false}).limit(300),sb.from('bt_sessions').select('id,started_at,ended_at,distance_m,duration_s,time_zone').eq('user_id',row.user_id).order('started_at',{ascending:false}).limit(30),sb.from('bt_live').select('lat,lng,updated_at').eq('user_id',row.user_id).maybeSingle(),sb.from('bt_days').select('day,km,hours').eq('user_id',row.user_id).order('day',{ascending:false}).limit(30)]);
  const lvOk=lv.data&&Date.now()-new Date(lv.data.updated_at)<10*60*1000;
  S.detail={nickname:row.nickname,currency:row.currency,live:lvOk?{lat:lv.data.lat,lng:lv.data.lng,t:new Date(lv.data.updated_at).getTime()}:null,entries:(en.data||[]).map(r=>({id:r.id,kind:r.kind,amount:Number(r.amount),category:r.category,note:r.note,date:r.entry_date,created_at:r.created_at,photo_path:r.photo_path})),sessions:se.data||[],days:dy.data||[]};render();
 }
@@ -652,16 +664,17 @@ document.addEventListener('submit',async e=>{
  if(act==='day')return saveDay();
  if(act==='fixed'){const name=$('#fx-name').value.trim().slice(0,60),amount=n2($('#fx-amt').value);if(!name||!(amount>0)||amount>=1e9){say('error');return}S.fixed.push({id:uuid(),name,amount,period:S.fixedPer,deleted_at:null,dirty:!S.demo});persist();sync();render();return}
  if(act==='goals'){const v=n2($('#g-daily').value);if(!Number.isFinite(v)||v<0||v>=1e9){S.msg=t().invalid;render(true);return}S.goals.daily=v;S.dirty.goals=true;persist();S.msg=t().goalSaved;render();S.msg='';sync();return}
- if(act==='nick'){const nick=$('#n-nick').value.trim();if(!NICK.test(nick)){S.msg=t().nickRule;return render()}const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur});if(r.error){S.msg=r.error.code==='23505'?t().nickTaken:t().netErr;return render()}S.nick=nick;S.sheet=null;S.msg='';const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data;render();say('welcome');sync()}
+ if(act==='nick'){const nick=$('#n-nick').value.trim();if(!NICK.test(nick)){S.msg=t().nickRule;return render()}const r=await sb.from('bt_profiles').insert({nickname:nick,currency:S.cur,time_zone:Intl.DateTimeFormat().resolvedOptions().timeZone});if(r.error){S.msg=r.error.code==='23505'?t().nickTaken:t().netErr;return render()}S.nick=nick;S.sheet=null;S.msg='';const {data}=await sb.from('bt_admins').select('user_id').maybeSingle();S.admin=!!data;render();say('welcome');sync()}
 });
 document.addEventListener('input',e=>{if(e.target.closest('#day-form'))syncDayForm();if(e.target.id==='amt'&&S.sheet)S.sheet.amount=e.target.value});
 document.addEventListener('change',async e=>{
+ if(e.target.id==='restore-file'){const file=e.target.files?.[0];if(file)await inspectRestore(file);e.target.value='';return}
  if(e.target.id==='d-date')return syncDayForm();
  const i=e.target;if(i.id!=='in-cam'&&i.id!=='in-gal')return;const file=i.files&&i.files[0];if(!file||!S.sheet)return;
  keepSheet();try{const blob=await compress(file);if(S.sheet.photoUrl)URL.revokeObjectURL(S.sheet.photoUrl);S.sheet.photo=blob;S.sheet.photoUrl=URL.createObjectURL(blob)}catch{alert(t().photoErr)}render();
 });
 document.addEventListener('click',async e=>{
- const b=e.target.closest('[data-act]');if(!b||b.tagName==='FORM')return;const a=b.dataset.act,v=b.dataset.v;
+ const b=e.target.closest('[data-act]');if(!b||b.tagName==='FORM'||S.restoring||S.deleting||S.saving)return;const a=b.dataset.act,v=b.dataset.v;
  if(a==='lang'){S.lang=v;saveSettings();render()}
  else if(a==='mode'){const em=$('#f-email')?.value||'';S.authMode=v||(S.authMode==='signup'?'signin':'signup');S.msg='';render();if(em)$('#f-email').value=em}
  else if(a==='pw-eye'){const i=$('#f-pw');i.type=i.type==='password'?'text':'password'}
@@ -679,6 +692,7 @@ document.addEventListener('click',async e=>{
  else if(a==='days'){const i=$('#g-daily');if(i){const value=n2(i.value);if(!Number.isFinite(value)||value<0||value>=1e9){S.msg=t().invalid;render(true);return}S.goals.daily=value;}S.goals.days=Number(v);S.dirty.goals=true;persist();sync();render()}
  else if(a==='sound'){S.sound=b.checked;saveSettings()}
  else if(a==='export')csv();
+ else if(a==='conflict-server'||a==='conflict-local'){const row=S.entries.find(e=>e.id===b.dataset.id);if(row?.hasConflict){const remote=row.conflict;if(remote&&remote.id!==row.id){S.pending.delete(row.id);S.photoQ.delete(row.id);S.entries=S.entries.filter(e=>e.id!==row.id&&e.id!==remote.id);row.id=remote.id;S.entries.push(row);if(a==='conflict-local')S.pending.add(row.id);}if(a==='conflict-server'&&remote){Object.assign(row,{kind:remote.kind,amount:Number(remote.amount),category:remote.category,note:remote.note,date:remote.entry_date,deleted_at:remote.deleted_at,photo_path:remote.photo_path});S.pending.delete(row.id);S.photoQ.delete(row.id);await idb.del(row.id);}row.server_updated_at=remote?.updated_at||null;row.hasConflict=false;delete row.conflict;persist();render();sync();}}
  else if(a==='sync')sync();
  else if(a==='logout')logout();
  else if(a==='del')removeEntry(b.dataset.id);
@@ -686,7 +700,13 @@ document.addEventListener('click',async e=>{
  else if(a==='edit'){const row=live().find(r=>r.id===b.dataset.id);if(row){S.sheet={type:'add',...row,amount:String(row.amount)};render()}}
  else if(a==='review-day'){S.sheet={type:'day',date:v};fillDay(S.sheet);render()}
  else if(a==='new-entry'){openSheet();render()}
+ else if(a==='account-open')await openAccount();
+ else if(a==='account-delete')await deleteAccount();
  else if(a==='backup')backup();
+ else if(a==='restore-pick')$('#restore-file').click();
+ else if(a==='restore-apply')await applyRestore();
+ else if(a==='update-check')await checkUpdates(true);
+ else if(a==='update-open')await nativeApp.openUpdate();
  else if(a==='resume')startWatch();
  else if(a==='photo')openPhoto(b.dataset.id,b.dataset.path);
  else if(a==='viewer-close'){if(e.target===b||b.tagName==='BUTTON'){URL.revokeObjectURL(S.viewer);S.viewer=null;render()}}
@@ -712,7 +732,7 @@ document.addEventListener('click',async e=>{
   S.saving=true;b.disabled=true;
   try{
    if(sh.id){const row=S.entries.find(r=>r.id===sh.id);if(!row)throw new Error('missing');
-    if(sh.photo){if(S.demo)demoPhotos.set(row.id,sh.photo);else{await idb.put(row.id,sh.photo);S.photoQ.add(row.id);S.photoVersions??={};S.photoVersions[row.id]=uuid()}row.photo_path=`${uid()}/${row.id}.jpg`}
+    if(sh.photo){if(S.demo)demoPhotos.set(row.id,sh.photo);else{await idb.put(row.id,sh.photo);S.photoQ.add(row.id);S.photoVersions??={};S.photoVersions[row.id]=uuid()}row.photo_path=`${uid()}/${row.id}-${uuid()}.jpg`}
     Object.assign(row,{kind:sh.kind,amount,category:sh.category,note:(sh.note||'').trim().slice(0,200),date:sh.date});if(!S.demo)S.pending.add(row.id);persist();sync();
    }else await addEntry({kind:sh.kind,amount,category:sh.category,note:(sh.note||'').trim().slice(0,200),date:sh.date,photo:sh.photo});
    closeSheet();
@@ -725,6 +745,7 @@ window.addEventListener('online',()=>{sync();render()});window.addEventListener(
 /* ---------- boot ---------- */
 async function boot(){
  render();
+ if(inApp())checkUpdates();
  if(import.meta.env.PROD&&!inApp()&&'serviceWorker' in navigator)navigator.serviceWorker.register('/budgettracker/sw.js',{scope:'/budgettracker/'}).catch(()=>{});
  const q=new URLSearchParams(location.search);
  if(q.get('demo')==='warsaw')return startWarsaw();
@@ -738,7 +759,8 @@ async function boot(){
 boot();
 
 function hasPending(){return S.pending.size>0||S.photoQ.size>0||S.dirty.goals||S.sessions.some(s=>s.dirty)||S.fixed.some(f=>f.dirty)||Object.values(S.days).some(d=>d.dirty)}
-function statusView(){const x=t();return `<div class="sync-status" role="status">${esc(S.storageError?x.localError:S.msg||S.syncError||(!navigator.onLine?x.offline:S.syncing?x.syncing:hasPending()?x.pending:S.lastSync?x.synced:''))}</div>`}
+function conflictView(){const x=t();return S.entries.filter(e=>e.hasConflict).map(e=>`<section class="card notice"><h3>${esc(x.conflictTitle)}</h3><p>${esc(e.date)} · ${esc(e.note||catName(e.category))}</p><p>${esc(x.localCopy)}: ${money(e.amount)} · ${esc(x.serverCopy)}: ${e.conflict?money(Number(e.conflict.amount)):'—'}</p><p>${esc(x.conflictHelp)}</p><button class="btn primary" data-act="conflict-server" data-id="${e.id}" ${e.conflict?'':'disabled'}>${esc(x.keepServer)}</button><button class="btn ghost" data-act="conflict-local" data-id="${e.id}">${esc(x.keepLocal)}</button></section>`).join('')}
+function statusView(){const x=t();return `${conflictView()}<div class="sync-status" role="status">${esc(S.storageError?x.localError:S.msg||S.syncError||(!navigator.onLine?x.offline:S.syncing?x.syncing:hasPending()?x.pending:S.lastSync?x.synced:''))}</div>`}
 async function backup(){
  if(S.backingUp)return;S.backingUp=true;
  try{
@@ -751,7 +773,7 @@ async function backup(){
    const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)});
    photos.push({id:entry.id,data});
   }
-  const data={format:'kuryebro',version:1,currency:S.cur,created_at,entries,days,goals,fixed,sessions,active,photos};
+  const data={format:'kuryebro',version:2,ownerId:S.user?.id||null,currency:S.cur,created_at,entries,days,goals,fixed,sessions,active,photos};
   const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`kuryebro-${today()}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  }catch{S.msg=t().backupError;render()}finally{S.backingUp=false}
 }
@@ -762,3 +784,85 @@ document.addEventListener('keydown',e=>{
  if(e.key==='Escape'&&S.sheet.type!=='nick'){e.preventDefault();closeSheet();return}
  if(e.key==='Tab'){const sheet=$('.sheet'),all=[...sheet.querySelectorAll('button,input,a[href]')].filter(el=>!el.disabled&&el.getClientRects().length),first=all[0],last=all.at(-1);if(e.shiftKey&&(document.activeElement===first||!sheet.contains(document.activeElement))){e.preventDefault();last?.focus()}else if(!e.shiftKey&&(document.activeElement===last||!sheet.contains(document.activeElement))){e.preventDefault();first?.focus()}}
 });
+
+async function inspectRestore(file){
+ if(S.active||S.saving||S.syncing){setMsg(t().restoreBusy);return}
+ try{
+  if(file.size>MAX_BACKUP_BYTES)throw new Error('invalid-backup');
+  const backup=parseBackup(await file.text());
+  // Older exports lack ownership information: reconcile online before planning a merge.
+  if(!S.demo&&backup.ownerId!==S.user.id){if(!navigator.onLine)throw new Error('online-required');await sync();if(S.syncError)throw new Error('online-required')}
+  const plan=await planRestore(backup,{currency:S.cur,entries:S.entries,sessions:S.sessions,fixed:S.fixed,days:S.days},S.user?.id||'demo');
+  S.sheet={type:'restore',plan,backup};S.msg='';render();
+ }catch(error){setMsg(error.message==='online-required'?t().restoreOnline:t().badBackup)}
+}
+function restoreView(sh){
+ const x=t(),p=sh.plan;
+ return `<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(x.restore)}"><h3>${esc(x.restore)}</h3><p>${esc(x.restoreConfirm)}</p><ul><li>${esc(x.entries)}: ${p.entries.length}</li><li>${esc(x.sessions)}: ${p.sessions.length}</li><li>${esc(x.fixedTitle)}: ${p.fixed.length}</li><li>${esc(x.daysTitle)}: ${Object.keys(p.days).length}</li><li>${esc(x.restoreSkipped)}: ${p.skipped}</li></ul>${p.conflicts?`<p class="notice">${esc(x.restoreConflicts)}: ${p.conflicts}</p>`:''}${p.closedShift?`<p class="muted">${esc(x.restoreClosedShift)}</p>`:''}<label class="check"><input id="restore-goals" type="checkbox" ${S.goals.daily?'':'checked'}> ${esc(x.restoreGoals)}</label><p class="msg" id="restore-error" role="alert"></p><div class="row"><button class="btn ghost" data-act="sheet-close">${esc(x.cancel)}</button><button class="btn primary" data-act="restore-apply">${esc(x.restore)}</button></div></div></div>`;
+}
+async function applyRestore(){
+ if(S.restoring||S.syncing||S.active)return;S.restoring=true;
+ const sh=S.sheet,useGoals=$('#restore-goals').checked,button=$('[data-act="restore-apply"]');button.disabled=true;
+ const before={entries:S.entries,sessions:S.sessions,fixed:S.fixed,days:S.days,goals:S.goals,dirty:S.dirty,pending:new Set(S.pending),photoQ:new Set(S.photoQ)};
+ try{
+  const p=await planRestore(sh.backup,{currency:S.cur,entries:S.entries,sessions:S.sessions,fixed:S.fixed,days:S.days},S.user?.id||'demo');
+  const values=[];
+  for(const photo of p.photos){const match=photo.data.match(/^data:([^;]+);base64,(.+)$/),bytes=Uint8Array.from(atob(match[2]),c=>c.charCodeAt(0));values.push([photo.id,new Blob([bytes],{type:match[1]})]);}
+  for(const session of p.sessions)values.push(['route:'+session.id,session.points]);
+  // All binary data is committed as one transaction before the local account snapshot changes.
+  if(!S.demo)await idb.putMany(values);
+  else for(const [key,value] of values)demoPhotos.set(key,value);
+  S.entries=[...S.entries,...p.entries];S.sessions=[...S.sessions,...p.sessions.map(row=>({...row,dirty:!S.demo}))];S.fixed=[...S.fixed,...p.fixed.map(row=>({...row,dirty:!S.demo}))];S.days={...S.days,...Object.fromEntries(Object.entries(p.days).map(([date,row])=>[date,{...row,dirty:!S.demo}]))};
+  if(useGoals){S.goals={daily:p.goals.daily,days:p.goals.days};S.dirty={...S.dirty,goals:!S.demo};}
+  if(!S.demo){for(const row of p.entries)S.pending.add(row.id);for(const photo of p.photos)S.photoQ.add(photo.id);}
+  if(!persist())throw new Error('storage');
+  S.sheet=null;S.msg=t().restored;render();sync();
+ }catch{Object.assign(S,before);if($('#restore-error'))$('#restore-error').textContent=t().localError;button.disabled=false}
+ finally{S.restoring=false;if(!S.sheet)sync();}
+}
+
+async function checkUpdates(explicit=false){
+ if(S.checkingUpdate)return;S.checkingUpdate=true;
+ try{
+  const installed=await nativeApp.info();S.installedVersion=installed?.versionName||null;
+  const response=await fetch(RELEASES_URL,{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw new Error('network');
+  S.update=updateInfo(await response.json(),installed?.versionCode??null);S.updateError=false;
+ }catch{S.updateError=true}finally{S.checkingUpdate=false;if(S.user||S.demo||explicit)render(true)}
+}
+function updateView(){
+ if(!inApp())return '';const x=t(),release=S.update;
+ return `<section class="card update-card"><h3>${esc(x.appUpdate)}</h3>${S.installedVersion?`<p>${esc(x.installedVersion)}: ${esc(S.installedVersion)}</p>`:''}<p class="muted">${esc(S.updateError?x.updateFailed:release?.available?x.updateAvailable:release?x.upToDate:x.updateCheckHelp)}${release?.available?' '+esc(release.versionName):''}</p>${release?.available?`<button class="btn primary" data-act="update-open">${esc(x.updateNow)}</button>`:''}<button class="btn ghost" data-act="update-check">${esc(x.checkUpdates)}</button></section>`;
+}
+window.kuryebroBack=()=>{if(S.sheet){closeSheet();return true}if(S.viewer){URL.revokeObjectURL(S.viewer);S.viewer=null;render();return true}if(S.detail||S.workDetail){S.detail=null;S.workDetail=null;render();return true}const home=S.admin?'watch':'home';if(S.tab!==home){S.tab=home;render();return true}return false};
+
+async function checkLifecycle(){
+ const {data,error}=await sb.rpc('bt_lifecycle_status');if(error)throw error;
+ if(!data)return;
+ if(data.state!=='ready')throw new Error('account-reset-pending');
+ if((data.epoch||null)!==(S.epoch||null)){
+  stopWatchOnly();if(nativeTracker.available()){try{await nativeTracker.stop();await nativeTracker.clear()}catch{}}
+  const ids=S.entries.map(e=>e.id),routes=S.sessions.map(e=>'route:'+e.id);
+  S.entries=[];S.sessions=[];S.days={};S.fixed=[];S.active=null;S.goals={daily:0,days:6};S.pending=new Set();S.photoQ=new Set();S.dirty={goals:false};S.lastSync=null;S.epoch=data.epoch||null;persist();
+  for(const id of [...ids,...routes])await idb.del(id).catch(()=>{});
+ }
+}
+async function accountRequest(body){
+ const session=await sb.auth.getSession();if(!session.data.session)throw new Error('authentication');
+ const response=await fetch(SB_URL+'/functions/v1/budget-account',{method:'POST',headers:{apikey:SB_KEY,Authorization:'Bearer '+session.data.session.access_token,'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const data=await response.json();if(!response.ok)throw new Error(data.error||'operation-failed');return data;
+}
+async function openAccount(){
+ if(S.active||S.syncing||S.saving)return setMsg(t().restoreBusy);
+ try{const scope=await accountRequest({action:'preview'});S.sheet={type:'account',scope};render()}catch{setMsg(t().netErr)}
+}
+function accountView(sh){const x=t(),limited=sh.scope.shared||sh.scope.lastAdmin;return `<div class="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(x.deleteData)}"><h3>${esc(x.deleteData)}</h3><p>${esc(x.deleteWarning)}</p>${limited?`<p class="notice">${esc(sh.scope.lastAdmin?x.lastAdminHelp:x.sharedHelp)}</p>`:''}<label>${esc(x.currentPassword)}<input id="delete-password" type="password" autocomplete="current-password"></label><label>${esc(x.typeDelete)}<input id="delete-confirm" autocomplete="off" autocapitalize="characters"></label>${limited?'':`<label class="check"><input id="delete-identity" type="checkbox"> ${esc(x.deleteIdentity)}</label>`}<p id="delete-error" class="msg" role="alert"></p><div class="row"><button class="btn ghost" data-act="sheet-close">${esc(x.cancel)}</button><button class="btn danger" data-act="account-delete">${esc(x.deletePermanently)}</button></div></div></div>`}
+async function deleteAccount(){
+ if(S.deleting||S.active||S.syncing||S.saving)return;
+ const confirm=$('#delete-confirm').value,password=$('#delete-password').value;if(confirm!=='DELETE'||!password){$('#delete-error').textContent=t().deleteConfirm;return}
+ S.deleting=true;const button=$('[data-act="account-delete"]');button.disabled=true;
+ try{
+  await accountRequest({action:'delete',mode:$('#delete-identity')?.checked?'account':'data',confirm,password});
+  const owner=S.user.id;stopWatchOnly();for(const id of [...S.entries.map(e=>e.id),...S.sessions.map(e=>'route:'+e.id)])await idb.del(id).catch(()=>{});
+  localStorage.removeItem('bt.u.'+owner);await sb.auth.signOut({scope:'local'});S.user=null;S.sheet=null;S.entries=[];S.sessions=[];S.days={};S.fixed=[];S.active=null;S.pending=new Set();S.photoQ=new Set();S.admin=false;S.msg=t().dataDeleted;render();
+ }catch(error){if($('#delete-error'))$('#delete-error').textContent=error.message==='password'?t().badLogin:t().deleteFailed;button.disabled=false}finally{S.deleting=false}
+}
