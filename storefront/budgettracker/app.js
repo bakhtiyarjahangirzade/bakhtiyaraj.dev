@@ -2,7 +2,7 @@ import '../src/fonts.css';
 import './app.css';
 import {T,CATS,CURRENCIES,AUDIO_LANGS} from './strings.js';
 import {EXTRA} from './messages.js';
-import {BALANCE_NOTE,legacyTotalDates,total,decimal,validDate,dayAdjustment,dayMetrics,fuelRate,monthProjection} from './core.mjs';
+import {currentRouteSpeed,BALANCE_NOTE,legacyTotalDates,total,decimal,validDate,dayAdjustment,dayMetrics,fuelRate,monthProjection} from './core.mjs';
 import {readOwnEntries,readOwnTable,entryRow,acknowledgeEntries} from './sync.mjs';
 import {nativeTracker} from './native.js';
 for(const lang of Object.keys(EXTRA)){Object.assign(T[lang],EXTRA[lang]);T[lang].feats=T[lang].feats.filter(f=>!/səsli bildiriş|Spoken notifications|Голосовые уведомления/i.test(f));}
@@ -311,6 +311,7 @@ function applyNative(snapshot){
  if(!snapshot.id||snapshot.owner!==S.user?.id)return;
  const previous=S.active?.points?.at(-1)?.[2];
  S.active={id:snapshot.id,started_at:new Date(snapshot.started_at).toISOString(),points:snapshot.points||[],distance_m:snapshot.distance_m||0,ended_at:snapshot.ended_at};
+ const speed=$('#live-spd'),average=$('#live-avg');if(speed)speed.textContent=kmhTxt(currentRouteSpeed(S.active.points));if(average)average.textContent=kmhTxt(moveStats(S.active.points).kmh);
  persist();const clock=$('#clock'),km=$('#live-km');if(clock)clock.textContent=fmtDur(Math.round((Date.now()-snapshot.started_at)/1000));if(km)km.textContent=(S.active.distance_m/1000).toFixed(2);
  const point=S.active.points.at(-1);if(point&&point[2]!==previous){updateLiveMap(S.active);if(sb&&navigator.onLine&&Date.now()-lastLive>30000){lastLive=Date.now();sb.from('bt_live').upsert({user_id:S.user.id,session_id:S.active.id,lat:point[0],lng:point[1],accuracy:0}).then(()=>{})}}
 }

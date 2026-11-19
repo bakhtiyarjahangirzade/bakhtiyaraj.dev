@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {decimal,total,validDate,dayAdjustment,dayMetrics,fuelRate,monthProjection,BALANCE_NOTE,legacyTotalDates} from '../storefront/budgettracker/core.mjs';
+import {decimal,total,validDate,dayAdjustment,dayMetrics,fuelRate,monthProjection,BALANCE_NOTE,legacyTotalDates,currentRouteSpeed} from '../storefront/budgettracker/core.mjs';
 const day='2026-11-19';
 const row=(amount,kind='sale',category='delivery',date=day)=>({id:crypto.randomUUID(),amount,kind,category,date});
 test('day total adds only the remainder above itemised earnings and keeps receipts',()=>{
@@ -53,4 +53,11 @@ test('monthly goal agrees with the integer number of working-day bundles',()=>{
 test('historical ambiguous totals are flagged without changing financial history',()=>{
  const old=[row(66.5),row(100,'sale','daily')];assert.deepEqual(legacyTotalDates(old),[day]);assert.equal(total(old,'sale'),166.5);
  old[1].note=BALANCE_NOTE;assert.deepEqual(legacyTotalDates(old),[]);
+});
+test('native live speed uses fresh route points and does not show stale motion',()=>{
+ const points=[[40,49,1000],[40,49.001,1010]];
+ assert.ok(currentRouteSpeed(points,1015)>20);
+ assert.equal(currentRouteSpeed(points,1041),null);
+ assert.equal(currentRouteSpeed([[40,49,1000],[40,49,1010]],1015),0);
+ assert.equal(currentRouteSpeed([[40,49,1010],[40,49,1010]],1015),null);
 });
