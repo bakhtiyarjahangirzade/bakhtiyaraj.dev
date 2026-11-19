@@ -85,6 +85,7 @@ public class ShiftIntegrationTest {
         assertEquals("true",js("window.__backHandled"));
         android.view.View content=activity.findViewById(android.R.id.content);
         assertTrue("System bar inset is applied",content.getPaddingTop()>0);
+        assertTrue("Status icons contrast with the light app",androidx.core.view.WindowCompat.getInsetsController(activity.getWindow(),activity.getWindow().getDecorView()).isAppearanceLightStatusBars());
     }
     @Test public void migratesHostedStorageWithoutNetwork() throws Exception {
         CountDownLatch seeded=new CountDownLatch(1);

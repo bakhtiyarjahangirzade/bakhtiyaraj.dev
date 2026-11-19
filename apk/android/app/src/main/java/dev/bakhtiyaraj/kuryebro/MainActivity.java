@@ -8,6 +8,9 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(AppLifecyclePlugin.class);
         super.onCreate(state);
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(getWindow(),false);
+        androidx.core.view.WindowInsetsControllerCompat bars=androidx.core.view.WindowCompat.getInsetsController(getWindow(),getWindow().getDecorView());
+        bars.setAppearanceLightStatusBars(true);
+        bars.setAppearanceLightNavigationBars(true);
         android.view.View content=findViewById(android.R.id.content);
         androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(content,(view,insets)->{
             androidx.core.graphics.Insets safe=insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars()|androidx.core.view.WindowInsetsCompat.Type.displayCutout()|androidx.core.view.WindowInsetsCompat.Type.ime());

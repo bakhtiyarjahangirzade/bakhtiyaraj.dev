@@ -1,7 +1,7 @@
 name: KuryeBro checks
 on:
   push:
-    branches: [main, 'codex/**']
+    branches: [main]
     paths: ['storefront/budgettracker/**', 'storefront/public/budgettracker/**', 'supabase/budgettracker*.sql', 'supabase/functions/budget-account/**', 'tests/budget*', 'tests/browser/budget*', 'scripts/prepare-budget.mjs', 'scripts/budget-release.mjs', 'package*.json', '.github/workflows/kuryebro.yml']
   pull_request:
     paths: ['storefront/budgettracker/**', 'storefront/public/budgettracker/**', 'supabase/budgettracker*.sql', 'supabase/functions/budget-account/**', 'tests/budget*', 'tests/browser/budget*', 'scripts/prepare-budget.mjs', 'scripts/budget-release.mjs', 'package*.json', '.github/workflows/kuryebro.yml']
