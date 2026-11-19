@@ -1,3 +1,4 @@
+import {splitSession} from './calendar.mjs';
 // Shared, side-effect-free rules used by both the web app and the bundled APK.
 export const cents = value => Math.round((Number(value) + Number.EPSILON) * 100);
 export function currentRouteSpeed(points, now=Date.now()/1000) {
@@ -33,12 +34,12 @@ export function dayAdjustment(entries, date, earned, spent) {
   if (sale < 0 || expense < 0) throw new Error('below-details');
   return {sale:sale/100, expense:expense/100};
 }
-export function dayMetrics(entries, days, sessions, date) {
+export function dayMetrics(entries, days, sessions, date,zone) {
   const en = entries.filter(e => !e.deleted_at && e.date === date), manual = days[date];
-  const gps = sessions.filter(s => s.ended_at && localDay(s.started_at) === date);
+  const gps = sessions.filter(s=>s.ended_at).flatMap(s=>splitSession(s,zone)).filter(part=>part.day===date);
   // An explicit zero is a valid manual value, not a request to use GPS instead.
-  const km = manual ? Number(manual.km) : gps.reduce((n,s) => n+(s.distance_m||0)/1000,0);
-  const h = manual ? Number(manual.hours) : gps.reduce((n,s) => n+(s.duration_s||0)/3600,0);
+  const km = manual ? Number(manual.km) : gps.reduce((n,s) => n+s.km,0);
+  const h = manual ? Number(manual.hours) : gps.reduce((n,s) => n+s.seconds/3600,0);
   return {earn:total(en,'sale'), spent:total(en,'expense'), km, h};
 }
 export function localDay(value) {

@@ -65,3 +65,40 @@ test('JSON backup contains entries, day metrics and routes without account token
  expect(data.sessions.every(s=>s.points.length>0)).toBeTruthy();expect(Object.keys(data.days)).toHaveLength(4);
  expect(JSON.stringify(data)).not.toMatch(/access_token|refresh_token/);
 });
+
+test('restore previews, imports receipts and remains idempotent after reload',async({page})=>{
+ await page.addInitScript(mockBackend+";{const backend=window.supabase;Object.defineProperty(window,'supabase',{get:()=>backend,set:()=>{}})}");
+ await page.goto('/budgettracker/');await expect(page.locator('.today-summary')).toBeVisible();
+ await page.locator('nav [data-v=settings]').click();
+ const id='33333333-3333-4333-8333-333333333333',owner='11111111-1111-4111-8111-111111111111';
+ const data={format:'kuryebro',version:2,ownerId:owner,currency:'AZN',created_at:'2026-11-19T10:00:00Z',entries:[{id,kind:'sale',amount:25,category:'delivery',note:'restored',date:'2026-11-19',created_at:'2026-11-19T09:00:00Z',photo_path:owner+'/'+id+'.jpg'}],sessions:[],fixed:[],days:{},goals:{daily:50,days:5},photos:[{id,data:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jB1sAAAAASUVORK5CYII='}]};
+ const file={name:'backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))};
+ await page.locator('#restore-file').setInputFiles(file);await expect(page.getByRole('dialog')).toContainText('Entries: 1');
+ await page.locator('[data-act=restore-apply]').click();await expect(page.getByRole('dialog')).toHaveCount(0);
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('test.backend')||'{}').bt_entries?.length||0)).toBe(1);
+ await page.reload();await page.locator('nav [data-v=settings]').click();await page.locator('#restore-file').setInputFiles(file);
+ await expect(page.getByRole('dialog')).toContainText('Entries: 0');await page.locator('[data-act=restore-apply]').click();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('test.backend')||'{}').bt_entries?.length||0)).toBe(1);
+});
+
+test('another device edit stays visible until the user resolves the conflict',async({page})=>{
+ await page.addInitScript(mockBackend+";{const backend=window.supabase;Object.defineProperty(window,'supabase',{get:()=>backend,set:()=>{}})}");
+ await page.addInitScript(()=>{
+  const owner='11111111-1111-4111-8111-111111111111',id='33333333-3333-4333-8333-333333333333',row={id,user_id:owner,kind:'sale',amount:20,category:'delivery',note:'Other device',entry_date:'2026-11-19',created_at:'2026-11-19T09:00:00Z',updated_at:'2026-11-19T10:00:00Z'};
+  localStorage.setItem('test.backend',JSON.stringify({bt_entries:[row]}));localStorage.setItem('bt.u.'+owner,JSON.stringify({entries:[{...row,amount:10,date:row.entry_date,server_updated_at:'2026-11-19T09:00:00Z'}],pending:[id]}));
+ });
+ await page.goto('/budgettracker/');await expect(page.getByRole('heading',{name:'Changes from another device'})).toBeVisible();
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('test.backend')).bt_entries[0].amount)).toBe(20);
+ await page.locator('[data-act=conflict-server]').click();await expect(page.locator('[data-act=conflict-server]')).toHaveCount(0);
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('bt.u.11111111-1111-4111-8111-111111111111')).pending.length)).toBe(0);
+});
+
+test('shared account deletion explains its scope and requires typed confirmation',async({page})=>{
+ await page.addInitScript(mockBackend+";{const backend=window.supabase;Object.defineProperty(window,'supabase',{get:()=>backend,set:()=>{}})}");
+ let deletes=0;await page.route('**/functions/v1/budget-account',route=>{const body=route.request().postDataJSON();if(body.action==='delete')deletes++;return route.fulfill({json:body.action==='preview'?{shared:true,lastAdmin:false}:{ok:true}})});
+ await page.goto('/budgettracker/');await expect(page.locator('.today-summary')).toBeVisible();await page.locator('nav [data-v=settings]').click();await page.locator('[data-act=account-open]').click();
+ await expect(page.getByRole('dialog')).toContainText('Only KuryeBro data');await expect(page.locator('#delete-identity')).toHaveCount(0);
+ await page.locator('[data-act=account-delete]').click();expect(deletes).toBe(0);await expect(page.locator('#delete-error')).toContainText('DELETE');
+ await page.locator('#delete-password').fill('fixture-password');await page.locator('#delete-confirm').fill('DELETE');await page.locator('[data-act=account-delete]').click();
+ await expect(page.getByRole('button',{name:'Try the demo'})).toBeVisible();expect(deletes).toBe(1);
+});

@@ -4,8 +4,10 @@ let tracker;
 export const nativeTracker={
  available:()=>!!window.Capacitor?.isNativePlatform?.(),
  get:()=>tracker||(tracker=plugin()),
- async start(id,message,owner){return this.get().start({id,message,owner})},
+ async start(id,message,owner,timeZone){return this.get().start({id,message,owner,timeZone})},
  async status(){return this.get().status()},
  async stop(){return this.get().stop()},
  async clear(){return this.get().clear()}
 };
+
+export const nativeApp={info:async()=>window.Capacitor?.Plugins?.AppLifecycle?.info?.()||null,openUpdate:async()=>window.Capacitor?.Plugins?.AppLifecycle?.openUpdate?.()};

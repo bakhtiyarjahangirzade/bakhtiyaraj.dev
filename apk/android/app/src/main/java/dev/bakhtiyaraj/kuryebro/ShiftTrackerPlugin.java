@@ -31,7 +31,7 @@ public class ShiftTrackerPlugin extends Plugin {
             if(previous!=null&&!previous.equals(id)){call.reject("Recover the previous shift before starting another");return;}
             String owner=call.getString("owner");if(owner==null||!owner.matches("[a-fA-F0-9-]{36}")){call.reject("Invalid account");return;}
             if(previous!=null&&!owner.equals(store.prefs.getString("owner",null))){call.reject("Previous shift belongs to another account");return;}
-            store.begin(id);store.prefs.edit().putString("owner",owner).commit();
+            store.begin(id);store.prefs.edit().putString("owner",owner).putString("time_zone",call.getString("timeZone",java.util.TimeZone.getDefault().getID())).commit();
             Intent intent=new Intent(getContext(),ShiftService.class).putExtra("id",id).putExtra("message",call.getString("message","Shift in progress"));
             ContextCompat.startForegroundService(getContext(),intent);call.resolve();
         }catch(Exception error){call.reject("Could not start tracking",error);}

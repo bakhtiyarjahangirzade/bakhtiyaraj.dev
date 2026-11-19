@@ -26,3 +26,8 @@ export async function readOwnTable(client,table,columns,owner,order) {
     if(error)throw error;all.push(...data);if(data.length<500)return all;
   }
 }
+
+export async function dailyEntryId(owner,date,kind){
+ const bytes=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`kuryebro-daily:${owner}:${date}:${kind}`))).slice(0,16);bytes[6]=(bytes[6]&15)|80;bytes[8]=(bytes[8]&63)|128;
+ const h=[...bytes].map(n=>n.toString(16).padStart(2,'0')).join('');return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;
+}
