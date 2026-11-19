@@ -1,5 +1,14 @@
 // Shared, side-effect-free rules used by both the web app and the bundled APK.
 export const cents = value => Math.round((Number(value) + Number.EPSILON) * 100);
+export function currentRouteSpeed(points, now=Date.now()/1000) {
+  if(points.length<2)return null;
+  const a=points.at(-2),b=points.at(-1),seconds=b[2]-a[2];
+  if(seconds<=0||now-b[2]>30)return null;
+  const rad=n=>n*Math.PI/180,lat=rad(b[0]-a[0]),lng=rad(b[1]-a[1]);
+  const h=Math.sin(lat/2)**2+Math.cos(rad(a[0]))*Math.cos(rad(b[0]))*Math.sin(lng/2)**2;
+  const kmh=6371000*2*Math.asin(Math.min(1,Math.sqrt(h)))/seconds*3.6;
+  return kmh<162?kmh:null;
+}
 export const BALANCE_NOTE='kuryebro:day-balance:v1';
 export function legacyTotalDates(entries) {
   const live=entries.filter(e=>!e.deleted_at);
